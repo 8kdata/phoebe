@@ -13,9 +13,8 @@
     <modules>
         <module>febe-common</module>
         <module>febe-fe</module>
-        <module>febe-common-netty</module>
-        <module>main</module>
-        <module>febe-fe-api</module>           <!-- TODO: remove this one, only for testing -->
+        <module>febe-fe-api</module>           
+        <module>main</module>		<!-- TODO: remove this one, only for testing -->
     </modules>
 
     <packaging>pom</packaging>

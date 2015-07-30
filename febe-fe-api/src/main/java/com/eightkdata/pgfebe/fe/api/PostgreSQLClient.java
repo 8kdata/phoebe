@@ -20,8 +20,7 @@ package com.eightkdata.pgfebe.fe.api;
 
 import com.eightkdata.pgfebe.common.exception.FeBeException;
 import com.eightkdata.pgfebe.common.exception.FeBeExceptionType;
-import com.eightkdata.pgfebe.fe.decoder.BeMessageHeaderDecoder;
-import com.eightkdata.pgfebe.fe.decoder.BeMessagePayloadDecoder;
+import com.eightkdata.pgfebe.fe.decoder.BeMessageDecoder;
 import com.eightkdata.pgfebe.fe.decoder.BeMessageProcessor;
 import com.eightkdata.pgfebe.fe.encoder.FeMessageEncoder;
 import com.eightkdata.pgfebe.fe.encoder.FeMessageProcessor;
@@ -120,8 +119,7 @@ public class PostgreSQLClient {
 
                     // inbound
                     .addLast(
-                            new BeMessageHeaderDecoder(),
-                            new BeMessagePayloadDecoder(),
+                            new BeMessageDecoder(),
                             new BeMessageProcessor()
                     )
 

@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>com.8kdata.pgfebe</groupId>
-            <artifactId>febe-common-netty</artifactId>
+            <artifactId>febe-common</artifactId>
         </dependency>
 
         <dependency>

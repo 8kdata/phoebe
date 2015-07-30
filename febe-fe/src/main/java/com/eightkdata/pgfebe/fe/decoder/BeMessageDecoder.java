@@ -20,10 +20,11 @@ package com.eightkdata.pgfebe.fe.decoder;
 
 import com.eightkdata.pgfebe.common.BeMessageType;
 import com.eightkdata.pgfebe.common.FeBe;
+import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
+import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
 import com.eightkdata.pgfebe.common.exception.FeBeException;
 import com.eightkdata.pgfebe.common.exception.FeBeExceptionType;
-import com.eightkdata.pgfebe.common.netty.RetainedByteBuf;
 import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -32,11 +33,11 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import java.util.List;
 
 /**
- * Created: 28/07/15
+ * Created: 30/07/15
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
-public class BeMessageHeaderDecoder extends ByteToMessageDecoder {
+public class BeMessageDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         if(in.readableBytes() < BeMessageType.MIN_HEADER_SIZE) {
@@ -80,15 +81,18 @@ public class BeMessageHeaderDecoder extends ByteToMessageDecoder {
         int payloadLength = 1 + (int) length - headerLength;
         if(payloadLength == 0) {
             out.add(febeMessageType.getHeaderOnlyInstance());
-        } else {
-            out.add(new BeMessageParsedHeaderBufferPayload(
-                    febeMessageType, beMessageType, headerLength,
-                    1 + length,     // decoded length does not include byte type
-                    new RetainedByteBuf(in.slice(in.readerIndex(), payloadLength))
-            ));
-
-            // Mark all payload bytes as read, so that this decoder will only be called again if there's more input
-            in.readerIndex(in.readerIndex() + payloadLength);
+            return;
         }
+
+        assert febeMessageType.hasPayload();
+
+        FeBeMessage febeMessage;
+        MessageDecoder<?> decoder = BeMessageTypeDecoder.valueOf(beMessageType.name()).getDecoder();
+        febeMessage = decoder.decode(in.slice(in.readerIndex(), payloadLength).nioBuffer());
+
+        out.add(febeMessage);
+
+        // Mark all payload bytes as read, so that this decoder will only be called again if there's more input
+        in.readerIndex(in.readerIndex() + payloadLength);
     }
 }
