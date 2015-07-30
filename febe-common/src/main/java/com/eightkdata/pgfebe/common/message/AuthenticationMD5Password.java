@@ -18,7 +18,7 @@
 
 package com.eightkdata.pgfebe.common.message;
 
-import com.eightkdata.pgfebe.common.BaseFeBeMessage;
+import com.eightkdata.pgfebe.common.BaseFixedLengthFeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
 import com.google.common.base.Preconditions;
 import com.google.common.io.BaseEncoding;
@@ -32,7 +32,7 @@ import javax.annotation.concurrent.Immutable;
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
 @Immutable
-public class AuthenticationMD5Password extends BaseFeBeMessage {
+public class AuthenticationMD5Password extends BaseFixedLengthFeBeMessage {
     private final byte[] salt;
 
     private AuthenticationMD5Password(@Nonnull byte[] salt) {

@@ -14,7 +14,8 @@
         <module>febe-common</module>
         <module>febe-fe</module>
         <module>febe-common-netty</module>
-        <module>main</module>           <!-- TODO: remove this one, only for testing -->
+        <module>main</module>
+        <module>febe-fe-api</module>           <!-- TODO: remove this one, only for testing -->
     </modules>
 
     <packaging>pom</packaging>
@@ -48,16 +49,21 @@
                 <artifactId>febe-common-netty</artifactId>
                 <version>${febe-common.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.8kdata.pgfebe</groupId>
+                <artifactId>febe-fe</artifactId>
+                <version>${febe-common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.8kdata.pgfebe</groupId>
+                <artifactId>febe-fe-api</artifactId>
+                <version>${febe-common.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.12</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>1.1.3</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>

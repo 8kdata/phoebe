@@ -24,5 +24,6 @@ package com.eightkdata.pgfebe.common.exception;
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
 public enum FeBeExceptionType {
+    CONNECT_EXCEPTION,
     INVALID_MESSAGE;
 }

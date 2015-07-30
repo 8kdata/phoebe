@@ -52,4 +52,8 @@ public enum FeMessageType {
         this.febeMessageType = FeBeMessageType.valueOf(name());
         this.headerOnlyInstance = febeMessageType.hasPayload() ? null : new HeaderOnlyMessage(febeMessageType);
     }
+
+    public FeBeMessageType getFeBeMessageType() {
+        return febeMessageType;
+    }
 }

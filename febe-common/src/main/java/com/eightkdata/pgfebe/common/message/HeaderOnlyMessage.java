@@ -33,4 +33,9 @@ public class HeaderOnlyMessage extends BaseFeBeMessage {
     public HeaderOnlyMessage(FeBeMessageType febeMessageType) {
         super(febeMessageType);
     }
+
+    @Override
+    public int computePayloadLength() {
+        return 0;
+    }
 }

@@ -16,39 +16,26 @@
  */
 
 
-package com.eightkdata.pgfebe.common.netty;
+package com.eightkdata.pgfebe.common.decoder;
 
-import com.eightkdata.pgfebe.common.FeBeMessageParsedHeaderBufferPayload;
-import com.eightkdata.pgfebe.common.FeBeMessageType;
+import com.eightkdata.pgfebe.common.FeBeMessage;
+import com.eightkdata.pgfebe.common.exception.FeBeException;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
+import java.nio.ByteBuffer;
 
 /**
- * Created: 28/07/15
+ * Created: 26/07/15
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
-@NotThreadSafe
-public class NettyMessageParsedHeaderBufferPayload extends FeBeMessageParsedHeaderBufferPayload {
-    private final RetainedByteBuf retainedByteBuf;
-
-    public NettyMessageParsedHeaderBufferPayload(
-            @Nonnull FeBeMessageType febeMessageType,
-            int headerLength, long messageLength, @Nullable RetainedByteBuf retainedByteBuf
-    ) {
-        super(
-                febeMessageType, headerLength, messageLength,
-                null == retainedByteBuf ? null : retainedByteBuf.getNIOBuffer()
-        );
-
-        this.retainedByteBuf = retainedByteBuf;
-    }
-
-    public void releaseRetainedBuffer() {
-        if(retainedByteBuf != null) {
-            retainedByteBuf.release();
-        }
-    }
+public interface MessageDecoder<T extends FeBeMessage> {
+    /**
+     * Decodes a febe message from the contents of a ByteBuffer.
+     * MessageDecoder implementations must be stateless, working only on byteBuffer argument and method local variables.
+     * @param byteBuffer the buffer from where to decode the bytes
+     * @return a message T, decoded
+     * @throws FeBeException if the remaining bytes in the ByteBuffer do not match the expected message format
+     */
+    T decode(@Nonnull ByteBuffer byteBuffer) throws FeBeException;
 }

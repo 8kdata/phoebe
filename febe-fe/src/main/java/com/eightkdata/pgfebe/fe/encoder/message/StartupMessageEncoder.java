@@ -15,33 +15,42 @@
  *
  */
 
-package com.eightkdata.pgfebe.fe.decoder.message;
 
-import com.eightkdata.pgfebe.common.FeBeMessage;
-import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
-import com.eightkdata.pgfebe.common.exception.FeBeException;
-import com.eightkdata.pgfebe.common.message.AuthenticationMD5Password;
+package com.eightkdata.pgfebe.fe.encoder.message;
+
+import com.eightkdata.pgfebe.common.encoder.EncoderUtils;
+import com.eightkdata.pgfebe.common.encoder.MessageEncoder;
+import com.eightkdata.pgfebe.common.message.StartupMessage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.ByteBuffer;
 
 /**
- * Created: 26/07/15
+ * Created: 29/07/15
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
 @Immutable
-public class AuthenticationMD5PasswordDecoder implements MessageDecoder<FeBeMessage> {
-    private static final int SALT_LENGTH = 4;
+public class StartupMessageEncoder implements MessageEncoder<StartupMessage> {
+    private static final class EncoderParametersIterator implements StartupMessage.ParametersIterator {
+        private final ByteBuffer byteBuffer;
+
+        public EncoderParametersIterator(ByteBuffer byteBuffer) {
+            this.byteBuffer = byteBuffer;
+        }
+
+        @Override
+        public void doWithParameter(@Nonnull String name, @Nonnull String value) {
+            EncoderUtils.encodeToCString(name, byteBuffer, StartupMessage.MESSAGE_ENCODING);
+            EncoderUtils.encodeToCString(value, byteBuffer, StartupMessage.MESSAGE_ENCODING);
+        }
+    }
 
     @Override
-    public AuthenticationMD5Password decode(@Nonnull ByteBuffer byteBuffer) throws FeBeException {
-        byte[] salt = new byte[SALT_LENGTH];
-        byteBuffer.get(salt);
+    public void encode(@Nonnull StartupMessage message, @Nonnull final ByteBuffer byteBuffer) {
+        message.iterateParameters(new EncoderParametersIterator(byteBuffer));
 
-        return new AuthenticationMD5Password.Builder()
-                .setSalt(salt)
-                .build();
+        byteBuffer.put((byte) 0);
     }
 }

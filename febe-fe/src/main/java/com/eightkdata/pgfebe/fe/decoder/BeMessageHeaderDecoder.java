@@ -24,7 +24,6 @@ import com.eightkdata.pgfebe.common.FeBeMessageType;
 import com.eightkdata.pgfebe.common.exception.FeBeException;
 import com.eightkdata.pgfebe.common.exception.FeBeExceptionType;
 import com.eightkdata.pgfebe.common.netty.RetainedByteBuf;
-import com.eightkdata.pgfebe.fe.BeMessageParsedHeaderBufferPayload;
 import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

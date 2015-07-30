@@ -16,23 +16,24 @@
  */
 
 
-package com.eightkdata.pgfebe.fe;
+package com.eightkdata.pgfebe.common.encoder;
 
 import com.eightkdata.pgfebe.common.FeBeMessage;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageDecoder;
 
-import java.util.List;
+import javax.annotation.Nonnull;
+import java.nio.ByteBuffer;
 
 /**
- * Created: 25/07/15
+ * Created: 26/07/15
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
-public class BeMessageProcessor extends MessageToMessageDecoder<FeBeMessage> {
-    @Override
-    protected void decode(ChannelHandlerContext ctx, FeBeMessage msg, List<Object> out)
-    throws Exception {
-        System.out.println(msg);
-    }
+public interface MessageEncoder<T extends FeBeMessage> {
+    /**
+     * Encodes a febe message to the ByteBuffer.
+     * MessageEncoder implementations must be stateless, using only local variables.
+     * @param message the message to encode
+     * @param byteBuffer the ByteBuffer where to encode the message
+     */
+    void encode(@Nonnull final T message, @Nonnull final ByteBuffer byteBuffer);
 }

@@ -34,7 +34,7 @@ public abstract class BaseFeBeMessage implements FeBeMessage {
 
     @Override
     public FeBeMessageType getType() {
-        return null;
+        return febeMessageType;
     }
 
     private static final String TO_STRING_VALUES_SEPARATOR = ", ";
@@ -45,7 +45,7 @@ public abstract class BaseFeBeMessage implements FeBeMessage {
         sb.append(febeMessageType.name())
                 .append("(")
                 .append("length=")
-                .append(febeMessageType.getLength());
+                .append(computePayloadLength());
 
         return toStringMessagePayload(sb, TO_STRING_VALUES_SEPARATOR)
                 .append(")")

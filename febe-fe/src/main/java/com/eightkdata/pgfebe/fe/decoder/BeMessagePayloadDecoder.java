@@ -20,9 +20,8 @@ package com.eightkdata.pgfebe.fe.decoder;
 
 import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
-import com.eightkdata.pgfebe.common.MessageDecoder;
+import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
 import com.eightkdata.pgfebe.common.message.HeaderOnlyMessage;
-import com.eightkdata.pgfebe.fe.BeMessageParsedHeaderBufferPayload;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 

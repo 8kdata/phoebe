@@ -13,17 +13,25 @@
     </parent>
 
     <groupId>com.8kdata.pgfebe</groupId>
-    <artifactId>main</artifactId>
+    <artifactId>febe-fe-api</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.8kdata.pgfebe</groupId>
-            <artifactId>febe-fe-api</artifactId>
+            <artifactId>febe-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.8kdata.pgfebe</groupId>
+            <artifactId>febe-fe</artifactId>
         </dependency>
 
         <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty-codec</artifactId>
+            <artifactId>netty-transport</artifactId>
         </dependency>
     </dependencies>
 

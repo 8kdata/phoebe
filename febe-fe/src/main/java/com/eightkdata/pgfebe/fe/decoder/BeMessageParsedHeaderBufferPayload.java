@@ -16,7 +16,7 @@
  */
 
 
-package com.eightkdata.pgfebe.fe;
+package com.eightkdata.pgfebe.fe.decoder;
 
 import com.eightkdata.pgfebe.common.BeMessageType;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
@@ -26,12 +26,14 @@ import com.google.common.base.Preconditions;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * Created: 28/07/15
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
+@NotThreadSafe
 public class BeMessageParsedHeaderBufferPayload extends NettyMessageParsedHeaderBufferPayload {
     private final BeMessageType beMessageType;
 

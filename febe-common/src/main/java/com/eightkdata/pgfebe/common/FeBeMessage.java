@@ -25,4 +25,5 @@ package com.eightkdata.pgfebe.common;
  */
 public interface FeBeMessage {
     FeBeMessageType getType();
+    int computePayloadLength();
 }

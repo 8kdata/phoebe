@@ -18,8 +18,11 @@
 
 package com.eightkdata.pgfebe.common.netty;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.nio.ByteBuffer;
 
 /**
@@ -27,10 +30,13 @@ import java.nio.ByteBuffer;
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
+@NotThreadSafe
 public class RetainedByteBuf {
     private final ByteBuf buffer;
 
-    public RetainedByteBuf(ByteBuf buffer) {
+    public RetainedByteBuf(@Nonnull ByteBuf buffer) {
+        Preconditions.checkNotNull(buffer);
+
         this.buffer = buffer.retain();
     }
 

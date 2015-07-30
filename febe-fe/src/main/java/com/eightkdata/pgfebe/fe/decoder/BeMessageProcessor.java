@@ -16,41 +16,23 @@
  */
 
 
-package com.eightkdata.pgfebe.main;
+package com.eightkdata.pgfebe.fe.decoder;
 
-import io.netty.buffer.ByteBuf;
+import com.eightkdata.pgfebe.common.FeBeMessage;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.handler.codec.MessageToMessageDecoder;
+
+import java.util.List;
 
 /**
- * Created: 26/06/15
+ * Created: 25/07/15
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
-public class OutboundMessageHandler extends MessageToByteEncoder<Object> {
-    private final short POSTGRESQL_PROTOCOL_MAJOR = 3;
-    private final short POSTGRESQL_PROTOCOL_MINOR = 0;
-
+public class BeMessageProcessor extends MessageToMessageDecoder<FeBeMessage> {
     @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, Object message, ByteBuf byteBuf) throws Exception {
-        byteBuf.writeShort(POSTGRESQL_PROTOCOL_MAJOR);
-        byteBuf.writeShort(POSTGRESQL_PROTOCOL_MINOR);
-
-    // Validate possible startup params
-        StringBuffer stringBuffer = new StringBuffer();
-        writeParam(stringBuffer, "user", "aht");
-
-        byteBuf.writeBytes(stringBuffer.toString().getBytes());
-
-        byteBuf.writeByte(0);
-    }
-
-    private void writeParam(StringBuffer stringBuffer, String key, String value) {
-        stringBuffer
-                .append(key)
-                .append("\0")
-                .append(value)
-                .append("\0")
-        ;
+    protected void decode(ChannelHandlerContext ctx, FeBeMessage msg, List<Object> out)
+    throws Exception {
+        System.out.println(msg);
     }
 }
