@@ -3,7 +3,6 @@
 package com.eightkdata.pgfebe.fe.api;
 
 import com.eightkdata.pgfebe.common.exception.FeBeException;
-import com.eightkdata.pgfebe.common.exception.FeBeExceptionType;
 import com.eightkdata.pgfebe.fe.decoder.BeMessageDecoder;
 import com.eightkdata.pgfebe.fe.decoder.BeMessageProcessor;
 import com.eightkdata.pgfebe.fe.encoder.FeMessageEncoder;
@@ -14,9 +13,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -33,6 +33,8 @@ public class PGClient {
     private final String host;
     private final int port;
 
+    private final EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+
     public PGClient(@Nonnull String host, int port) {
         checkArgument(!isNullOrEmpty(host), "host cannot be null or empty");
         checkArgument(port > 0, "port cannot be less than 1");
@@ -40,76 +42,56 @@ public class PGClient {
         this.port = port;
     }
 
-    private static final class LatchChannelFutureListener implements ChannelFutureListener {
-        private final CountDownLatch connectLatch;
-
-        public LatchChannelFutureListener(CountDownLatch connectLatch) {
-            this.connectLatch = connectLatch;
-        }
-
-        @Override
-        public void operationComplete(ChannelFuture channelFuture) throws Exception {
-            try {
-                if (! channelFuture.isSuccess()) {
-                    throw new FeBeException(FeBeExceptionType.CONNECT_EXCEPTION, "Unable to establish TCP connection");
-                }
-            } finally {
-                connectLatch.countDown();
-            }
-        }
-    }
-
-    public PGSession connect(long timeout, TimeUnit timeUnit) throws FeBeException {
+    /**
+     * Attempts to create a new session within a specified time limit.
+     *
+     * @return the session, or {@code null} if the time limit is reached.
+     * @throws FeBeException if the session could not be created.
+     */
+    public @Nullable PGSession connect(long timeout, TimeUnit unit) throws FeBeException, InterruptedException {
         checkArgument(timeout > 0, "timeout cannot be less than 1");
-        checkNotNull(timeUnit, "timeUnit");
+        checkNotNull(unit, "timeUnit");
 
-        EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+        final AtomicReference<Channel> channelRef = new AtomicReference<Channel>();
 
-        Bootstrap bootstrap = new Bootstrap()
+        new Bootstrap()
                 .group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new ClientChannelHandlerInitializer())
-        ;
-
-        CountDownLatch connectLatch = new CountDownLatch(1);
-
-        ChannelFuture channelFuture = bootstrap
                 .connect(host, port)
-                .addListener(new LatchChannelFutureListener(connectLatch))
-        ;
+                .addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        channelRef.set(future.channel());
+                    }
+                })
+                .await(timeout, unit);
 
-        try {
-            if(connectLatch.await(timeout, timeUnit)) {
-                return new PGSession(channelFuture.channel());
-            }
-        } catch (InterruptedException e) {
-            return null;
-        }
-
-        return null;
+        Channel channel = channelRef.get();
+        return channel != null ? new PGSession(channel) : null;
     }
 
-    public PGSession connect() throws FeBeException {
+    /**
+     * Attempts to create a new session using the default time limit of 30 seconds.
+     *
+     * @return the session, or {@code null} if the time limit is reached.
+     * @throws FeBeException if the session could not be created.
+     */
+    public PGSession connect() throws FeBeException, InterruptedException {
         return connect(DEFAULT_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_TIMEUNIT);
     }
+
 
     private static class ClientChannelHandlerInitializer extends ChannelInitializer<Channel> {
         @Override
         protected void initChannel(Channel channel) throws Exception {
             channel.pipeline()
+                    .addLast("PGInboundMessageDecoder", new BeMessageDecoder())
+                    .addLast("PGInboundMessageProcessor", new BeMessageProcessor())
 
-                    // inbound
-                    .addLast(
-                            new BeMessageDecoder(),
-                            new BeMessageProcessor()
-                    )
-
-                    // outbound
-                    .addLast(
-                            new FeMessageEncoder(),
-                            new FeMessageProcessor()
-                    )
-            ;
+                    .addLast("PGOutboundMessageEncoder", new FeMessageEncoder())
+                    .addLast("PGOutboundMessageProcessor", new FeMessageProcessor());
         }
     }
+
 }
