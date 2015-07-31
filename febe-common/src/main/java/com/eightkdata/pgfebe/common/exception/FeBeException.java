@@ -15,28 +15,19 @@
  *
  */
 
-
 package com.eightkdata.pgfebe.common.exception;
 
 /**
- * Created: 25/07/15
- *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * Base class for exceptions.
  */
 public class FeBeException extends Exception {
-    private final FeBeExceptionType exceptionType;
 
-    public FeBeException(FeBeExceptionType exceptionType, String message) {
+    public FeBeException(String message) {
         super(message);
-        this.exceptionType = exceptionType;
     }
 
-    public FeBeException(FeBeExceptionType exceptionType, String message, Throwable cause) {
+    public FeBeException(String message, Throwable cause) {
         super(message, cause);
-        this.exceptionType = exceptionType;
     }
 
-    public FeBeExceptionType getExceptionType() {
-        return exceptionType;
-    }
 }

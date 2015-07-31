@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 8Kdata Technology S.L.
+ * Copyright © 2015, 8Kdata Technologies, S.L.
  *
  * Permission to use, copy, modify, and distribute this software and its documentation for any purpose,
  * without fee, and without a written agreement is hereby granted, provided that the above copyright notice and this
@@ -15,16 +15,17 @@
  *
  */
 
-
 package com.eightkdata.pgfebe.common.exception;
 
 /**
- * Created: 25/07/15
- *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * Exception thrown when a message could not be decoded.
  */
-// fixme: replace this with subclasses
-public enum FeBeExceptionType {
-    CONNECT_EXCEPTION,
-    INVALID_MESSAGE;
+public class InvalidMessageException extends FeBeException {
+    public InvalidMessageException(String message) {
+        super(message);
+    }
+
+    public InvalidMessageException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

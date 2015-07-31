@@ -23,8 +23,7 @@ import com.eightkdata.pgfebe.common.FeBe;
 import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
 import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
-import com.eightkdata.pgfebe.common.exception.FeBeException;
-import com.eightkdata.pgfebe.common.exception.FeBeExceptionType;
+import com.eightkdata.pgfebe.common.exception.InvalidMessageException;
 import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -33,11 +32,12 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import java.util.List;
 
 /**
- * Created: 30/07/15
+ * This pipeline stage is responsible for decoding the raw byte stream into messages.
  *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * The actual processing is handled by {@link BeMessageProcessor}.
  */
 public class BeMessageDecoder extends ByteToMessageDecoder {
+
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         if(in.readableBytes() < BeMessageType.MIN_HEADER_SIZE) {
@@ -66,25 +66,23 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
         }
 
         // Check for invalid messages
-        if(beMessageType == null) {
-            throw new FeBeException(FeBeExceptionType.INVALID_MESSAGE, "Unknown be message byte type (" + type + ")");
+        if (beMessageType == null) {
+            throw new InvalidMessageException("unknown message type (" + type + ")");
         }
-        FeBeMessageType febeMessageType = beMessageType.getFeBeMessageType();
-        if(febeMessageType.hasFixedLength() && length != febeMessageType.getLength()) {
-            throw new FeBeException(
-                    FeBeExceptionType.INVALID_MESSAGE,
-                    "Unexpected length (" + length + ") for be message type=" + (char) type
-            );
+        FeBeMessageType messageType = beMessageType.getFeBeMessageType();
+        if (messageType.hasFixedLength() && length != messageType.getLength()) {
+            throw new InvalidMessageException(
+                    "unexpected length (" + length + ") for " + messageType + "(" + (char) type + ") message.");
         }
 
         // Extract payload, if any
         int payloadLength = 1 + (int) length - headerLength;
         if(payloadLength == 0) {
-            out.add(febeMessageType.getHeaderOnlyInstance());
+            out.add(messageType.getHeaderOnlyInstance());
             return;
         }
 
-        assert febeMessageType.hasPayload();
+        assert messageType.hasPayload();
 
         FeBeMessage febeMessage;
         MessageDecoder<?> decoder = BeMessageTypeDecoder.valueOf(beMessageType.name()).getDecoder();
@@ -95,4 +93,5 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
         // Mark all payload bytes as read, so that this decoder will only be called again if there's more input
         in.readerIndex(in.readerIndex() + payloadLength);
     }
+
 }
