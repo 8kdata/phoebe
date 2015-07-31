@@ -29,6 +29,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -66,17 +68,17 @@ public class PGClient {
         checkNotNull(unit, "timeUnit");
 
         final AtomicReference<Channel> channelRef = new AtomicReference<Channel>();
+        List<MessageListener> listeners = new CopyOnWriteArrayList<MessageListener>();
 
         new Bootstrap()
                 .group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
-                .handler(new ClientChannelHandlerInitializer())
+                .handler(new ClientChannelHandlerInitializer(channelRef, listeners))
                 .connect(host, port)
-                .addListener(new ChannelSaver(channelRef))
                 .await(timeout, unit);
 
         Channel channel = channelRef.get();
-        return channel != null ? new PGSession(channel) : null;
+        return channel != null ? new PGSession(channel, listeners) : null;
     }
 
     /**
@@ -91,27 +93,26 @@ public class PGClient {
 
 
     private static class ClientChannelHandlerInitializer extends ChannelInitializer<Channel> {
+        private final AtomicReference<Channel> channelRef;
+        private final List<MessageListener> listeners;
+
+        ClientChannelHandlerInitializer(AtomicReference<Channel> channelRef, List<MessageListener> listeners) {
+            this.channelRef = channelRef;
+            this.listeners = listeners;
+        }
+
         @Override
         protected void initChannel(Channel channel) throws Exception {
             channel.pipeline()
                     .addLast("PGInboundMessageDecoder", new BeMessageDecoder())
                     .addLast("PGInboundMessageProcessor", new BeMessageProcessor())
 
+                    .addLast("PGMessageBroadcaster", new MessageBroadcaster(listeners))
+
                     .addLast("PGOutboundMessageEncoder", new FeMessageEncoder())
                     .addLast("PGOutboundMessageProcessor", new FeMessageProcessor());
+            channelRef.set(channel);
         }
     }
 
-    private static class ChannelSaver implements ChannelFutureListener {
-        private final AtomicReference<Channel> channelRef;
-
-        public ChannelSaver(AtomicReference<Channel> channelRef) {
-            this.channelRef = channelRef;
-        }
-
-        @Override
-        public void operationComplete(ChannelFuture future) throws Exception {
-            channelRef.set(future.channel());
-        }
-    }
 }

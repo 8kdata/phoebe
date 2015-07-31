@@ -78,7 +78,7 @@ public enum BeMessageType {
         for(BeMessageType beMessageType : values()) {
             assert beMessageType.getType() != null : "Backend messages must have a type byte";
 
-            if(beMessageType.getType() == (byte) FeBe.AUTH_MESSAGE_TYPE.charValue()) {
+            if(FeBe.AUTH_MESSAGE_TYPE.equals(beMessageType.getType())) {
                 assert beMessageType.getSubtype() != null : "Auth be messages must have a subtype";
                 authMessageTypes.put(beMessageType.getSubtype(), beMessageType);
             } else {

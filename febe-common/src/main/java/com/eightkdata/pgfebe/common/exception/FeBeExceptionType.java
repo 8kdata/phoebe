@@ -23,6 +23,7 @@ package com.eightkdata.pgfebe.common.exception;
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
+// fixme: replace this with subclasses
 public enum FeBeExceptionType {
     CONNECT_EXCEPTION,
     INVALID_MESSAGE;

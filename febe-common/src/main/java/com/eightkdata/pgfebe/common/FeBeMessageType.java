@@ -30,14 +30,14 @@ import static com.eightkdata.pgfebe.common.FeBe.*;
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
 public enum FeBeMessageType {
-    AuthenticationOk					(   AUTH_MESSAGE_TYPE,  8,      0                               ),
-    AuthenticationKerberosV5            (   AUTH_MESSAGE_TYPE,  8,      2                               ),
-    AuthenticationCleartextPassword		(   AUTH_MESSAGE_TYPE,  8,      3                               ),
-    AuthenticationMD5Password           (   AUTH_MESSAGE_TYPE,  12,     5                               ),
-    AuthenticationSCMCredential         (   AUTH_MESSAGE_TYPE,  8,      6                               ),
-    AuthenticationGSS                   (   AUTH_MESSAGE_TYPE,  8,      7                               ),
-    AuthenticationSSPI                  (   AUTH_MESSAGE_TYPE,  8,      9                               ),
-    AuthenticationGSSContinue           (   AUTH_MESSAGE_TYPE,  null,   8                               ),
+    AuthenticationOk					(   (char) AUTH_MESSAGE_TYPE.byteValue(),  8,      0            ),
+    AuthenticationKerberosV5            (   (char) AUTH_MESSAGE_TYPE.byteValue(),  8,      2            ),
+    AuthenticationCleartextPassword		(   (char) AUTH_MESSAGE_TYPE.byteValue(),  8,      3            ),
+    AuthenticationMD5Password           (   (char) AUTH_MESSAGE_TYPE.byteValue(),  12,     5            ),
+    AuthenticationSCMCredential         (   (char) AUTH_MESSAGE_TYPE.byteValue(),  8,      6            ),
+    AuthenticationGSS                   (   (char) AUTH_MESSAGE_TYPE.byteValue(),  8,      7            ),
+    AuthenticationSSPI                  (   (char) AUTH_MESSAGE_TYPE.byteValue(),  8,      9            ),
+    AuthenticationGSSContinue           (   (char) AUTH_MESSAGE_TYPE.byteValue(),  null,   8            ),
     BackendKeyData                      (   'K',                12,     null                            ),
     Bind                                (   'B',                null,   null                            ),
     BindComplete						(   '2',                4,   	null                            ),

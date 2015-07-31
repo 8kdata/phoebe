@@ -17,45 +17,36 @@
 
 package com.eightkdata.pgfebe.fe.api;
 
-import com.eightkdata.pgfebe.common.message.StartupMessage;
-import io.netty.channel.Channel;
-
-import java.util.List;
+import com.eightkdata.pgfebe.common.FeBeMessage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A session represents a useable connection to the database, it is used to send and receive messages.
+ * Callback interface to allow clients to process individual messages.
  */
-public class PGSession {
-    private final Channel channel;
-    private final List<MessageListener> listeners;
+public abstract class MessageListener<T extends FeBeMessage> {
 
-    public PGSession(Channel channel, List<MessageListener> listeners) {
-        this.listeners = listeners;
-        this.channel = checkNotNull(channel, "channel");
+    private final Class<T> type;
+
+    protected MessageListener(Class<T> type) {
+        this.type = checkNotNull(type, "type");
     }
 
     /**
-     * Send the start message to the server.
+     * Does this listener understand {@code message}.
+     * @param message the message to test.
+     * @return {@code true} if the message can be understood, {@code false} otherwise.
      */
-    public void start(String user, String database) {
-        StartupMessage message = new StartupMessage.Builder(user, database).build();
-        channel.writeAndFlush(message);
+    public final boolean accepts(FeBeMessage message) {
+        return message != null && type.isAssignableFrom(message.getClass());
     }
 
     /**
-     * Adds a listener which will be notified of any messages passing over this session.
+     * Called when a new message is available for processing.
+     *
+     * This will be called during pipeline processing and so should return promptly.
+     * In particular, if a large amount of work needs to be done, or any blocking calls made,
+     * then this methid should hand the work off to a different thread for processing.
      */
-    public void addListener(MessageListener listener) {
-        listeners.add(listener);
-    }
-
-    /**
-     * Removes a previously added listener.
-     */
-    public void removeListener(MessageListener listener) {
-        listeners.remove(listener);
-    }
-
+    public abstract void onMessage(T message) throws Exception;
 }

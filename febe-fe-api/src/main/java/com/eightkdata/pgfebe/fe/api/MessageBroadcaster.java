@@ -18,35 +18,32 @@
 package com.eightkdata.pgfebe.fe.api;
 
 import com.eightkdata.pgfebe.common.FeBeMessage;
-import net.jodah.concurrentunit.Waiter;
-import org.junit.Test;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageDecoder;
 
-import static com.eightkdata.pgfebe.common.FeBe.AUTH_MESSAGE_TYPE;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import java.util.List;
 
 /**
- * Unit tests for {@link }
+ * Handles broadcasting message notifications to interested listeners.
  */
-public class PGSessionTest extends AbstractTest {
+class MessageBroadcaster extends MessageToMessageDecoder<FeBeMessage> {
 
-    @Test
-    public void testStart() throws Throwable {
-        final Waiter waiter = new Waiter();
+    private final List<MessageListener> listeners;
 
-        PGSession session = client.connect();
-        session.addListener(new MessageListener<FeBeMessage>(FeBeMessage.class) {
-            @Override
-            public void onMessage(FeBeMessage message) {
-                System.out.println(">>> " + message);
-                if (AUTH_MESSAGE_TYPE.equals(message.getType().getType())) {
-                    waiter.assertTrue(true);
-                    waiter.resume();
-                }
+    public MessageBroadcaster(List<MessageListener> listeners) {
+        super(FeBeMessage.class);
+        this.listeners = listeners;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void decode(ChannelHandlerContext ctx, FeBeMessage message, List<Object> out) throws Exception {
+        for (MessageListener listener : listeners) {
+            if (listener.accepts(message)) {
+                listener.onMessage(message);
             }
-        });
-        session.start(props.getProperty("db.user"), props.getProperty("db.name"));
-
-        waiter.await(5, SECONDS);
+        }
+        out.add(message);
     }
 
 }
