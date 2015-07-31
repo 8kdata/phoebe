@@ -12,10 +12,10 @@ import io.netty.channel.Channel;
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
-public class PostgreSQLSession {
+public class PGSession {
     private final Channel channel;
 
-    public PostgreSQLSession(Channel channel) {
+    public PGSession(Channel channel) {
         this.channel = channel;
     }
 

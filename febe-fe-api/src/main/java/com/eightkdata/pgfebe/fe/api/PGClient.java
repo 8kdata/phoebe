@@ -1,20 +1,4 @@
-/*
- * Copyright (c) 2015, 8Kdata Technology S.L.
- *
- * Permission to use, copy, modify, and distribute this software and its documentation for any purpose,
- * without fee, and without a written agreement is hereby granted, provided that the above copyright notice and this
- * paragraph and the following two paragraphs appear in all copies.
- *
- * IN NO EVENT SHALL 8Kdata BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,
- * INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF 8Kdata HAS BEEN
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * 8Kdata SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS,
- * AND 8Kdata HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
- *
- */
-
+// Copyright © 2015, 8Kdata Technologies, S.L.
 
 package com.eightkdata.pgfebe.fe.api;
 
@@ -24,7 +8,6 @@ import com.eightkdata.pgfebe.fe.decoder.BeMessageDecoder;
 import com.eightkdata.pgfebe.fe.decoder.BeMessageProcessor;
 import com.eightkdata.pgfebe.fe.encoder.FeMessageEncoder;
 import com.eightkdata.pgfebe.fe.encoder.FeMessageProcessor;
-import com.google.common.base.Preconditions;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -35,23 +18,24 @@ import javax.annotation.concurrent.NotThreadSafe;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 /**
- * Created: 26/06/15
- *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * A client represents a server configuration and manages any shared resources for the server.
  */
 @NotThreadSafe
-public class PostgreSQLClient {
+public class PGClient {
     private static final long DEFAULT_CONNECT_TIMEOUT = 30;
     private static final TimeUnit DEFAULT_CONNECT_TIMEOUT_TIMEUNIT = TimeUnit.SECONDS;
 
     private final String host;
     private final int port;
 
-    public PostgreSQLClient(@Nonnull String host, int port) {
-        Preconditions.checkNotNull(host);
-        Preconditions.checkArgument(port > 0);
-
+    public PGClient(@Nonnull String host, int port) {
+        checkArgument(!isNullOrEmpty(host), "host cannot be null or empty");
+        checkArgument(port > 0, "port cannot be less than 1");
         this.host = host;
         this.port = port;
     }
@@ -67,9 +51,7 @@ public class PostgreSQLClient {
         public void operationComplete(ChannelFuture channelFuture) throws Exception {
             try {
                 if (! channelFuture.isSuccess()) {
-                    throw new FeBeException(
-                            FeBeExceptionType.CONNECT_EXCEPTION, "Unable to establish TCP connection"
-                    );
+                    throw new FeBeException(FeBeExceptionType.CONNECT_EXCEPTION, "Unable to establish TCP connection");
                 }
             } finally {
                 connectLatch.countDown();
@@ -77,10 +59,9 @@ public class PostgreSQLClient {
         }
     }
 
-    public PostgreSQLSession connect(long timeout, TimeUnit timeUnit)
-    throws FeBeException {
-        Preconditions.checkArgument(timeout > 0);
-        Preconditions.checkNotNull(timeUnit);
+    public PGSession connect(long timeout, TimeUnit timeUnit) throws FeBeException {
+        checkArgument(timeout > 0, "timeout cannot be less than 1");
+        checkNotNull(timeUnit, "timeUnit");
 
         EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 
@@ -99,7 +80,7 @@ public class PostgreSQLClient {
 
         try {
             if(connectLatch.await(timeout, timeUnit)) {
-                return new PostgreSQLSession(channelFuture.channel());
+                return new PGSession(channelFuture.channel());
             }
         } catch (InterruptedException e) {
             return null;
@@ -108,7 +89,7 @@ public class PostgreSQLClient {
         return null;
     }
 
-    public PostgreSQLSession connect() throws FeBeException {
+    public PGSession connect() throws FeBeException {
         return connect(DEFAULT_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_TIMEUNIT);
     }
 

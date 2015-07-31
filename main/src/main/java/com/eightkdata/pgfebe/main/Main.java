@@ -19,8 +19,8 @@
 package com.eightkdata.pgfebe.main;
 
 import com.eightkdata.pgfebe.common.exception.FeBeException;
-import com.eightkdata.pgfebe.fe.api.PostgreSQLClient;
-import com.eightkdata.pgfebe.fe.api.PostgreSQLSession;
+import com.eightkdata.pgfebe.fe.api.PGClient;
+import com.eightkdata.pgfebe.fe.api.PGSession;
 
 /**
  * Created: 26/06/15
@@ -29,9 +29,9 @@ import com.eightkdata.pgfebe.fe.api.PostgreSQLSession;
  */
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        PostgreSQLClient postgreSQLClient = new PostgreSQLClient("localhost", 5432);
+        PGClient postgreSQLClient = new PGClient("localhost", 5432);
         try {
-            PostgreSQLSession session = postgreSQLClient.connect();
+            PGSession session = postgreSQLClient.connect();
             session.sendStartupMessage();
         } catch (FeBeException e) {
             e.printStackTrace();
