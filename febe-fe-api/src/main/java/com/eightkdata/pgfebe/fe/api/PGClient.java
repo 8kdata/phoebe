@@ -14,7 +14,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -25,7 +24,6 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 /**
  * A client represents a server configuration and manages any shared resources for the server.
  */
-@NotThreadSafe
 public class PGClient {
     private static final long DEFAULT_CONNECT_TIMEOUT = 30;
     private static final TimeUnit DEFAULT_CONNECT_TIMEOUT_TIMEUNIT = TimeUnit.SECONDS;
