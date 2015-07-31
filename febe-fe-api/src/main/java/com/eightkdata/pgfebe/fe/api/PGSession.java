@@ -1,26 +1,28 @@
-/*
- * Copyright (c) 2009-2014, 8Kdata Technologies, S.L.
- */
+// Copyright © 2015, 8Kdata Technologies, S.L.
 
 package com.eightkdata.pgfebe.fe.api;
 
 import com.eightkdata.pgfebe.common.message.StartupMessage;
 import io.netty.channel.Channel;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * Created: 30/07/15
- *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * A session represents a useable connection to the database, it is used to send and receive messages.
  */
 public class PGSession {
     private final Channel channel;
 
     public PGSession(Channel channel) {
-        this.channel = channel;
+        this.channel = checkNotNull(channel, "channel");
     }
 
-    public void sendStartupMessage() {
-        StartupMessage.Builder builder = new StartupMessage.Builder("aht", "template1");
-        channel.writeAndFlush(builder.build());
+    /**
+     * Send the start message to the server.
+     */
+    public void start(String user, String database) {
+        StartupMessage message = new StartupMessage.Builder(user, database).build();
+        channel.writeAndFlush(message);
     }
+
 }

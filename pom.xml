@@ -13,8 +13,7 @@
     <modules>
         <module>febe-common</module>
         <module>febe-fe</module>
-        <module>febe-fe-api</module>           
-        <module>main</module>		<!-- TODO: remove this one, only for testing -->
+        <module>febe-fe-api</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -32,6 +31,7 @@
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- fixme: use project.version instead of a property -->
         <febe-common.version>0.10-SNAPSHOT</febe-common.version>
         <netty.version>4.0.30.Final</netty.version>
     </properties>
