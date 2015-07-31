@@ -72,12 +72,7 @@ public class PGClient {
                 .channel(NioSocketChannel.class)
                 .handler(new ClientChannelHandlerInitializer())
                 .connect(host, port)
-                .addListener(new ChannelFutureListener() {
-                    @Override
-                    public void operationComplete(ChannelFuture future) throws Exception {
-                        channelRef.set(future.channel());
-                    }
-                })
+                .addListener(new ChannelSaver(channelRef))
                 .await(timeout, unit);
 
         Channel channel = channelRef.get();
@@ -107,4 +102,16 @@ public class PGClient {
         }
     }
 
+    private static class ChannelSaver implements ChannelFutureListener {
+        private final AtomicReference<Channel> channelRef;
+
+        public ChannelSaver(AtomicReference<Channel> channelRef) {
+            this.channelRef = channelRef;
+        }
+
+        @Override
+        public void operationComplete(ChannelFuture future) throws Exception {
+            channelRef.set(future.channel());
+        }
+    }
 }
