@@ -77,34 +77,16 @@ public enum FeBeMessageType {
     Terminate							(   'X',                4,  	null    	                    )
 	;
 
-    /**
-     * Byte to help identify message types. null for SSLRequest, StartupMessage and CancelRequest messsages
-     */
     private final Byte type;
 
-    /**
-     * Length in bytes of a fixed-length message. null if length is variable
-     */
     private final Integer length;
 
-    /**
-     * Field used within that types to distinguish different message variations
-     */
     private final Integer subtype;
 
-    /**
-     * Cached value for the header length
-     */
     private final int headerLength;
 
-    /**
-     * Cached value: if the message is self-contained within the header or rather has a payload
-     */
     private final boolean hasPayload;
 
-    /**
-     * If message type indicates a message with no payload (only header) we store here a singleton of the FeBeMessage
-     */
     private final FeBeMessage headerOnlyInstance;
 
     FeBeMessageType(Character type, Integer length, Integer subtype) {
@@ -133,14 +115,28 @@ public enum FeBeMessageType {
         return headerLength;
     }
 
+    /**
+     * The code used to represent this message type on the wire.
+     *
+     * This will be {@code null} for
+     * {@code SSLRequest},
+     * {@link com.eightkdata.pgfebe.common.message.StartupMessage},
+     * and {@code CancelRequest} messsages.
+     */
     public Byte getType() {
         return type;
     }
 
+    /**
+     * The length in bytes for fixed-length messages, or {@code null} if the length is variable.
+     */
     public Integer getLength() {
         return length;
     }
 
+    /**
+     * Some messages (e.g. authentication) can have different subtypes, this field is used to distinguish between them.
+     */
     public Integer getSubtype() {
         return subtype;
     }
@@ -149,14 +145,23 @@ public enum FeBeMessageType {
         return length != null;
     }
 
+    /**
+     * The header length.
+     */
     public int getHeaderLength() {
         return headerLength;
     }
 
+    /**
+     * Does the message have a variable length payload or not.
+     */
     public boolean hasPayload() {
         return hasPayload;
     }
 
+    /**
+     * Get the shared instance for header-only messages.
+     */
     public FeBeMessage getHeaderOnlyInstance() {
         return headerOnlyInstance;
     }
