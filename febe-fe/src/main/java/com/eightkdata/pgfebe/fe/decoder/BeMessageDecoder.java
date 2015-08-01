@@ -88,8 +88,6 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
             return;
         }
 
-        assert messageType.hasPayload();
-
         MessageDecoder<?> decoder = BeMessageTypeDecoder.valueOf(beMessageType.name()).getDecoder();
         if (decoder == null) {
             throw new UnsupportedOperationException(messageType + "Decoder");
