@@ -45,11 +45,6 @@
             </dependency>
             <dependency>
                 <groupId>com.8kdata.pgfebe</groupId>
-                <artifactId>febe-common-netty</artifactId>
-                <version>${febe-common.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.8kdata.pgfebe</groupId>
                 <artifactId>febe-fe</artifactId>
                 <version>${febe-common.version}</version>
             </dependency>
