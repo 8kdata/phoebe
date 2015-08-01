@@ -32,9 +32,17 @@ final class Helper {
     }
 
     static String readString(ByteBuf in, Charset encoding) {
-        String s = in.readSlice(in.bytesBefore((byte) 0)).toString(encoding);
-        in.readByte(); // discard the trailing zero
-        return s;
+        int length = in.bytesBefore((byte) 0);
+        switch (length) {
+            case -1: throw new CorruptedFrameException("unterminated string");
+            case 0:
+                in.readByte(); // discard the trailing zero
+                return "";
+            default:
+                String s = in.readSlice(length).toString(encoding);
+                in.readByte(); // discard the trailing zero
+                return s;
+        }
     }
 
     static void writeString(ByteBuf buf, Charset encoding, String s) {
