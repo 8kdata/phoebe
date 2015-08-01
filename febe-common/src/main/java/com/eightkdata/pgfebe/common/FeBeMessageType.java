@@ -97,7 +97,9 @@ public enum FeBeMessageType {
         this.length = length;
         this.subtype = subtype;
         this.headerLength = computeHeaderLength(type, subtype);
-        this.hasPayload = hasFixedLength() && length == headerLength;
+        //this.hasPayload = !hasFixedLength();
+        //this.hasPayload = hasFixedLength() && length == headerLength;
+        this.hasPayload = (length == null || length > headerLength);
         this.headerOnlyInstance = hasPayload ? null : new HeaderOnlyMessage(this);
     }
 
