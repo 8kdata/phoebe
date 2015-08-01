@@ -20,9 +20,9 @@ package com.eightkdata.pgfebe.common.decoder;
 
 import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.exception.FeBeException;
+import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 /**
@@ -38,5 +38,5 @@ public interface MessageDecoder<T extends FeBeMessage> {
      * @return a message T, decoded
      * @throws FeBeException if the remaining bytes in the ByteBuffer do not match the expected message format
      */
-    T decode(@Nonnull ByteBuffer in, @Nonnull Charset encoding) throws FeBeException;
+    T decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) throws FeBeException;
 }

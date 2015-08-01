@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 8Kdata Technology S.L.
+ * Copyright © 2015, 8Kdata Technologies, S.L.
  *
  * Permission to use, copy, modify, and distribute this software and its documentation for any purpose,
  * without fee, and without a written agreement is hereby granted, provided that the above copyright notice and this
@@ -20,27 +20,23 @@ package com.eightkdata.pgfebe.fe.decoder;
 import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
 import com.eightkdata.pgfebe.common.exception.FeBeException;
-import com.eightkdata.pgfebe.common.message.AuthenticationMD5Password;
+import com.eightkdata.pgfebe.common.message.ParameterStatus;
 import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
-/**
- * Decoder for {@link AuthenticationMD5Password} messages.
- */
-@Immutable
-public class AuthenticationMD5PasswordDecoder implements MessageDecoder<FeBeMessage> {
+import static com.eightkdata.pgfebe.fe.decoder.Helper.readString;
 
-    private static final int SALT_LENGTH = 4;
+@Immutable
+public class ParameterStatusDecoder implements MessageDecoder<FeBeMessage> {
 
     @Override
-    public AuthenticationMD5Password decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) throws FeBeException {
-        byte[] salt = new byte[SALT_LENGTH];
-        in.readBytes(salt);
-
-        return new AuthenticationMD5Password.Builder().setSalt(salt).build();
+    public FeBeMessage decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) throws FeBeException {
+        String name = readString(in, encoding);
+        String value = readString(in, encoding);
+        return new ParameterStatus(name, value);
     }
 
 }

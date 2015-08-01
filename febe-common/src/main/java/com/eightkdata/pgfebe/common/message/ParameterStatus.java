@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 8Kdata Technology S.L.
+ * Copyright © 2015, 8Kdata Technologies, S.L.
  *
  * Permission to use, copy, modify, and distribute this software and its documentation for any purpose,
  * without fee, and without a written agreement is hereby granted, provided that the above copyright notice and this
@@ -15,32 +15,43 @@
  *
  */
 
-package com.eightkdata.pgfebe.fe.decoder;
+package com.eightkdata.pgfebe.common.message;
 
 import com.eightkdata.pgfebe.common.FeBeMessage;
-import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
-import com.eightkdata.pgfebe.common.exception.FeBeException;
-import com.eightkdata.pgfebe.common.message.AuthenticationMD5Password;
-import io.netty.buffer.ByteBuf;
+import com.eightkdata.pgfebe.common.FeBeMessageType;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.nio.charset.Charset;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * Decoder for {@link AuthenticationMD5Password} messages.
- */
-@Immutable
-public class AuthenticationMD5PasswordDecoder implements MessageDecoder<FeBeMessage> {
+public final class ParameterStatus implements FeBeMessage {
 
-    private static final int SALT_LENGTH = 4;
+    private final String name;
+    private final String value;
 
-    @Override
-    public AuthenticationMD5Password decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) throws FeBeException {
-        byte[] salt = new byte[SALT_LENGTH];
-        in.readBytes(salt);
-
-        return new AuthenticationMD5Password.Builder().setSalt(salt).build();
+    public ParameterStatus(String name, String value) {
+        this.name = checkNotNull(name, "name");
+        this.value = checkNotNull(value, "value");
     }
 
+    @Override
+    public FeBeMessageType getType() {
+        return FeBeMessageType.ParameterStatus;
+    }
+
+    @Override
+    public int computePayloadLength() {
+        return 0;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return "ParameterStatus(" + name + "=" + value + ")";
+    }
 }

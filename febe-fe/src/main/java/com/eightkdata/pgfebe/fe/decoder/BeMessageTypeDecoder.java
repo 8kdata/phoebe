@@ -55,7 +55,7 @@ public enum BeMessageTypeDecoder {
     NoticeResponse                  (   null                                    ),  // TODO: needs a decoder
     NotificationResponse            (   null                                    ),  // TODO: needs a decoder
     ParameterDescription            (   null                                    ),  // TODO: needs a decoder
-    ParameterStatus                 (   null                                    ),  // TODO: needs a decoder
+    ParameterStatus                 (   new ParameterStatusDecoder()            ),
     ParseComplete                   (   null                                    ),
     PortalSuspended                 (   null                                    ),
     ReadyForQuery                   (   null                                    ),  // TODO: needs a decoder

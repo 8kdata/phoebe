@@ -91,10 +91,13 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
         assert messageType.hasPayload();
 
         MessageDecoder<?> decoder = BeMessageTypeDecoder.valueOf(beMessageType.name()).getDecoder();
-        out.add(decoder.decode(in.slice(in.readerIndex(), payloadLength).nioBuffer(), encoding));
+        if (decoder == null) {
+            throw new UnsupportedOperationException(messageType + "Decoder");
+        }
+        out.add(decoder.decode(in.readSlice(payloadLength), encoding));
 
         // Mark all payload bytes as read, so that this decoder will only be called again if there's more input
-        in.readerIndex(in.readerIndex() + payloadLength);
+        // in.readerIndex(in.readerIndex() + payloadLength);
     }
 
 }
