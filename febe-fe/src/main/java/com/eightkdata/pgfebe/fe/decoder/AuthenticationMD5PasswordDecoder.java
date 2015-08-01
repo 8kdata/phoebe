@@ -15,7 +15,7 @@
  *
  */
 
-package com.eightkdata.pgfebe.fe.decoder.message;
+package com.eightkdata.pgfebe.fe.decoder;
 
 import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
@@ -25,23 +25,22 @@ import com.eightkdata.pgfebe.common.message.AuthenticationMD5Password;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
 /**
- * Created: 26/07/15
- *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * Decoder for {@link AuthenticationMD5Password} messages.
  */
 @Immutable
 public class AuthenticationMD5PasswordDecoder implements MessageDecoder<FeBeMessage> {
+
     private static final int SALT_LENGTH = 4;
 
     @Override
-    public AuthenticationMD5Password decode(@Nonnull ByteBuffer byteBuffer) throws FeBeException {
+    public AuthenticationMD5Password decode(@Nonnull ByteBuffer in, @Nonnull Charset encoding) throws FeBeException {
         byte[] salt = new byte[SALT_LENGTH];
-        byteBuffer.get(salt);
+        in.get(salt);
 
-        return new AuthenticationMD5Password.Builder()
-                .setSalt(salt)
-                .build();
+        return new AuthenticationMD5Password.Builder().setSalt(salt).build();
     }
+
 }

@@ -21,7 +21,6 @@ package com.eightkdata.pgfebe.fe.decoder;
 import com.eightkdata.pgfebe.common.BeMessageType;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
 import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
-import com.eightkdata.pgfebe.fe.decoder.message.AuthenticationMD5PasswordDecoder;
 
 import javax.annotation.Nullable;
 

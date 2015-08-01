@@ -20,7 +20,6 @@ package com.eightkdata.pgfebe.fe.decoder;
 
 import com.eightkdata.pgfebe.common.BeMessageType;
 import com.eightkdata.pgfebe.common.FeBe;
-import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
 import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
 import com.eightkdata.pgfebe.common.exception.InvalidMessageException;
@@ -29,6 +28,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -37,6 +37,12 @@ import java.util.List;
  * The actual processing is handled by {@link BeMessageProcessor}.
  */
 public class BeMessageDecoder extends ByteToMessageDecoder {
+
+    private final Charset encoding;
+
+    public BeMessageDecoder(Charset encoding) {
+        this.encoding = encoding;
+    }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -84,11 +90,8 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
 
         assert messageType.hasPayload();
 
-        FeBeMessage febeMessage;
         MessageDecoder<?> decoder = BeMessageTypeDecoder.valueOf(beMessageType.name()).getDecoder();
-        febeMessage = decoder.decode(in.slice(in.readerIndex(), payloadLength).nioBuffer());
-
-        out.add(febeMessage);
+        out.add(decoder.decode(in.slice(in.readerIndex(), payloadLength).nioBuffer(), encoding));
 
         // Mark all payload bytes as read, so that this decoder will only be called again if there's more input
         in.readerIndex(in.readerIndex() + payloadLength);

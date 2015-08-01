@@ -33,7 +33,6 @@ public class BeMessageProcessor extends MessageToMessageDecoder<FeBeMessage> {
     @Override
     protected void decode(ChannelHandlerContext ctx, FeBeMessage message, List<Object> out)
     throws Exception {
-        System.out.println(message);
         out.add(message);
     }
 }
