@@ -20,8 +20,11 @@ package com.eightkdata.pgfebe.common.message;
 import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
 
+import javax.annotation.concurrent.Immutable;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@Immutable
 public final class ParameterStatus implements FeBeMessage {
 
     private final String name;
