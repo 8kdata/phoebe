@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 8Kdata Technology S.L.
+ * Copyright © 2015, 8Kdata Technologies, S.L.
  *
  * Permission to use, copy, modify, and distribute this software and its documentation for any purpose,
  * without fee, and without a written agreement is hereby granted, provided that the above copyright notice and this
@@ -15,18 +15,24 @@
  *
  */
 
+package com.eightkdata.pgfebe.fe.decoder;
 
-package com.eightkdata.pgfebe.common;
+import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
+import com.eightkdata.pgfebe.common.exception.FeBeException;
+import com.eightkdata.pgfebe.common.message.BackendKeyData;
+import io.netty.buffer.ByteBuf;
+
+import javax.annotation.Nonnull;
+import java.nio.charset.Charset;
 
 /**
- * Created: 26/07/15
- *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * Decoder for {@link BackendKeyData} messages.
  */
-public interface FeBeMessage {
-    FeBeMessageType getType();
+public class BackendKeyDataDecoder implements MessageDecoder<BackendKeyData> {
 
-    // fixme: this needs to know about the charset in order to get the byte length of any strings
-    // it's probaby better to remove this method though, and calculate the message length in the encoder
-    int computePayloadLength();
+    @Override
+    public BackendKeyData decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) throws FeBeException {
+        return new BackendKeyData(in.readInt(), in.readInt());
+    }
+
 }

@@ -15,27 +15,43 @@
  *
  */
 
-package com.eightkdata.pgfebe.fe.decoder;
+package com.eightkdata.pgfebe.common.message;
 
-import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
-import com.eightkdata.pgfebe.common.exception.FeBeException;
-import com.eightkdata.pgfebe.common.message.ParameterStatus;
-import io.netty.buffer.ByteBuf;
+import com.eightkdata.pgfebe.common.FeBeMessage;
+import com.eightkdata.pgfebe.common.FeBeMessageType;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.nio.charset.Charset;
+public final class BackendKeyData implements FeBeMessage {
 
-import static com.eightkdata.pgfebe.fe.decoder.Helper.readString;
+    private final int processId;
 
-@Immutable
-public class ParameterStatusDecoder implements MessageDecoder<ParameterStatus> {
+    private final int secretKey;
+
+    public BackendKeyData(int processId, int secretKey) {
+        this.processId = processId;
+        this.secretKey = secretKey;
+    }
+
+    public int getProcessId() {
+        return processId;
+    }
+
+    public int getSecretKey() {
+        return secretKey;
+    }
 
     @Override
-    public ParameterStatus decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) throws FeBeException {
-        String name = readString(in, encoding);
-        String value = readString(in, encoding);
-        return new ParameterStatus(name, value);
+    public FeBeMessageType getType() {
+        return FeBeMessageType.BackendKeyData;
+    }
+
+    @Override
+    public int computePayloadLength() {
+        return 8; // 2 ints, 4 bytes each
+    }
+
+    @Override
+    public String toString() {
+        return "BackendKeyData(processId=" + processId + ",secretKey=" + secretKey + ")";
     }
 
 }

@@ -38,7 +38,7 @@ public enum BeMessageTypeDecoder {
     AuthenticationGSS               (   null                                    ),
     AuthenticationSSPI              (   null                                    ),
     AuthenticationGSSContinue       (   null                                    ),  // TODO: needs a decoder
-    BackendKeyData                  (   null                                    ),  // TODO: needs a decoder
+    BackendKeyData                  (   new BackendKeyDataDecoder()             ),
     BindComplete                    (   null                                    ),
     CloseComplete                   (   null                                    ),
     CommandComplete                 (   null                                    ),  // TODO: needs a decoder
