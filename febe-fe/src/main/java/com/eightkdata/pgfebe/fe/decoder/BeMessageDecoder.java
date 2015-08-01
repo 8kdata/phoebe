@@ -93,9 +93,6 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
             throw new UnsupportedOperationException(messageType + "Decoder");
         }
         out.add(decoder.decode(in.readSlice(payloadLength), encoding));
-
-        // Mark all payload bytes as read, so that this decoder will only be called again if there's more input
-        // in.readerIndex(in.readerIndex() + payloadLength);
     }
 
 }
