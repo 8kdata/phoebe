@@ -1,32 +1,42 @@
 /*
- * Copyright (c) 2015, 8Kdata Technology S.L.
+ * Copyright © 2015, 8Kdata Technology S.L.
  *
- * Permission to use, copy, modify, and distribute this software and its documentation for any purpose,
- * without fee, and without a written agreement is hereby granted, provided that the above copyright notice and this
- * paragraph and the following two paragraphs appear in all copies.
+ * Permission to use, copy, modify, and distribute this software
+ * and its documentation for any purpose, without fee, and without
+ * a written agreement is hereby granted, provided that the above
+ * copyright notice and this paragraph and the following two
+ * paragraphs appear in all copies.
  *
- * IN NO EVENT SHALL 8Kdata BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,
- * INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF 8Kdata HAS BEEN
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * In no event shall 8Kdata Technology S.L. be liable to any party
+ * for direct, indirect, special, incidental, or consequential
+ * damages, including lost profits, arising out of the use of this
+ * software and its documentation, even if 8Kdata Technology S.L.
+ * has been advised of the possibility of such damage.
  *
- * 8Kdata SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS,
- * AND 8Kdata HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
- *
+ * 8Kdata Technology S.L. specifically disclaims any warranties,
+ * including, but not limited to, the implied warranties of
+ * merchantability and fitness for a particular purpose. the
+ * software provided hereunder is on an “as is” basis, and
+ * 8Kdata Technology S.L. has no obligations to provide
+ * maintenance, support, updates, enhancements, or modifications.
  */
-
 
 package com.eightkdata.pgfebe.common;
 
+import java.nio.charset.Charset;
+
 /**
- * Created: 26/07/15
- *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * Common interface for all messages.
  */
 public interface FeBeMessage {
+
     FeBeMessageType getType();
 
-    // fixme: this needs to know about the charset in order to get the byte length of any strings
-    // it's probaby better to remove this method though, and calculate the message length in the encoder
-    int computePayloadLength();
+    /**
+     * Calculate the amount of storage needed for this messages payload.
+     * @param encoding the character set encoding to use for any strings
+     * @return the length, in bytes
+     */
+    int computePayloadLength(Charset encoding);
+
 }

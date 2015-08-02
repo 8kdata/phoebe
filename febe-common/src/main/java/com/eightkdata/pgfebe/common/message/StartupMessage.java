@@ -85,7 +85,7 @@ public class StartupMessage implements FeBeMessage {
     }
 
     @Override
-    public int computePayloadLength() {
+    public int computePayloadLength(Charset encoding) {
         int length = 1;     // end '0' byte
         for (Map.Entry<String,String> entry : parameters.entrySet()) {
             length += Encoders.stringLength(entry.getKey(), encoding);

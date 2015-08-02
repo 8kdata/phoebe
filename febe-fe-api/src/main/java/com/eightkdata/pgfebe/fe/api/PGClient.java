@@ -113,7 +113,7 @@ public class PGClient {
 
                     .addLast("PGMessageBroadcaster", new MessageBroadcaster(listeners))
 
-                    .addLast("PGOutboundMessageEncoder", new FeMessageEncoder())
+                    .addLast("PGOutboundMessageEncoder", new FeMessageEncoder(encoding))
                     .addLast("PGOutboundMessageProcessor", new FeMessageProcessor());
             channelRef.set(channel);
         }

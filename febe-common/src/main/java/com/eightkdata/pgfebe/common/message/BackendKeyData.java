@@ -20,6 +20,8 @@ package com.eightkdata.pgfebe.common.message;
 import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
 
+import java.nio.charset.Charset;
+
 public final class BackendKeyData implements FeBeMessage {
 
     private final int processId;
@@ -45,7 +47,7 @@ public final class BackendKeyData implements FeBeMessage {
     }
 
     @Override
-    public int computePayloadLength() {
+    public int computePayloadLength(Charset encoding) {
         return 8; // 2 ints, 4 bytes each
     }
 

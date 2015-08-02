@@ -43,9 +43,7 @@ public abstract class BaseFeBeMessage implements FeBeMessage {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(febeMessageType.name())
-                .append("(")
-                .append("length=")
-                .append(computePayloadLength());
+                .append("(");
 
         return toStringMessagePayload(sb, TO_STRING_VALUES_SEPARATOR)
                 .append(")")

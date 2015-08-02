@@ -22,6 +22,8 @@ import com.eightkdata.pgfebe.common.FeBeMessageType;
 
 import javax.annotation.concurrent.Immutable;
 
+import java.nio.charset.Charset;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @Immutable
@@ -41,7 +43,7 @@ public final class ParameterStatus implements FeBeMessage {
     }
 
     @Override
-    public int computePayloadLength() {
+    public int computePayloadLength(Charset encoding) {
         return 0;
     }
 

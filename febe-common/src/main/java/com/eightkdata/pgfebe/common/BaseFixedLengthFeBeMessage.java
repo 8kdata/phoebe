@@ -18,6 +18,8 @@
 
 package com.eightkdata.pgfebe.common;
 
+import java.nio.charset.Charset;
+
 /**
  * Created: 26/07/15
  *
@@ -29,7 +31,7 @@ public abstract class BaseFixedLengthFeBeMessage extends BaseFeBeMessage {
     }
 
     @Override
-    public int computePayloadLength() {
+    public int computePayloadLength(Charset encoding) {
         assert getType().hasFixedLength();
 
         return getType().getLength();

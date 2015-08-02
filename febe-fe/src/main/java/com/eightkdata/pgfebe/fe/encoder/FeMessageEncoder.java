@@ -13,6 +13,8 @@ import io.netty.handler.codec.MessageToByteEncoder;
 
 import javax.annotation.concurrent.Immutable;
 
+import java.nio.charset.Charset;
+
 import static com.eightkdata.pgfebe.common.MessageId.NONE;
 
 /**
@@ -22,10 +24,16 @@ import static com.eightkdata.pgfebe.common.MessageId.NONE;
  */
 @Immutable
 public class FeMessageEncoder extends MessageToByteEncoder<FeBeMessage> {
+    private final Charset encoding;
+
+    public FeMessageEncoder(Charset encoding) {
+        this.encoding = encoding;
+    }
+
     @Override
     protected void encode(ChannelHandlerContext ctx, FeBeMessage message, ByteBuf out) throws Exception {
         FeBeMessageType messageType = message.getType();
-        int payloadSize = message.computePayloadLength();
+        int payloadSize = message.computePayloadLength(encoding);
         int totalSize = messageType.getHeaderLength() + payloadSize;
         int feMessageSize = (messageType.getId() == NONE ? totalSize : totalSize - 1);
 

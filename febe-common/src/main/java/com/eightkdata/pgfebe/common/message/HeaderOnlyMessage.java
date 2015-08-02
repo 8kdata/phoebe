@@ -28,6 +28,7 @@ import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
 
 import javax.annotation.concurrent.Immutable;
+import java.nio.charset.Charset;
 
 /**
  * A simple message that contains no variable data.
@@ -49,7 +50,7 @@ public class HeaderOnlyMessage implements FeBeMessage {
     }
 
     @Override
-    public int computePayloadLength() {
+    public int computePayloadLength(Charset encoding) {
         return 0;
     }
 

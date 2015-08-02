@@ -21,6 +21,7 @@ import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
 
 import javax.annotation.concurrent.Immutable;
+import java.nio.charset.Charset;
 
 @Immutable
 public class ReadyForQuery implements FeBeMessage {
@@ -41,7 +42,7 @@ public class ReadyForQuery implements FeBeMessage {
     }
 
     @Override
-    public int computePayloadLength() {
+    public int computePayloadLength(Charset encoding) {
         return 1; // 1 status code
     }
 
