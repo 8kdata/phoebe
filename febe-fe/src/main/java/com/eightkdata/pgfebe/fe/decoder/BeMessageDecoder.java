@@ -19,7 +19,6 @@
 package com.eightkdata.pgfebe.fe.decoder;
 
 import com.eightkdata.pgfebe.common.BeMessageType;
-import com.eightkdata.pgfebe.common.FeBe;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
 import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
 import com.eightkdata.pgfebe.common.exception.InvalidMessageException;
@@ -30,6 +29,8 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.nio.charset.Charset;
 import java.util.List;
+
+import static com.eightkdata.pgfebe.common.MessageId.AUTHENTICATION;
 
 /**
  * This pipeline stage is responsible for decoding the raw byte stream into messages.
@@ -60,7 +61,7 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
 
         // Find exact type, checking subtype, if needed (only for auth messages)
         BeMessageType beMessageType;
-        if(type == FeBe.AUTH_MESSAGE_TYPE) {
+        if (type == AUTHENTICATION) {
             if(in.readableBytes() < Ints.BYTES) {
                 return;
             }
@@ -80,6 +81,9 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
             throw new InvalidMessageException(
                     "unexpected length (" + length + ") for " + messageType + "(" + (char) type + ") message.");
         }
+
+        // todo: add a singletondecoder (maybe some better name?) class and replace this special casing
+        // todo: modules should be common/client/server
 
         // Extract payload, if any
         int payloadLength = 1 + (int) length - headerLength;

@@ -26,6 +26,4 @@ package com.eightkdata.pgfebe.common;
 public class FeBe {
     public static final int PROTOCOL_MAJOR = 3;
     public static final int PROTOCOL_MINOR = 0;
-
-    public static final Byte AUTH_MESSAGE_TYPE = 'R';
 }

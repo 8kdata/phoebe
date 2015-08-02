@@ -13,6 +13,8 @@ import io.netty.handler.codec.MessageToByteEncoder;
 
 import javax.annotation.concurrent.Immutable;
 
+import static com.eightkdata.pgfebe.common.MessageId.NONE;
+
 /**
  * Created: 29/07/15
  *
@@ -25,14 +27,14 @@ public class FeMessageEncoder extends MessageToByteEncoder<FeBeMessage> {
         FeBeMessageType type = msg.getType();
         int payloadSize = msg.computePayloadLength();
         int totalSize = type.getHeaderLength() + payloadSize;
-        int feMessageSize = (null == type.getType() ? totalSize : totalSize - 1);
+        int feMessageSize = (type.getId() == NONE ? totalSize : totalSize - 1);
 
         // Reserve buffer size
         out.capacity(totalSize);
 
         // Header
-        if(null != type.getType()) {
-            out.writeByte(type.getType());
+        if (type.getId() != NONE) {
+            out.writeByte(type.getId());
         }
         out.writeInt(feMessageSize);
         if(null != type.getSubtype()) {

@@ -21,7 +21,7 @@ import com.eightkdata.pgfebe.common.FeBeMessage;
 import net.jodah.concurrentunit.Waiter;
 import org.junit.Test;
 
-import static com.eightkdata.pgfebe.common.FeBe.AUTH_MESSAGE_TYPE;
+import static com.eightkdata.pgfebe.common.MessageId.AUTHENTICATION;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
@@ -38,7 +38,7 @@ public class PGSessionTest extends AbstractTest {
             @Override
             public void onMessage(FeBeMessage message) {
                 System.out.println(">>> " + message);
-                if (AUTH_MESSAGE_TYPE.equals(message.getType().getType())) {
+                if (message.getType().getId() == AUTHENTICATION) {
                     waiter.assertTrue(true);
                     waiter.resume();
                 }

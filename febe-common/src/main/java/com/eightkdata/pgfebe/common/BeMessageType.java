@@ -25,6 +25,8 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.eightkdata.pgfebe.common.MessageId.*;
+
 /**
  * Created: 25/07/15
  *
@@ -76,14 +78,14 @@ public enum BeMessageType {
         int minHeaderSize = Integer.MAX_VALUE;
 
         for(BeMessageType beMessageType : values()) {
-            assert beMessageType.getType() != null : "Backend messages must have a type byte";
+            assert beMessageType.getId() != NONE : "Backend messages must have a type byte";
 
-            if(FeBe.AUTH_MESSAGE_TYPE.equals(beMessageType.getType())) {
+            if (beMessageType.getId() == AUTHENTICATION) {
                 assert beMessageType.getSubtype() != null : "Auth be messages must have a subtype";
                 authMessageTypes.put(beMessageType.getSubtype(), beMessageType);
             } else {
                 assert beMessageType.getSubtype() == null : "Non auth be messages do not have subtype";
-                nonAuthMessageTypes.put(beMessageType.getType(), beMessageType);
+                nonAuthMessageTypes.put(beMessageType.getId(), beMessageType);
             }
 
             if(beMessageType.getHeaderLength() < minHeaderSize) {
@@ -116,8 +118,8 @@ public enum BeMessageType {
         return febeMessageType.hasPayload();
     }
 
-    public Byte getType() {
-        return febeMessageType.getType();
+    public byte getId() {
+        return febeMessageType.getId();
     }
 
     public Integer getSubtype() {
