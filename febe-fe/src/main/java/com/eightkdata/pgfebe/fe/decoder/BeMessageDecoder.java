@@ -30,8 +30,6 @@ import io.netty.handler.codec.CorruptedFrameException;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import static com.eightkdata.pgfebe.common.MessageId.AUTHENTICATION;
-
 /**
  * This pipeline stage is responsible for decoding the raw byte stream into messages.
  *
@@ -61,7 +59,7 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
 
         // Find exact type, checking subtype, if needed (only for auth messages)
         BeMessageType beMessageType;
-        if (type == AUTHENTICATION) {
+        if (type == FeBeMessageType.AUTHENTICATION_TYPE) {
             if(in.readableBytes() < Ints.BYTES) {
                 return;
             }

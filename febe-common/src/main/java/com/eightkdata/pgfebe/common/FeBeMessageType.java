@@ -19,13 +19,11 @@
 package com.eightkdata.pgfebe.common;
 
 import com.eightkdata.pgfebe.common.message.HeaderOnlyMessage;
-import com.eightkdata.pgfebe.common.message.StartupMessage;
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
 
 import static com.eightkdata.pgfebe.common.FeBe.PROTOCOL_MAJOR;
 import static com.eightkdata.pgfebe.common.FeBe.PROTOCOL_MINOR;
-import static com.eightkdata.pgfebe.common.MessageId.*;
 
 /**
  * Created: 21/07/15
@@ -33,98 +31,109 @@ import static com.eightkdata.pgfebe.common.MessageId.*;
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
 public enum FeBeMessageType {
-    AuthenticationOk(AUTHENTICATION, 8, 0),
-    AuthenticationKerberosV5(AUTHENTICATION, 8, 2),
-    AuthenticationCleartextPassword(AUTHENTICATION, 8, 3),
-    AuthenticationMD5Password(AUTHENTICATION, 12, 5),
-    AuthenticationSCMCredential(AUTHENTICATION, 8, 6),
-    AuthenticationGSS(AUTHENTICATION, 8, 7),
-    AuthenticationSSPI(AUTHENTICATION, 8, 9),
-    AuthenticationGSSContinue(AUTHENTICATION, null, 8),
-    BackendKeyData(BACKEND_KEY_DATA, 12, null),
-    Bind(BIND, null, null),
-    BindComplete(BIND_COMPLETE, 4, null),
-    CancelRequest(NONE, 16, 1234, 5678),
-    Close(CLOSE, null, null),
-    CloseComplete(CLOSE_COMPLETE, 4, null),
-    CommandComplete(COMMAND_COMPLETE, null, null),
-    CopyData(COPY_DATA, null, null),
-    CopyDone(COPY_DONE, 4, null),
-    CopyFail(COPY_FAIL, null, null),
-    CopyInResponse(COPY_IN_RESPONSE, null, null),
-    CopyOutResponse(COPY_OUT_RESPONSE, null, null),
-    CopyBothResponse(COPY_BOTH_RESPONSE, null, null),
-    DataRow(DATA_ROW, null, null),
-    Describe(DESCRIBE, null, null),
-    EmptyQueryResponse(EMPTY_QUERY_RESPONSE, 4, null),
-    ErrorResponse(ERROR_RESPONSE, null, null),
-    Execute(EXECUTE, null, null),
-    Flush(FLUSH, 4, null),
-    FunctionCall(FUNCTION_CALL, null, null),
-    FunctionCallResponse(FUNCTION_CALL_RESPONSE, null, null),
-    NoData(NO_DATA, 4, null),
-    NoticeResponse(NOTICE_RESPONSE, null, null),
-    NotificationResponse(NOTIFICATION_RESPONSE, null, null),
-    ParameterDescription(PARAMETER_DESCRIPTION, null, null),
-    ParameterStatus(PARAMETER_STATUS, null, null),
-    Parse(PARSE, null, null),
-    ParseComplete(PARSE_COMPLETE, 4, null),
-    PasswordMessage(PASSWORD_MESSAGE, null, null),
-    PortalSuspended(PORTAL_SUSPENDED, 4, null),
-    Query(QUERY, null, null),
-    ReadyForQuery(READY_FOR_QUERY, 5, null),
-    RowDescription(ROW_DESCRIPTION, null, null),
-    SSLRequest(NONE, 8, 1234, 5679),
-    StartupMessage(NONE, null, PROTOCOL_MAJOR, PROTOCOL_MINOR),
-    Sync(SYNC, 4, null),
-    Terminate(TERMINATE, 4, null);
-    
-    private final byte id;
+    AuthenticationOk                    (   'R',  	8,      0                               ),
+    AuthenticationKerberosV5            (   'R',  	8,      2                               ),
+    AuthenticationCleartextPassword     (   'R',  	8,      3                               ),
+    AuthenticationMD5Password           (   'R',  	12,     5                               ),
+    AuthenticationSCMCredential         (   'R',  	8,      6                               ),
+    AuthenticationGSS                   (   'R',  	8,      7                               ),
+    AuthenticationSSPI                  (   'R',  	8,      9                               ),
+    AuthenticationGSSContinue           (   'R',  	null,   8                               ),
+    BackendKeyData                      (   'K',    12,     null                            ),
+    Bind                                (   'B',    null,   null                            ),
+    BindComplete                        (   '2',    4,      null                            ),
+    CancelRequest                       (   null,   16,     1234, 5678                      ),
+    Close                               (   'C',    null,   null                            ),
+    CloseComplete                       (   '3',    4,      null                            ),
+    CommandComplete                     (   'C',    null,   null                            ),
+    CopyData                            (   'd',    null,   null                            ),
+    CopyDone                            (   'c',    4,      null                            ),
+    CopyFail                            (   'f',    null,   null                            ),
+    CopyInResponse                      (   'G',    null,   null                            ),
+    CopyOutResponse                     (   'H',    null,   null                            ),
+    CopyBothResponse                    (   'W',    null,   null                            ),
+    DataRow                             (   'D',    null,   null                            ),
+    Describe                            (   'D',    null,   null                            ),
+    EmptyQueryResponse                  (   'I',    4,      null                            ),
+    ErrorResponse                       (   'E',    null,   null                            ),
+    Execute                             (   'E',    null,   null                            ),
+    Flush                               (   'H',    4,      null                            ),
+    FunctionCall                        (   'F',    null,   null                            ),
+    FunctionCallResponse                (   'V',    null,   null                            ),
+    NoData                              (   'n',    4,      null                            ),
+    NoticeResponse                      (   'N',    null,   null                            ),
+    NotificationResponse                (   'A',    null,   null                            ),
+    ParameterDescription                (   't',    null,   null                            ),
+    ParameterStatus                     (   'S',    null,   null                            ),
+    Parse                               (   'P',    null,   null                            ),
+    ParseComplete                       (   '1',    4,      null                            ),
+    PasswordMessage                     (   'p',    null,   null                            ),
+    PortalSuspended                     (   's',    4,      null                            ),
+    Query                               (   'Q',    null,   null                            ),
+    ReadyForQuery                       (   'Z',    5,      null                            ),
+    RowDescription                      (   'T',    null,   null                            ),
+    SSLRequest                          (   null,   8,      1234, 5679                      ),
+    StartupMessage                      (   null,   null,   PROTOCOL_MAJOR, PROTOCOL_MINOR  ),
+    Sync                                (   'S',    4,      null                            ),
+    Terminate                           (   'X',    4,      null                            )
+    ;
 
+    public static final byte AUTHENTICATION_TYPE = 'R';
+
+    private static final byte NO_TYPE = -1;
+
+    private final Character charType;
+    private final byte type;
     private final Integer length;
-
     private final Integer subtype;
-
     private final int headerLength;
-
     private final boolean hasPayload;
-
     private final FeBeMessage headerOnlyInstance;
 
-    FeBeMessageType(byte id, Integer length, Integer subtype) {
+    FeBeMessageType(Character type, Integer length, Integer subtype) {
         Preconditions.checkArgument(null == length || length > 0, "Illegal message length");
 
-        this.id = id;
+        this.charType = type;
+        this.type = (null == type) ? NO_TYPE : (byte) type.charValue();
         this.length = length;
         this.subtype = subtype;
-        this.headerLength = computeHeaderLength(id, subtype);
+        this.headerLength = computeHeaderLength(type, subtype);
         this.hasPayload = (length == null || length > headerLength);
         this.headerOnlyInstance = hasPayload ? null : new HeaderOnlyMessage(this);
     }
 
-    FeBeMessageType(byte id, Integer length, int subtype1, int subtype2) {
-        this(id, null, ((0x0000ffff & subtype1) << Short.SIZE) | (0x0000ffff & subtype2));
+    FeBeMessageType(Character type, Integer length, int subtype1, int subtype2) {
+        this(type, length, ((0x0000ffff & subtype1) << Short.SIZE) | (0x0000ffff & subtype2));
+
         Preconditions.checkArgument(subtype1 < Short.MAX_VALUE, "Illegal subtype 1");
         Preconditions.checkArgument(subtype2 < Short.MAX_VALUE, "Illegal subtype 2");
     }
 
-    private int computeHeaderLength(byte id, Integer subtype) {
+    private int computeHeaderLength(Character type, Integer subtype) {
         int headerLength = Ints.BYTES;                       // length field
-        if (id != NONE) { headerLength += 1; }               // byte field
-        if (subtype != null) { headerLength += Ints.BYTES; } // subtype field
+        if (null != type) { headerLength += 1; }               // byte field
+        if (null != subtype) { headerLength += Ints.BYTES; } // subtype field
+
         return headerLength;
     }
 
     /**
      * Get the numeric code used to represent this message type on the wire.
+     * Use the method {@link #hasType()} to check if the message has or has not a type.
      * 
-     * This will return {@link MessageId#NONE} for {@code SSLRequest}, {@link StartupMessage},
-     * and {@code CancelRequest} messsages.
-     * 
-     * @return the message id.
+     * @return the message id or {@code -1} if the message does not have type.
      */
-    public byte getId() {
-        return id;
+    public byte getType() {
+        return type;
+    }
+
+    /**
+     * Checks whether this message has a type identifier or not.
+     *
+     * @return true if the message has a type identifier, false otherwise
+     */
+    public boolean hasType() {
+        return charType != null;
     }
 
     /**

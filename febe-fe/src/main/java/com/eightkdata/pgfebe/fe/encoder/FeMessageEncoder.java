@@ -12,10 +12,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
 import javax.annotation.concurrent.Immutable;
-
 import java.nio.charset.Charset;
-
-import static com.eightkdata.pgfebe.common.MessageId.NONE;
 
 /**
  * Created: 29/07/15
@@ -35,7 +32,7 @@ public class FeMessageEncoder extends MessageToByteEncoder<FeBeMessage> {
         FeBeMessageType messageType = message.getType();
         int payloadSize = message.computePayloadLength(encoding);
         int totalSize = messageType.getHeaderLength() + payloadSize;
-        int feMessageSize = (messageType.getId() == NONE ? totalSize : totalSize - 1);
+        int feMessageSize = (messageType.hasType() ? totalSize -1 : totalSize);
 
         // reserve extra space if necessary
         if (totalSize > out.capacity()) {
@@ -43,8 +40,8 @@ public class FeMessageEncoder extends MessageToByteEncoder<FeBeMessage> {
         }
 
         // Header
-        if (messageType.getId() != NONE) {
-            out.writeByte(messageType.getId());
+        if (messageType.hasType()) {
+            out.writeByte(messageType.getType());
         }
         out.writeInt(feMessageSize);
         if(null != messageType.getSubtype()) {
@@ -54,8 +51,9 @@ public class FeMessageEncoder extends MessageToByteEncoder<FeBeMessage> {
         // Payload
         MessageEncoder encoder = FeMessageTypeEncoder.valueOf(messageType.name()).getEncoder();
         if (encoder == null) {
-            throw new UnsupportedOperationException(messageType + "Encoder");
+            throw new UnsupportedOperationException(messageType + " Encoder");
         }
+
         encoder.encode(message, out, encoding);
     }
 }
