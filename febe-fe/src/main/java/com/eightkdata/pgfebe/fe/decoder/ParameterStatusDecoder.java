@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
-import static com.eightkdata.pgfebe.fe.decoder.Helper.readString;
+import static com.eightkdata.pgfebe.common.Decoders.readString;
 
 @Immutable
 public class ParameterStatusDecoder implements MessageDecoder<ParameterStatus> {

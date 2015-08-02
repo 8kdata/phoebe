@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty-buffer</artifactId>
+            <artifactId>netty-codec</artifactId>
             <version>${netty.version}</version>
         </dependency>
         <dependency>
