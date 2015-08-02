@@ -30,7 +30,7 @@ import java.nio.charset.Charset;
  * Decoder for {@link AuthenticationMD5Password} messages.
  */
 @Immutable
-public class AuthenticationMD5PasswordDecoder implements MessageDecoder<FeBeMessage> {
+class AuthenticationMD5PasswordDecoder implements MessageDecoder<FeBeMessage> {
 
     private static final int SALT_LENGTH = 4;
 

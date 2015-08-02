@@ -22,12 +22,14 @@ import com.eightkdata.pgfebe.common.message.BackendKeyData;
 import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
 /**
  * Decoder for {@link BackendKeyData} messages.
  */
-public class BackendKeyDataDecoder implements MessageDecoder<BackendKeyData> {
+@Immutable
+class BackendKeyDataDecoder implements MessageDecoder<BackendKeyData> {
 
     @Override
     public BackendKeyData decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {

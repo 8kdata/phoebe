@@ -28,7 +28,7 @@ import java.nio.charset.Charset;
 import static com.eightkdata.pgfebe.common.Decoders.readString;
 
 @Immutable
-public class ParameterStatusDecoder implements MessageDecoder<ParameterStatus> {
+class ParameterStatusDecoder implements MessageDecoder<ParameterStatus> {
 
     @Override
     public ParameterStatus decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {

@@ -22,12 +22,14 @@ import com.eightkdata.pgfebe.common.message.ReadyForQuery;
 import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
 /**
  * Decoder for {@link ReadyForQuery} messages.
  */
-public class ReadyForQueryDecoder implements MessageDecoder<ReadyForQuery> {
+@Immutable
+class ReadyForQueryDecoder implements MessageDecoder<ReadyForQuery> {
 
     // todo: this can use 3 singleton instances of ReadyForQuery instead of creating a new instance each time
 
