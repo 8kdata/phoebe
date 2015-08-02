@@ -27,6 +27,7 @@ import com.eightkdata.pgfebe.common.Decoders;
 import com.eightkdata.pgfebe.common.MessageDecoder;
 import com.eightkdata.pgfebe.common.message.RowDescription;
 import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.CorruptedFrameException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -57,8 +58,16 @@ class RowDescriptionDecoder implements MessageDecoder<RowDescription> {
         int typeId = in.readInt();
         short typeSize = in.readShort();
         int typeModifier = in.readInt();
-        short formatCode = in.readShort();
-        return new RowDescription.Field(name, tableId, columnId, typeId, typeSize, typeModifier, formatCode);
+        RowDescription.Format format = decodeFormat(in.readShort());
+        return new RowDescription.Field(name, tableId, columnId, typeId, typeSize, typeModifier, format);
+    }
+
+    private RowDescription.Format decodeFormat(short formatCode) {
+        switch (formatCode) {
+            case 0: return RowDescription.Format.TEXT;
+            case 1: return RowDescription.Format.BINARY;
+            default: throw new CorruptedFrameException("unknown field format code: " + formatCode);
+        }
     }
 
 }

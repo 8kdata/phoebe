@@ -29,12 +29,14 @@ import com.eightkdata.pgfebe.common.message.CommandComplete;
 import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
 /**
  * Decoder for {@link CommandComplete} messages.
  */
-public class CommandCompleteDecoder implements MessageDecoder<CommandComplete> {
+@Immutable
+class CommandCompleteDecoder implements MessageDecoder<CommandComplete> {
 
     @Override
     public CommandComplete decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {

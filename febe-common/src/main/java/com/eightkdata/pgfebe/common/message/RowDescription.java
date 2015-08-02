@@ -76,16 +76,16 @@ public class RowDescription implements FeBeMessage {
         private final int typeId;
         private final short typeSize;
         private final int typeModifier;
-        private final short formatCode;
+        private final Format format;
 
-        public Field(String name, int tableId, short columnId, int typeId, short typeSize, int typeModifier, short formatCode) {
+        public Field(String name, int tableId, short columnId, int typeId, short typeSize, int typeModifier, Format format) {
             this.name = name;
             this.tableId = tableId;
             this.columnId = columnId;
             this.typeId = typeId;
             this.typeSize = typeSize;
             this.typeModifier = typeModifier;
-            this.formatCode = formatCode;
+            this.format = format;
         }
     }
 
