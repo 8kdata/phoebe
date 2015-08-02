@@ -4,3 +4,4 @@ target/
 nbactions.xml
 nb-configuration.xml
 /bin/
+phoebe-client-api/src/test/resources/local.properties

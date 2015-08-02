@@ -7,18 +7,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.8kdata</groupId>
-    <artifactId>pgfebe</artifactId>
+    <artifactId>phoebe</artifactId>
     <version>0.10-SNAPSHOT</version>
 
     <modules>
-        <module>febe-common</module>
-        <module>febe-fe</module>
-        <module>febe-fe-api</module>
+        <module>phoebe-common</module>
+        <module>phoebe-client</module>
+        <module>phoebe-client-api</module>
     </modules>
 
     <packaging>pom</packaging>
     
-    <name>PgFeBe parent</name>
+    <name>Phoebe parent</name>
     
     <organization>
         <name>8Kdata</name>
@@ -31,27 +31,26 @@
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- fixme: use project.version instead of a property -->
-        <febe-common.version>0.10-SNAPSHOT</febe-common.version>
+        <phoebe.version>${project.version}</phoebe.version>
         <netty.version>4.0.30.Final</netty.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.8kdata.pgfebe</groupId>
-                <artifactId>febe-common</artifactId>
-                <version>${febe-common.version}</version>
+                <groupId>com.8kdata.phoebe</groupId>
+                <artifactId>phoebe-common</artifactId>
+                <version>${phoebe.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.8kdata.pgfebe</groupId>
-                <artifactId>febe-fe</artifactId>
-                <version>${febe-common.version}</version>
+                <groupId>com.8kdata.phoebe</groupId>
+                <artifactId>phoebe-client</artifactId>
+                <version>${phoebe.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.8kdata.pgfebe</groupId>
-                <artifactId>febe-fe-api</artifactId>
-                <version>${febe-common.version}</version>
+                <groupId>com.8kdata.phoebe</groupId>
+                <artifactId>phoebe-client-api</artifactId>
+                <version>${phoebe.version}</version>
             </dependency>
 
             <dependency>
