@@ -22,6 +22,7 @@ import com.eightkdata.pgfebe.fe.decoder.BeMessageProcessor;
 import com.eightkdata.pgfebe.fe.encoder.FeMessageEncoder;
 import com.eightkdata.pgfebe.fe.encoder.FeMessageProcessor;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -70,7 +71,7 @@ public class PGClient {
      */
     public @Nullable PGSession connect(long timeout, TimeUnit unit) throws InterruptedException {
         checkArgument(timeout > 0, "timeout cannot be less than 1");
-        checkNotNull(unit, "timeUnit");
+        checkNotNull(unit, "unit");
 
         final AtomicReference<Channel> channelRef = new AtomicReference<Channel>();
         List<MessageListener> listeners = new CopyOnWriteArrayList<MessageListener>();
@@ -78,6 +79,7 @@ public class PGClient {
         new Bootstrap()
                 .group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
+                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .handler(new ClientChannelHandlerInitializer(channelRef, listeners))
                 .connect(host, port)
                 .await(timeout, unit);
