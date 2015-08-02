@@ -85,7 +85,7 @@ public class PGClient {
                 .await(timeout, unit);
 
         Channel channel = channelRef.get();
-        return channel != null ? new PGSession(channel, listeners) : null;
+        return channel != null ? new PGSession(channel, listeners, encoding) : null;
     }
 
     /**

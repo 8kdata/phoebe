@@ -20,6 +20,7 @@ package com.eightkdata.pgfebe.fe.api;
 import com.eightkdata.pgfebe.common.message.StartupMessage;
 import io.netty.channel.Channel;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -30,9 +31,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class PGSession {
     private final Channel channel;
     private final List<MessageListener> listeners;
+    private final Charset encoding;
 
-    public PGSession(Channel channel, List<MessageListener> listeners) {
+    public PGSession(Channel channel, List<MessageListener> listeners, Charset encoding) {
         this.listeners = listeners;
+        this.encoding = encoding;
         this.channel = checkNotNull(channel, "channel");
     }
 
@@ -40,7 +43,7 @@ public class PGSession {
      * Send the start message to the server.
      */
     public void start(String user, String database) {
-        StartupMessage message = new StartupMessage.Builder(user, database).build();
+        StartupMessage message = new StartupMessage.Builder(user, database, encoding).build();
         channel.writeAndFlush(message);
     }
 
