@@ -15,19 +15,23 @@
  *
  */
 
-package com.eightkdata.pgfebe.common.exception;
+package com.eightkdata.pgfebe.common;
+
+import io.netty.buffer.ByteBuf;
+
+import javax.annotation.Nonnull;
 
 /**
- * Base class for exceptions.
+ * An encoder that can write a specific message type to an output buffer.
  */
-public class FeBeException extends Exception {
+public interface MessageEncoder<T extends FeBeMessage> {
 
-    public FeBeException(String message) {
-        super(message);
-    }
-
-    public FeBeException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    /**
+     * Write {@code message} to {@code out}.
+     *
+     * @param message the message to encode
+     * @param out the buffer to write to
+     */
+    void encode(@Nonnull T message, @Nonnull ByteBuf out);
 
 }

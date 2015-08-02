@@ -17,8 +17,7 @@
 
 package com.eightkdata.pgfebe.fe.decoder;
 
-import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
-import com.eightkdata.pgfebe.common.exception.FeBeException;
+import com.eightkdata.pgfebe.common.MessageDecoder;
 import com.eightkdata.pgfebe.common.message.ReadyForQuery;
 import io.netty.buffer.ByteBuf;
 
@@ -33,7 +32,7 @@ public class ReadyForQueryDecoder implements MessageDecoder<ReadyForQuery> {
     // todo: this can use 3 singleton instances of ReadyForQuery instead of creating a new instance each time
 
     @Override
-    public ReadyForQuery decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) throws FeBeException {
+    public ReadyForQuery decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {
         return new ReadyForQuery(ReadyForQuery.Status.fromByte(in.readByte()));
     }
 

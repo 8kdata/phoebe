@@ -17,7 +17,6 @@
 
 package com.eightkdata.pgfebe.fe.api;
 
-import com.eightkdata.pgfebe.common.exception.FeBeException;
 import com.eightkdata.pgfebe.fe.decoder.BeMessageDecoder;
 import com.eightkdata.pgfebe.fe.decoder.BeMessageProcessor;
 import com.eightkdata.pgfebe.fe.encoder.FeMessageEncoder;
@@ -68,9 +67,8 @@ public class PGClient {
      * Attempts to create a new session within a specified time limit.
      *
      * @return the session, or {@code null} if the time limit is reached.
-     * @throws FeBeException if the session could not be created.
      */
-    public @Nullable PGSession connect(long timeout, TimeUnit unit) throws FeBeException, InterruptedException {
+    public @Nullable PGSession connect(long timeout, TimeUnit unit) throws InterruptedException {
         checkArgument(timeout > 0, "timeout cannot be less than 1");
         checkNotNull(unit, "timeUnit");
 
@@ -92,9 +90,8 @@ public class PGClient {
      * Attempts to create a new session using the default time limit of 30 seconds.
      *
      * @return the session, or {@code null} if the time limit is reached.
-     * @throws FeBeException if the session could not be created.
      */
-    public PGSession connect() throws FeBeException, InterruptedException {
+    public PGSession connect() throws InterruptedException {
         return connect(DEFAULT_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_TIMEUNIT);
     }
 

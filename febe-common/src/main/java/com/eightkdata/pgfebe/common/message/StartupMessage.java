@@ -32,7 +32,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 
-import static com.eightkdata.pgfebe.common.encoder.EncoderUtils.computeCStringLength;
+import static com.eightkdata.pgfebe.common.Encoders.computeCStringLength;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 

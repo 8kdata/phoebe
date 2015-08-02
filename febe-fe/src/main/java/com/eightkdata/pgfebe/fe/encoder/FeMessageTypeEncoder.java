@@ -21,7 +21,7 @@ package com.eightkdata.pgfebe.fe.encoder;
 import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
 import com.eightkdata.pgfebe.common.FeMessageType;
-import com.eightkdata.pgfebe.common.encoder.MessageEncoder;
+import com.eightkdata.pgfebe.common.MessageEncoder;
 import com.eightkdata.pgfebe.fe.encoder.message.StartupMessageEncoder;
 
 import javax.annotation.Nullable;

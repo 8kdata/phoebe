@@ -20,7 +20,7 @@ package com.eightkdata.pgfebe.fe.decoder;
 
 import com.eightkdata.pgfebe.common.BeMessageType;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
-import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
+import com.eightkdata.pgfebe.common.MessageDecoder;
 import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

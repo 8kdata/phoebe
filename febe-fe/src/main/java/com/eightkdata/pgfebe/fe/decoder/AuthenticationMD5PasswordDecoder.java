@@ -18,8 +18,7 @@
 package com.eightkdata.pgfebe.fe.decoder;
 
 import com.eightkdata.pgfebe.common.FeBeMessage;
-import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
-import com.eightkdata.pgfebe.common.exception.FeBeException;
+import com.eightkdata.pgfebe.common.MessageDecoder;
 import com.eightkdata.pgfebe.common.message.AuthenticationMD5Password;
 import io.netty.buffer.ByteBuf;
 
@@ -36,7 +35,7 @@ public class AuthenticationMD5PasswordDecoder implements MessageDecoder<FeBeMess
     private static final int SALT_LENGTH = 4;
 
     @Override
-    public AuthenticationMD5Password decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) throws FeBeException {
+    public AuthenticationMD5Password decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {
         byte[] salt = new byte[SALT_LENGTH];
         in.readBytes(salt);
 

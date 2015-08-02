@@ -6,7 +6,7 @@ package com.eightkdata.pgfebe.fe.encoder;
 
 import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
-import com.eightkdata.pgfebe.common.encoder.MessageEncoder;
+import com.eightkdata.pgfebe.common.MessageEncoder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -23,29 +23,33 @@ import static com.eightkdata.pgfebe.common.MessageId.NONE;
 @Immutable
 public class FeMessageEncoder extends MessageToByteEncoder<FeBeMessage> {
     @Override
-    protected void encode(ChannelHandlerContext ctx, FeBeMessage msg, ByteBuf out) throws Exception {
-        FeBeMessageType type = msg.getType();
-        int payloadSize = msg.computePayloadLength();
-        int totalSize = type.getHeaderLength() + payloadSize;
-        int feMessageSize = (type.getId() == NONE ? totalSize : totalSize - 1);
+    protected void encode(ChannelHandlerContext ctx, FeBeMessage message, ByteBuf out) throws Exception {
+        FeBeMessageType messageType = message.getType();
+        int payloadSize = message.computePayloadLength();
+        int totalSize = messageType.getHeaderLength() + payloadSize;
+        int feMessageSize = (messageType.getId() == NONE ? totalSize : totalSize - 1);
 
         // Reserve buffer size
+        // todo: only if necessary
         out.capacity(totalSize);
 
         // Header
-        if (type.getId() != NONE) {
-            out.writeByte(type.getId());
+        if (messageType.getId() != NONE) {
+            out.writeByte(messageType.getId());
         }
         out.writeInt(feMessageSize);
-        if(null != type.getSubtype()) {
-            out.writeInt(type.getSubtype());
+        if(null != messageType.getSubtype()) {
+            out.writeInt(messageType.getSubtype());
         }
 
         // Payload
-        MessageEncoder encoder = FeMessageTypeEncoder.valueOf(type.name()).getEncoder();
-        encoder.encode(msg, out.nioBuffer(out.writerIndex(), payloadSize));
+        MessageEncoder encoder = FeMessageTypeEncoder.valueOf(messageType.name()).getEncoder();
+        if (encoder == null) {
+            throw new UnsupportedOperationException(messageType + "Encoder");
+        }
+        encoder.encode(message, out);
 
         // Advance ByteBuf's writeIndex
-        out.writerIndex(totalSize);
+        //out.writerIndex(totalSize);
     }
 }

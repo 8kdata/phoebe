@@ -22,34 +22,24 @@
  */
 
 
-package com.eightkdata.pgfebe.fe.encoder.message;
+package com.eightkdata.pgfebe.common;
 
-import com.eightkdata.pgfebe.common.MessageEncoder;
-import com.eightkdata.pgfebe.common.message.StartupMessage;
 import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
-import java.util.Map;
-
-import static com.eightkdata.pgfebe.common.Encoders.writeString;
 
 /**
- * Encoder for {@link StartupMessage}s.
+ * A Decoder that can read a specific message type from an input buffer.
  */
-@Immutable
-public class StartupMessageEncoder implements MessageEncoder<StartupMessage> {
+public interface MessageDecoder<T extends FeBeMessage> {
 
-    @Override
-    public void encode(@Nonnull StartupMessage message, @Nonnull ByteBuf out) {
-        Charset encoding = message.getEncoding();
-        for (Map.Entry<String, String> param : message.getParameters().entrySet()) {
-            writeString(out, param.getKey(), encoding);
-            writeString(out, param.getValue(), encoding);
-
-        }
-        out.writeByte(0);
-    }
+    /**
+     * Read a message from {@code in}.
+     *
+     * @param in the buffer to read from
+     * @param encoding the character set encoding to use
+     */
+    T decode(@Nonnull ByteBuf in, @Nonnull Charset encoding);
 
 }

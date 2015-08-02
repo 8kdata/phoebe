@@ -17,8 +17,7 @@
 
 package com.eightkdata.pgfebe.fe.decoder;
 
-import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
-import com.eightkdata.pgfebe.common.exception.FeBeException;
+import com.eightkdata.pgfebe.common.MessageDecoder;
 import com.eightkdata.pgfebe.common.message.ParameterStatus;
 import io.netty.buffer.ByteBuf;
 
@@ -32,7 +31,7 @@ import static com.eightkdata.pgfebe.fe.decoder.Helper.readString;
 public class ParameterStatusDecoder implements MessageDecoder<ParameterStatus> {
 
     @Override
-    public ParameterStatus decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) throws FeBeException {
+    public ParameterStatus decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {
         String name = readString(in, encoding);
         String value = readString(in, encoding);
         return new ParameterStatus(name, value);

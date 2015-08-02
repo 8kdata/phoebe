@@ -17,8 +17,7 @@
 
 package com.eightkdata.pgfebe.fe.decoder;
 
-import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
-import com.eightkdata.pgfebe.common.exception.FeBeException;
+import com.eightkdata.pgfebe.common.MessageDecoder;
 import com.eightkdata.pgfebe.common.message.BackendKeyData;
 import io.netty.buffer.ByteBuf;
 
@@ -31,7 +30,7 @@ import java.nio.charset.Charset;
 public class BackendKeyDataDecoder implements MessageDecoder<BackendKeyData> {
 
     @Override
-    public BackendKeyData decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) throws FeBeException {
+    public BackendKeyData decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {
         return new BackendKeyData(in.readInt(), in.readInt());
     }
 
