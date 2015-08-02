@@ -23,6 +23,7 @@
 
 package com.eightkdata.pgfebe.common.message;
 
+import com.eightkdata.pgfebe.common.Encoders;
 import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
 
@@ -32,7 +33,6 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 
-import static com.eightkdata.pgfebe.common.Encoders.computeCStringLength;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -88,8 +88,8 @@ public class StartupMessage implements FeBeMessage {
     public int computePayloadLength() {
         int length = 1;     // end '0' byte
         for (Map.Entry<String,String> entry : parameters.entrySet()) {
-            length += computeCStringLength(entry.getKey(), encoding);
-            length += computeCStringLength(entry.getValue(), encoding);
+            length += Encoders.stringLength(entry.getKey(), encoding);
+            length += Encoders.stringLength(entry.getValue(), encoding);
         }
         return length;
     }
