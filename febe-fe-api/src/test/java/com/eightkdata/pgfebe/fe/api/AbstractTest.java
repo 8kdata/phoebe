@@ -17,6 +17,9 @@
 
 package com.eightkdata.pgfebe.fe.api;
 
+import com.eightkdata.pgfebe.common.FeBeMessage;
+import com.eightkdata.pgfebe.common.FeBeMessageType;
+import net.jodah.concurrentunit.Waiter;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
@@ -27,6 +30,9 @@ public class AbstractTest {
     static Properties props;
 
     PGClient client;
+    PGSession session;
+    Waiter waiter;
+
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -36,10 +42,24 @@ public class AbstractTest {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         client = new PGClient(
                 props.getProperty("db.host"),
                 Integer.parseInt(props.getProperty("db.port")));
+        waiter = new Waiter();
+        session = client.connect();
     }
 
+    void expect(final FeBeMessageType messageType) {
+        session.addListener(new MessageListener<FeBeMessage>(FeBeMessage.class) {
+            @Override
+            public void onMessage(FeBeMessage message) {
+                System.out.println(">>> " + message);
+                if (message.getType() == messageType) {
+                    waiter.assertTrue(true);
+                    waiter.resume();
+                }
+            }
+        });
+    }
 }

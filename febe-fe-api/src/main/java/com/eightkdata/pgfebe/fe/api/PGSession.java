@@ -17,6 +17,7 @@
 
 package com.eightkdata.pgfebe.fe.api;
 
+import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.message.StartupMessage;
 import io.netty.channel.Channel;
 
@@ -51,6 +52,21 @@ public class PGSession {
         channel.writeAndFlush(message);
     }
 
+    public void send(FeBeMessage message) {
+        channel.writeAndFlush(message);
+    }
+
+    public void send(FeBeMessage... messages) {
+        FeBeMessage lastMessage = messages[messages.length - 1];
+        for (FeBeMessage message : messages) {
+            if (message == lastMessage) {
+                channel.writeAndFlush(message);
+            } else {
+                channel.write(message);
+            }
+        }
+    }
+
     /**
      * Adds a listener which will be notified of any messages passing over this session.
      */
@@ -64,5 +80,4 @@ public class PGSession {
     public void removeListener(MessageListener listener) {
         listeners.remove(listener);
     }
-
 }

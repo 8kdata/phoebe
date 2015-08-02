@@ -18,35 +18,37 @@
 package com.eightkdata.pgfebe.fe.api;
 
 import com.eightkdata.pgfebe.common.FeBeMessage;
+import com.eightkdata.pgfebe.common.FeBeMessageType;
+import com.eightkdata.pgfebe.common.message.Query;
 import net.jodah.concurrentunit.Waiter;
+import org.junit.Before;
 import org.junit.Test;
 
-import static com.eightkdata.pgfebe.common.MessageId.AUTHENTICATION;
+import static com.eightkdata.pgfebe.common.FeBeMessageType.EmptyQueryResponse;
+import static com.eightkdata.pgfebe.common.FeBeMessageType.ReadyForQuery;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
- * Unit tests for {@link }
+ * Unit tests for {@link PGSession}.
  */
 public class PGSessionTest extends AbstractTest {
 
     @Test
     public void testStart() throws Throwable {
-        final Waiter waiter = new Waiter();
-
-        PGSession session = client.connect();
-        session.addListener(new MessageListener<FeBeMessage>(FeBeMessage.class) {
-            @Override
-            public void onMessage(FeBeMessage message) {
-                System.out.println(">>> " + message);
-                if (message.getType().getId() == AUTHENTICATION) {
-                    waiter.assertTrue(true);
-                    waiter.resume();
-                }
-            }
-        });
+        expect(ReadyForQuery);
         session.start(props.getProperty("db.user"), props.getProperty("db.name"));
-
         waiter.await(5, SECONDS);
+    }
+
+    @Test
+    public void testEmptyQuery() throws Throwable {
+        expect(ReadyForQuery);
+        session.start(props.getProperty("db.user"), props.getProperty("db.name"));
+        waiter.await(5, SECONDS);
+
+        expect(EmptyQueryResponse);
+        session.send(new Query(""));
+        waiter.await(5, SECONDS, 2);
     }
 
 }
