@@ -22,7 +22,7 @@
  */
 
 
-package com.eightkdata.pgfebe.fe.encoder.message;
+package com.eightkdata.pgfebe.fe.encoder;
 
 import com.eightkdata.pgfebe.common.MessageEncoder;
 import com.eightkdata.pgfebe.common.message.StartupMessage;
@@ -39,7 +39,7 @@ import static com.eightkdata.pgfebe.common.Encoders.writeString;
  * Encoder for {@link StartupMessage}s.
  */
 @Immutable
-public class StartupMessageEncoder implements MessageEncoder<StartupMessage> {
+class StartupMessageEncoder implements MessageEncoder<StartupMessage> {
 
     @Override
     public void encode(@Nonnull StartupMessage message, @Nonnull ByteBuf out, @Nonnull Charset encoding) {

@@ -29,12 +29,14 @@ import com.eightkdata.pgfebe.common.message.Query;
 import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
 /**
  * An ecoder for {@link Query} messages.
  */
-public class QueryMessageEncoder implements MessageEncoder<Query> {
+@Immutable
+class QueryMessageEncoder implements MessageEncoder<Query> {
 
     @Override
     public void encode(@Nonnull Query message, @Nonnull ByteBuf out, @Nonnull Charset encoding) {
