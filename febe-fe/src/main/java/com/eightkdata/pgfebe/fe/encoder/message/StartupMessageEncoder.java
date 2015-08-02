@@ -42,8 +42,7 @@ import static com.eightkdata.pgfebe.common.Encoders.writeString;
 public class StartupMessageEncoder implements MessageEncoder<StartupMessage> {
 
     @Override
-    public void encode(@Nonnull StartupMessage message, @Nonnull ByteBuf out) {
-        Charset encoding = message.getEncoding();
+    public void encode(@Nonnull StartupMessage message, @Nonnull ByteBuf out, @Nonnull Charset encoding) {
         for (Map.Entry<String, String> param : message.getParameters().entrySet()) {
             writeString(out, param.getKey(), encoding);
             writeString(out, param.getValue(), encoding);

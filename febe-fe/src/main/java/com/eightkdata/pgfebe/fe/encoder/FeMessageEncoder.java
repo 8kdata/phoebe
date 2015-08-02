@@ -56,9 +56,6 @@ public class FeMessageEncoder extends MessageToByteEncoder<FeBeMessage> {
         if (encoder == null) {
             throw new UnsupportedOperationException(messageType + "Encoder");
         }
-        encoder.encode(message, out);
-
-        // Advance ByteBuf's writeIndex
-        //out.writerIndex(totalSize);
+        encoder.encode(message, out, encoding);
     }
 }

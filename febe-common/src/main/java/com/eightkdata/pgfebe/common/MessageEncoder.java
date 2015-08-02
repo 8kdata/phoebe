@@ -20,6 +20,7 @@ package com.eightkdata.pgfebe.common;
 import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
+import java.nio.charset.Charset;
 
 /**
  * An encoder that can write a specific message type to an output buffer.
@@ -31,7 +32,8 @@ public interface MessageEncoder<T extends FeBeMessage> {
      *
      * @param message the message to encode
      * @param out the buffer to write to
+     * @param encoding the character set to use when encoding strings
      */
-    void encode(@Nonnull T message, @Nonnull ByteBuf out);
+    void encode(@Nonnull T message, @Nonnull ByteBuf out, @Nonnull Charset encoding);
 
 }

@@ -62,17 +62,10 @@ public class StartupMessage implements FeBeMessage {
         return new Builder();
     }
 
-    private final Charset encoding;
-
     private final Map<String,String> parameters;
 
-    StartupMessage(@Nonnull Map<String,String> parameters, Charset encoding) {
-        this.encoding = encoding;
+    StartupMessage(@Nonnull Map<String,String> parameters) {
         this.parameters = Collections.unmodifiableMap(parameters);
-    }
-
-    public Charset getEncoding() {
-        return encoding;
     }
 
     public Map<String, String> getParameters() {
@@ -106,7 +99,6 @@ public class StartupMessage implements FeBeMessage {
     }
 
     public static class Builder implements MessageBuilder<StartupMessage> {
-        private Charset encoding;
         private final Map<String,String> parameters = new LinkedHashMap<String, String>();
 
         Builder() {}
@@ -122,7 +114,6 @@ public class StartupMessage implements FeBeMessage {
         public Builder clientEncoding(@Nonnull Charset encoding) {
             String pgCharsetName = pgCharsetNames.get(encoding.name());
             checkArgument(pgCharsetName != null, "unsupported client encoding: %s", encoding);
-            this.encoding = encoding;
             return parameter("client_encoding", pgCharsetName);
         }
 
@@ -137,8 +128,8 @@ public class StartupMessage implements FeBeMessage {
         public StartupMessage build() {
             checkState(parameters.get("user") != null, "no user specified");
             checkState(parameters.get("database") != null, "no database specified");
-            checkState(encoding != null, "no encoding specified");
-            return new StartupMessage(parameters, encoding);
+            checkState(parameters.get("client_encoding") != null, "no encoding specified");
+            return new StartupMessage(parameters);
         }
     }
 
