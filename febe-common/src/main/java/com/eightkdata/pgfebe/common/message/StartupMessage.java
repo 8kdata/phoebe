@@ -1,137 +1,145 @@
 /*
- * Copyright (c) 2009-2014, 8Kdata Technologies, S.L.
+ * Copyright © 2015, 8Kdata Technology S.L.
+ *
+ * Permission to use, copy, modify, and distribute this software
+ * and its documentation for any purpose, without fee, and without
+ * a written agreement is hereby granted, provided that the above
+ * copyright notice and this paragraph and the following two
+ * paragraphs appear in all copies.
+ *
+ * In no event shall 8Kdata Technology S.L. be liable to any party
+ * for direct, indirect, special, incidental, or consequential
+ * damages, including lost profits, arising out of the use of this
+ * software and its documentation, even if 8Kdata Technology S.L.
+ * has been advised of the possibility of such damage.
+ *
+ * 8Kdata Technology S.L. specifically disclaims any warranties,
+ * including, but not limited to, the implied warranties of
+ * merchantability and fitness for a particular purpose. the
+ * software provided hereunder is on an “as is” basis, and
+ * 8Kdata Technology S.L. has no obligations to provide
+ * maintenance, support, updates, enhancements, or modifications.
  */
 
 package com.eightkdata.pgfebe.common.message;
 
-import com.eightkdata.pgfebe.common.BaseFeBeMessage;
+import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
-import com.eightkdata.pgfebe.common.encoder.EncoderUtils;
-import com.google.common.base.Charsets;
-import com.google.common.base.Preconditions;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+
+import static com.eightkdata.pgfebe.common.encoder.EncoderUtils.computeCStringLength;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
- * Created: 29/07/15
- *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * The startup message that is sent to establish a new connection to a PostgreSQL server.
  */
 @Immutable
-public class StartupMessage extends BaseFeBeMessage {
-    public static final Charset MESSAGE_ENCODING = Charsets.US_ASCII;
+public class StartupMessage implements FeBeMessage {
 
-    private static final String USER_PARAMETER_NAME = "user";
-    private static final String DATABASE_PARAMETER_NAME = "database";
-    private static final String CLIENT_ENCODING_PARAMETER_NAME = "client_encoding";
+    /**
+     * A map of Java character set names to Postgres names.
+     */
+    private static final Map<String, String> pgCharsetNames = new HashMap<String, String>();
+    static {
+        pgCharsetNames.put("US-ASCII", "SQL_ASCII");
+        pgCharsetNames.put("ISO-8859-1", "LATIN1");
+        pgCharsetNames.put("ISO-8859-15", "LATIN15");
+        pgCharsetNames.put("UTF-8", "UTF8");
+    }
+
+    /**
+     * Get a builder suitable for creating new startup messages.
+     *
+     * @return a new builder.
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    private final Charset encoding;
 
     private final Map<String,String> parameters;
 
-    public StartupMessage(@Nonnull Map<String,String> parameters) {
-        super(FeBeMessageType.StartupMessage);
-
-        Preconditions.checkNotNull(parameters);
+    StartupMessage(@Nonnull Map<String,String> parameters, Charset encoding) {
+        this.encoding = encoding;
         this.parameters = Collections.unmodifiableMap(parameters);
     }
 
-    public interface ParametersIterator {
-        void doWithParameter(@Nonnull final String name, @Nonnull final String value);
+    public Charset getEncoding() {
+        return encoding;
     }
 
-    public void iterateParameters(ParametersIterator iterator) {
-        for(Map.Entry<String,String> entry : parameters.entrySet()) {
-            iterator.doWithParameter(entry.getKey(), entry.getValue());
-        }
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    @Override
+    public FeBeMessageType getType() {
+        return FeBeMessageType.StartupMessage;
     }
 
     @Override
     public int computePayloadLength() {
         int length = 1;     // end '0' byte
-        for(Map.Entry<String,String> entry : parameters.entrySet()) {
-            length += EncoderUtils.computeCStringLength(entry.getKey(), MESSAGE_ENCODING);
-            length += EncoderUtils.computeCStringLength(entry.getValue(), MESSAGE_ENCODING);
+        for (Map.Entry<String,String> entry : parameters.entrySet()) {
+            length += computeCStringLength(entry.getKey(), encoding);
+            length += computeCStringLength(entry.getValue(), encoding);
         }
-
         return length;
     }
 
-    private static class ToStringMessagePayloadParamsIterator implements ParametersIterator {
-        private final StringBuilder sb;
-
-        public ToStringMessagePayloadParamsIterator(StringBuilder sb) {
-            this.sb = sb;
-        }
-
-        @Override
-        public void doWithParameter(final @Nonnull String name, final @Nonnull String value) {
-            sb.append(name).append("=").append(value).append(" ");
-        }
-    }
-
-    @Nonnull
     @Override
-    protected StringBuilder toStringMessagePayload(@Nonnull StringBuilder sb, @Nonnull String separator) {
-        sb.append(separator);
-        sb.append("params={").append(" ");
-
-        iterateParameters(new ToStringMessagePayloadParamsIterator(sb));
-
-        sb.append("}");
-
-        return sb;
-    }
-
-    private static final Map<Charset,String> java2PostgresEncodingNames = new HashMap<Charset, String>();
-    static {
-        java2PostgresEncodingNames.put(Charsets.UTF_8, "UTF8");
+    public String toString() {
+        StringBuilder sb = new StringBuilder(parameters.size() * 16 + 16);
+        sb.append("StartupMessage(");
+        for (Map.Entry<String, String> param : parameters.entrySet()) {
+            sb.append(param.getKey()).append('=').append(param.getValue()).append(", ");
+        }
+        sb.setLength(sb.length() - 2);
+        return sb.append(')').toString();
     }
 
     public static class Builder implements MessageBuilder<StartupMessage> {
-        private final Map<String,String> parameters = new HashMap<String, String>();
+        private Charset encoding;
+        private final Map<String,String> parameters = new LinkedHashMap<String, String>();
 
-        public Builder(@Nonnull String user, @Nonnull String database, @Nullable Charset clientEncoding) {
-            addStartupParameter(USER_PARAMETER_NAME, user);
-            addStartupParameter(DATABASE_PARAMETER_NAME, database);
+        Builder() {}
 
-            if(null != clientEncoding) {
-                String postgresEncoding = java2PostgresEncodingNames.get(clientEncoding);
-                if(null == postgresEncoding) {
-                    throw new IllegalArgumentException("Encoding " + clientEncoding + " not supported by the driver");
-                }
-                addStartupParameter(CLIENT_ENCODING_PARAMETER_NAME, postgresEncoding);
-            }
+        public Builder user(@Nonnull String user) {
+            return parameter("user", user);
         }
 
-        public Builder(@Nonnull String user, @Nonnull String database) {
-            this(user, database, null);
+        public Builder database(@Nonnull String database) {
+            return parameter("database", database);
         }
 
-        public Builder(@Nonnull String user, @Nullable Charset clientEncoding) {
-            this(user, user, clientEncoding);
+        public Builder clientEncoding(@Nonnull Charset encoding) {
+            String pgCharsetName = pgCharsetNames.get(encoding.name());
+            checkArgument(pgCharsetName != null, "unsupported client encoding: %s", encoding);
+            this.encoding = encoding;
+            return parameter("client_encoding", pgCharsetName);
         }
 
-        public Builder(@Nonnull String user) {
-            this(user, user, null);
-        }
-
-        public Builder addStartupParameter(@Nonnull String name, @Nonnull String value) {
-            Preconditions.checkArgument(null != name && ! name.isEmpty());
-            Preconditions.checkArgument(null != value && ! value.isEmpty());
-
+        public Builder parameter(@Nonnull String name, @Nonnull String value) {
+            checkArgument(name != null && !name.isEmpty(), "parameter name cannot be null or empty");
+            checkArgument(value != null && !value.isEmpty(), "%s parameter cannot be null or empty", name);
             parameters.put(name, value);
-
             return this;
         }
 
         @Override
         public StartupMessage build() {
-            return new StartupMessage(parameters);
+            checkState(parameters.get("user") != null, "no user specified");
+            checkState(parameters.get("database") != null, "no database specified");
+            checkState(encoding != null, "no encoding specified");
+            return new StartupMessage(parameters, encoding);
         }
     }
+
 }

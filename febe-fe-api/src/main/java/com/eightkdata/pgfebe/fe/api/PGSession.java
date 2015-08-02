@@ -43,7 +43,11 @@ public class PGSession {
      * Send the start message to the server.
      */
     public void start(String user, String database) {
-        StartupMessage message = new StartupMessage.Builder(user, database, encoding).build();
+        StartupMessage message = StartupMessage.builder()
+                .user(user)
+                .database(database)
+                .clientEncoding(encoding)
+                .build();
         channel.writeAndFlush(message);
     }
 

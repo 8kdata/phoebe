@@ -18,39 +18,32 @@
 
 package com.eightkdata.pgfebe.fe.encoder.message;
 
-import com.eightkdata.pgfebe.common.encoder.EncoderUtils;
 import com.eightkdata.pgfebe.common.encoder.MessageEncoder;
 import com.eightkdata.pgfebe.common.message.StartupMessage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.Map;
+
+import static com.eightkdata.pgfebe.common.encoder.EncoderUtils.encodeToCString;
 
 /**
- * Created: 29/07/15
- *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * Encoder for {@link StartupMessage}s.
  */
 @Immutable
 public class StartupMessageEncoder implements MessageEncoder<StartupMessage> {
-    private static final class EncoderParametersIterator implements StartupMessage.ParametersIterator {
-        private final ByteBuffer byteBuffer;
-
-        public EncoderParametersIterator(ByteBuffer byteBuffer) {
-            this.byteBuffer = byteBuffer;
-        }
-
-        @Override
-        public void doWithParameter(@Nonnull String name, @Nonnull String value) {
-            EncoderUtils.encodeToCString(name, byteBuffer, StartupMessage.MESSAGE_ENCODING);
-            EncoderUtils.encodeToCString(value, byteBuffer, StartupMessage.MESSAGE_ENCODING);
-        }
-    }
 
     @Override
     public void encode(@Nonnull StartupMessage message, @Nonnull final ByteBuffer byteBuffer) {
-        message.iterateParameters(new EncoderParametersIterator(byteBuffer));
+        Charset encoding = message.getEncoding();
+        for (Map.Entry<String, String> param : message.getParameters().entrySet()) {
+            encodeToCString(param.getKey(), byteBuffer, encoding);
+            encodeToCString(param.getValue(), byteBuffer, encoding);
 
+        }
         byteBuffer.put((byte) 0);
     }
+
 }
