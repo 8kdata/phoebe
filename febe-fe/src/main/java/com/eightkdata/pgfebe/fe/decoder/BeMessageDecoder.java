@@ -21,11 +21,11 @@ package com.eightkdata.pgfebe.fe.decoder;
 import com.eightkdata.pgfebe.common.BeMessageType;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
 import com.eightkdata.pgfebe.common.decoder.MessageDecoder;
-import com.eightkdata.pgfebe.common.exception.InvalidMessageException;
 import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.codec.CorruptedFrameException;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -74,11 +74,11 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
 
         // Check for invalid messages
         if (beMessageType == null) {
-            throw new InvalidMessageException("unknown message type (" + type + ")");
+            throw new CorruptedFrameException("unknown message type (" + type + ")");
         }
         FeBeMessageType messageType = beMessageType.getFeBeMessageType();
         if (messageType.hasFixedLength() && length != messageType.getLength()) {
-            throw new InvalidMessageException(
+            throw new CorruptedFrameException(
                     "unexpected length (" + length + ") for " + messageType + "(" + (char) type + ") message.");
         }
 
