@@ -51,4 +51,15 @@ public class PGSessionTest extends AbstractTest {
         waiter.await(5, SECONDS, 2);
     }
 
+
+    @Test
+    public void testSimpleQuery() throws Throwable {
+        expect(ReadyForQuery);
+        session.start(props.getProperty("db.user"), props.getProperty("db.name"));
+        waiter.await(5, SECONDS);
+
+        session.send(new Query("select current_timestamp;"));
+        waiter.await(5, SECONDS);
+    }
+
 }

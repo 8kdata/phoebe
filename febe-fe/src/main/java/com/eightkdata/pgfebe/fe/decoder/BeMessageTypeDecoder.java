@@ -41,13 +41,13 @@ public enum BeMessageTypeDecoder {
     BackendKeyData                  (   new BackendKeyDataDecoder()             ),
     BindComplete                    (   null                                    ),
     CloseComplete                   (   null                                    ),
-    CommandComplete                 (   null                                    ),  // TODO: needs a decoder
+    CommandComplete                 (   new CommandCompleteDecoder()            ),
     CopyData                        (   null                                    ),  // TODO: needs a decoder
     CopyDone                        (   null                                    ),  // TODO: needs a decoder
     CopyInResponse                  (   null                                    ),  // TODO: needs a decoder
     CopyOutResponse                 (   null                                    ),  // TODO: needs a decoder
     CopyBothResponse                (   null                                    ),  // TODO: needs a decoder
-    DataRow                         (   null                                    ),  // TODO: needs a decoder
+    DataRow                         (   new DataRowDecoder()                    ),
     EmptyQueryResponse              (   null                                    ),
     ErrorResponse                   (   null                                    ),  // TODO: needs a decoder
     FunctionCallResponse            (   null                                    ),  // TODO: needs a decoder
@@ -59,8 +59,7 @@ public enum BeMessageTypeDecoder {
     ParseComplete                   (   null                                    ),
     PortalSuspended                 (   null                                    ),
     ReadyForQuery                   (   new ReadyForQueryDecoder()              ),
-    RowDescription                  (   null                                    )   // TODO: needs a decoder
-    ;
+    RowDescription                  (   new RowDescriptionDecoder()             );
 
     private final BeMessageType beMessageType;
     private final MessageDecoder<?> decoder;
