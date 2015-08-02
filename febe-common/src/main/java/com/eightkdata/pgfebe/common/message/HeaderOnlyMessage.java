@@ -1,41 +1,61 @@
 /*
- * Copyright (c) 2015, 8Kdata Technology S.L.
+ * Copyright © 2015, 8Kdata Technology S.L.
  *
- * Permission to use, copy, modify, and distribute this software and its documentation for any purpose,
- * without fee, and without a written agreement is hereby granted, provided that the above copyright notice and this
- * paragraph and the following two paragraphs appear in all copies.
+ * Permission to use, copy, modify, and distribute this software
+ * and its documentation for any purpose, without fee, and without
+ * a written agreement is hereby granted, provided that the above
+ * copyright notice and this paragraph and the following two
+ * paragraphs appear in all copies.
  *
- * IN NO EVENT SHALL 8Kdata BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,
- * INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF 8Kdata HAS BEEN
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * In no event shall 8Kdata Technology S.L. be liable to any party
+ * for direct, indirect, special, incidental, or consequential
+ * damages, including lost profits, arising out of the use of this
+ * software and its documentation, even if 8Kdata Technology S.L.
+ * has been advised of the possibility of such damage.
  *
- * 8Kdata SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS,
- * AND 8Kdata HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
- *
+ * 8Kdata Technology S.L. specifically disclaims any warranties,
+ * including, but not limited to, the implied warranties of
+ * merchantability and fitness for a particular purpose. the
+ * software provided hereunder is on an “as is” basis, and
+ * 8Kdata Technology S.L. has no obligations to provide
+ * maintenance, support, updates, enhancements, or modifications.
  */
 
 
 package com.eightkdata.pgfebe.common.message;
 
-import com.eightkdata.pgfebe.common.BaseFeBeMessage;
+import com.eightkdata.pgfebe.common.FeBeMessage;
 import com.eightkdata.pgfebe.common.FeBeMessageType;
 
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Created: 26/07/15
+ * A simple message that contains no variable data.
  *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * Instances of this class are immutable and may be shared and reused across threads.
  */
 @Immutable
-public class HeaderOnlyMessage extends BaseFeBeMessage {
-    public HeaderOnlyMessage(FeBeMessageType febeMessageType) {
-        super(febeMessageType);
+public class HeaderOnlyMessage implements FeBeMessage {
+
+    private final FeBeMessageType messageType;
+
+    public HeaderOnlyMessage(FeBeMessageType messageType) {
+        this.messageType = messageType;
+    }
+
+    @Override
+    public FeBeMessageType getType() {
+        return messageType;
     }
 
     @Override
     public int computePayloadLength() {
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return getType().name() + "()";
+    }
+
 }
