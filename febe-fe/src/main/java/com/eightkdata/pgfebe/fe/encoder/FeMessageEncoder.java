@@ -29,9 +29,10 @@ public class FeMessageEncoder extends MessageToByteEncoder<FeBeMessage> {
         int totalSize = messageType.getHeaderLength() + payloadSize;
         int feMessageSize = (messageType.getId() == NONE ? totalSize : totalSize - 1);
 
-        // Reserve buffer size
-        // todo: only if necessary
-        out.capacity(totalSize);
+        // reserve extra space if necessary
+        if (totalSize > out.capacity()) {
+            out.capacity(totalSize);
+        }
 
         // Header
         if (messageType.getId() != NONE) {
