@@ -42,7 +42,7 @@ public enum FeMessageTypeEncoder {
     Flush                           (   null                                    ),
     FunctionCall                    (   null                                    ),
     Parse                           (   null                                    ),
-    PasswordMessage                 (   null                                    ),
+    PasswordMessage                 (   new PasswordMessageEncoder()            ),
     Query                           (   new QueryMessageEncoder()               ),
     SSLRequest                      (   null                                    ),
     StartupMessage                  (   new StartupMessageEncoder()             ),
