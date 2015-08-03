@@ -32,11 +32,6 @@ public class StartupFlowHandler extends FlowHandler {
     }
 
     @Override
-    public boolean isComplete(FeBeMessageType messageType) {
-        return messageType == ReadyForQuery || messageType == ErrorResponse;
-    }
-
-    @Override
     public boolean handle(Channel channel, FeBeMessage message, Charset encoding) {
         switch (message.getType()) {
             case AuthenticationCleartextPassword:

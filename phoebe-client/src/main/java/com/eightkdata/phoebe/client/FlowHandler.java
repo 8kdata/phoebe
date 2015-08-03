@@ -7,6 +7,9 @@ import io.netty.channel.Channel;
 import java.nio.charset.Charset;
 import java.util.Set;
 
+import static com.eightkdata.phoebe.common.FeBeMessageType.ErrorResponse;
+import static com.eightkdata.phoebe.common.FeBeMessageType.ReadyForQuery;
+
 public abstract class FlowHandler {
 
     /**
@@ -23,7 +26,7 @@ public abstract class FlowHandler {
     }
 
     public boolean isComplete(FeBeMessageType messageType) {
-        return messageType == FeBeMessageType.ReadyForQuery;
+        return messageType == ReadyForQuery || messageType == ErrorResponse;
     }
 
     /**
