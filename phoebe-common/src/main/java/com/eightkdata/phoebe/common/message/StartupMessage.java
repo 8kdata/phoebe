@@ -127,7 +127,6 @@ public class StartupMessage implements FeBeMessage {
         @Override
         public StartupMessage build() {
             checkState(parameters.get("user") != null, "no user specified");
-            checkState(parameters.get("database") != null, "no database specified");
             checkState(parameters.get("client_encoding") != null, "no encoding specified");
             return new StartupMessage(parameters);
         }
