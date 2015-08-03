@@ -1,7 +1,14 @@
+# IntelliJ Support Files
 .idea/
-target/
 *.iml
+
+# NetBeans Support Files
 nbactions.xml
 nb-configuration.xml
-/bin/
-phoebe-client-api/src/test/resources/local.properties
+
+# Build Output Folders
+target/
+build/
+
+# Local Test Configuration
+/*/src/test/resources/local.properties
