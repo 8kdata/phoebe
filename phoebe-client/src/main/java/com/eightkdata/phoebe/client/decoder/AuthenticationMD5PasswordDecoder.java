@@ -25,6 +25,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
+import static com.eightkdata.phoebe.common.message.AuthenticationMD5Password.SALT_LENGTH;
+
 /**
  * Decoder for {@link AuthenticationMD5Password} messages.
  */
@@ -33,7 +35,7 @@ class AuthenticationMD5PasswordDecoder implements MessageDecoder<AuthenticationM
 
     @Override
     public AuthenticationMD5Password decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {
-        byte[] salt = new byte[AuthenticationMD5Password.SALT_LENGTH];
+        byte[] salt = new byte[SALT_LENGTH];
         in.readBytes(salt);
         return new AuthenticationMD5Password(salt);
     }

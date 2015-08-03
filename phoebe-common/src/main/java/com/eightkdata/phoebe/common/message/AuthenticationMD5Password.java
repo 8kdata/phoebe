@@ -54,6 +54,17 @@ public final class AuthenticationMD5Password implements FeBeMessage {
         return salt.clone();
     }
 
+    /**
+     * Encode a suitable response based on this message.
+     *
+     * @param username the username to respond with
+     * @param password the password to respond with
+     * @return the response string, suitable for using with a {@link PasswordMessage}.
+     */
+    public String response(String username, String password, Charset encoding) {
+        return MD5.encode(username, password, salt, encoding);
+    }
+
     @Override
     public FeBeMessageType getType() {
         return FeBeMessageType.AuthenticationMD5Password;
@@ -66,11 +77,12 @@ public final class AuthenticationMD5Password implements FeBeMessage {
 
     @Override
     public String toString() {
-        return getType().name() + "(salt=0x"
-                + Integer.toHexString(salt[0])
-                + Integer.toHexString(salt[1])
-                + Integer.toHexString(salt[2])
-                + Integer.toHexString(salt[3]) + ")";
+        return String.format("%s(salt=0x%02x%02x%02x%02x)",
+                getType().name(),
+                salt[0] & 0xFF,
+                salt[1] & 0xFF,
+                salt[2] & 0xFF,
+                salt[3] & 0xFF);
     }
 
 }
