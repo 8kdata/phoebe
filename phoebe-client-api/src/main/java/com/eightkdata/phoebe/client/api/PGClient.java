@@ -17,10 +17,6 @@
 
 package com.eightkdata.phoebe.client.api;
 
-import com.eightkdata.phoebe.client.decoder.BeMessageDecoder;
-import com.eightkdata.phoebe.client.decoder.BeMessageProcessor;
-import com.eightkdata.phoebe.client.encoder.FeMessageEncoder;
-import com.eightkdata.phoebe.client.encoder.FeMessageProcessor;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
@@ -29,9 +25,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -68,18 +61,16 @@ public class PGClient {
         checkNotNull(unit, "unit");
 
         final AtomicReference<Channel> channelRef = new AtomicReference<Channel>();
-        List<MessageListener> listeners = new CopyOnWriteArrayList<MessageListener>();
-
         new Bootstrap()
                 .group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .handler(new ClientChannelHandlerInitializer(channelRef, listeners))
+                .handler(new ClientChannelHandlerInitializer(channelRef))
                 .connect(host, port)
                 .await(timeout, unit);
 
         Channel channel = channelRef.get();
-        return channel != null ? new PGSession(channel, listeners) : null;
+        return channel != null ? new PGSession(channel) : null;
     }
 
     /**
@@ -94,11 +85,9 @@ public class PGClient {
 
     private static class ClientChannelHandlerInitializer extends ChannelInitializer<Channel> {
         private final AtomicReference<Channel> channelRef;
-        private final List<MessageListener> listeners;
 
-        ClientChannelHandlerInitializer(AtomicReference<Channel> channelRef, List<MessageListener> listeners) {
+        ClientChannelHandlerInitializer(AtomicReference<Channel> channelRef) {
             this.channelRef = channelRef;
-            this.listeners = listeners;
         }
 
         @Override

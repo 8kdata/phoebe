@@ -17,6 +17,8 @@
 
 package com.eightkdata.phoebe.client.api;
 
+import com.eightkdata.phoebe.client.MessageFlowHandler;
+import com.eightkdata.phoebe.client.StartupFlowHandler;
 import com.eightkdata.phoebe.client.decoder.BeMessageDecoder;
 import com.eightkdata.phoebe.client.decoder.BeMessageProcessor;
 import com.eightkdata.phoebe.client.encoder.FeMessageEncoder;
@@ -26,7 +28,10 @@ import com.eightkdata.phoebe.common.message.StartupMessage;
 import io.netty.channel.Channel;
 
 import java.nio.charset.Charset;
+import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -35,22 +40,29 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class PGSession {
     private final Channel channel;
-    private final List<MessageListener> listeners;
+    private final List<MessageListener> listeners = new CopyOnWriteArrayList<MessageListener>();
+    // todo: use ConcurrentLinkedDeque once we switch to Java 1.7 or later
+    private final Deque<MessageFlowHandler> handlers = new LinkedBlockingDeque<MessageFlowHandler>();
 
-    public PGSession(Channel channel, List<MessageListener> listeners) {
-        this.listeners = listeners;
+    public PGSession(Channel channel) {
         this.channel = checkNotNull(channel, "channel");
     }
 
     private void initChannel(Charset encoding) {
         channel.pipeline()
                 .addLast("PGInboundMessageDecoder", new BeMessageDecoder(encoding))
-                .addLast("PGInboundMessageProcessor", new BeMessageProcessor())
+                .addLast("PGInboundMessageProcessor", new BeMessageProcessor(handlers, encoding))
 
                 .addLast("PGMessageBroadcaster", new MessageBroadcaster(listeners))
 
                 .addLast("PGOutboundMessageEncoder", new FeMessageEncoder(encoding))
                 .addLast("PGOutboundMessageProcessor", new FeMessageProcessor());
+    }
+
+    public void start(StartupCommand command) {
+        initChannel(command.getEncoding());
+        handlers.addLast(new StartupFlowHandler(command));
+        command.writeTo(channel);
     }
 
     public void start(String user, String database) {

@@ -23,7 +23,12 @@
 
 package com.eightkdata.phoebe.client.api;
 
+import com.eightkdata.phoebe.common.message.ReadyForQuery;
 import org.junit.Test;
+
+import java.nio.charset.Charset;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Unit tests for the various authentication methods.
@@ -34,7 +39,17 @@ public class AuthenticationTest extends AbstractTest {
 
     @Test
     public void testMD5Password() throws Throwable {
-        // fixme: implement me!
+        String username = props.getProperty("db.md5.user");
+        String password = props.getProperty("db.md5.pass");
+        String database = props.getProperty("db.md5.name");
+        session.start(new StartupCommand(username, password, database, Charset.forName("UTF-8")) {
+            @Override
+            public void onCompleted(ReadyForQuery message) {
+                waiter.assertTrue(message.getStatus() == ReadyForQuery.Status.IDLE);
+                waiter.resume();
+            }
+        });
+        waiter.await(5, SECONDS);
     }
 
 }

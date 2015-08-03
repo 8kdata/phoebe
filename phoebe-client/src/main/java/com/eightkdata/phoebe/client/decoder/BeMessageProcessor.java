@@ -18,10 +18,13 @@
 
 package com.eightkdata.phoebe.client.decoder;
 
+import com.eightkdata.phoebe.client.MessageFlowHandler;
 import com.eightkdata.phoebe.common.FeBeMessage;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
+import java.nio.charset.Charset;
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -30,9 +33,31 @@ import java.util.List;
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
 public class BeMessageProcessor extends MessageToMessageDecoder<FeBeMessage> {
-    @Override
-    protected void decode(ChannelHandlerContext ctx, FeBeMessage message, List<Object> out)
-    throws Exception {
-        out.add(message);
+
+    private final Charset encoding;
+
+    private final Deque<MessageFlowHandler> handlers;
+
+    public BeMessageProcessor(Deque<MessageFlowHandler> handlers, Charset encoding) {
+        this.handlers = handlers;
+        this.encoding = encoding;
     }
+
+    @Override
+    protected void decode(ChannelHandlerContext ctx, FeBeMessage message, List<Object> out) throws Exception {
+        MessageFlowHandler handler = handlers.peekFirst();
+        if (handler != null && handler.isHandled(message.getType())) {
+            if (handler.handle(ctx.channel(), message, encoding)) {
+                out.add(message);
+            }
+        } else {
+            // always propagate the message if it is not handled
+            out.add(message);
+        }
+        if (handler != null && handler.isComplete(message.getType())) {
+            handlers.removeFirst();
+        }
+
+    }
+
 }
