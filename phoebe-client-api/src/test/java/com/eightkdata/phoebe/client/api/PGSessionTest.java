@@ -17,13 +17,23 @@
 
 package com.eightkdata.phoebe.client.api;
 
+import com.eightkdata.phoebe.common.message.Query;
+import org.junit.Test;
+
+import static com.eightkdata.phoebe.common.FeBeMessageType.EmptyQueryResponse;
+import static com.eightkdata.phoebe.common.FeBeMessageType.ReadyForQuery;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 /**
  * Unit tests for {@link PGSession}.
+ *
+ * All of the tests here assume trust based authentication, so make sure
+ * that the DB instance you're running against is set up for that. See
+ * {@link AuthenticationTest} for test that excercise the various
+ * authentication protocols.
  */
 public class PGSessionTest extends AbstractTest {
-    /*
-     * TODO: this tests only work as-is if the authentication mechanism is trust. Fix the tests
-     *
+
     @Test
     public void testStart() throws Throwable {
         expect(ReadyForQuery);
@@ -51,5 +61,6 @@ public class PGSessionTest extends AbstractTest {
 
         session.send(new Query("select current_timestamp;"));
         waiter.await(5, SECONDS);
-    } */
+    }
+
 }

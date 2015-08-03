@@ -27,6 +27,9 @@ import java.util.Properties;
 
 public class AbstractTest {
 
+    /**
+     * Add a file named {@code local.properties} to override the defaults for your database connection.
+     */
     static Properties props;
 
     PGClient client;
