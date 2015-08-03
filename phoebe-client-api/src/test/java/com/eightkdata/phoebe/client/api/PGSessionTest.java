@@ -66,7 +66,7 @@ public class PGSessionTest extends AbstractTest {
         session.query(new SimpleQueryCommand("select current_timestamp;") {
             @Override
             public void onCompleted(ReadyForQuery message) {
-                waiter.assertTrue(true);
+                waiter.assertTrue(message.getStatus() == ReadyForQuery.Status.IDLE);
                 waiter.resume();
             }
         });
