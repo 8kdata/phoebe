@@ -59,6 +59,6 @@ public class StartupCommand implements StartupFlowHandler.Callback {
 
     @Override
     public void onFailed(ErrorResponse message) {
-        System.err.println("!!! " + message);
     }
+
 }

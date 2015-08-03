@@ -112,6 +112,10 @@ public class StartupMessage implements FeBeMessage {
         }
 
         public Builder clientEncoding(@Nonnull Charset encoding) {
+            // todo: startup encoding seems to be a bit of a mess
+            // what I have here and in MD5 works for the cases that I have tested but it probably
+            // isn't a comprehensive solution. Some discussion about this issue on the lists here
+            // http://www.postgresql.org/message-id/20081223212414.GD3894@merkur.hilbert.loc
             String pgCharsetName = pgCharsetNames.get(encoding.name());
             checkArgument(pgCharsetName != null, "unsupported client encoding: %s", encoding);
             return parameter("client_encoding", pgCharsetName);
