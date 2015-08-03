@@ -49,7 +49,7 @@ public enum BeMessageTypeDecoder {
     CopyBothResponse                (   null                                    ),  // TODO: needs a decoder
     DataRow                         (   new DataRowDecoder()                    ),
     EmptyQueryResponse              (   null                                    ),
-    ErrorResponse                   (   null                                    ),  // TODO: needs a decoder
+    ErrorResponse                   (   new ErrorResponseDecoder()              ),
     FunctionCallResponse            (   null                                    ),  // TODO: needs a decoder
     NoData                          (   null                                    ),
     NoticeResponse                  (   null                                    ),  // TODO: needs a decoder
