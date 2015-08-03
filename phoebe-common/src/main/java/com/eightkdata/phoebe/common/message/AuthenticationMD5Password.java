@@ -61,7 +61,7 @@ public final class AuthenticationMD5Password implements FeBeMessage {
 
     @Override
     public int computePayloadLength(Charset encoding) {
-        return 8; // 4 byte subtype code and 4 bytes of salt
+        return 4; // 4 bytes of salt
     }
 
     @Override
