@@ -42,7 +42,7 @@ public class AuthenticationTest extends AbstractTest {
         String username = props.getProperty("db.md5.user");
         String password = props.getProperty("db.md5.pass");
         String database = props.getProperty("db.md5.name");
-        session.start(new StartupCommand(username, password, database, Charset.forName("UTF-8")) {
+        session.start(new StartupCommand(username, password, database, UTF8) {
             @Override
             public void onCompleted(ReadyForQuery message) {
                 waiter.assertTrue(message.getStatus() == ReadyForQuery.Status.IDLE);

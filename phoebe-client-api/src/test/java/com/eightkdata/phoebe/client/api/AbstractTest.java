@@ -23,9 +23,12 @@ import net.jodah.concurrentunit.Waiter;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 public class AbstractTest {
+
+    static final Charset UTF8 = Charset.forName("UTF-8");
 
     /**
      * Add a file named {@code local.properties} to override the defaults for your database connection.
