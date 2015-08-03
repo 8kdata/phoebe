@@ -17,7 +17,6 @@
 
 package com.eightkdata.phoebe.client.decoder;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
 import com.eightkdata.phoebe.common.MessageDecoder;
 import com.eightkdata.phoebe.common.message.AuthenticationMD5Password;
 import io.netty.buffer.ByteBuf;
@@ -30,16 +29,13 @@ import java.nio.charset.Charset;
  * Decoder for {@link AuthenticationMD5Password} messages.
  */
 @Immutable
-class AuthenticationMD5PasswordDecoder implements MessageDecoder<FeBeMessage> {
-
-    private static final int SALT_LENGTH = 4;
+class AuthenticationMD5PasswordDecoder implements MessageDecoder<AuthenticationMD5Password> {
 
     @Override
     public AuthenticationMD5Password decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {
-        byte[] salt = new byte[SALT_LENGTH];
+        byte[] salt = new byte[AuthenticationMD5Password.SALT_LENGTH];
         in.readBytes(salt);
-
-        return new AuthenticationMD5Password.Builder().setSalt(salt).build();
+        return new AuthenticationMD5Password(salt);
     }
 
 }
