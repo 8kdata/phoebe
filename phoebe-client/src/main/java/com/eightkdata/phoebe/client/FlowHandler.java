@@ -7,14 +7,14 @@ import io.netty.channel.Channel;
 import java.nio.charset.Charset;
 import java.util.Set;
 
-public abstract class MessageFlowHandler {
+public abstract class FlowHandler {
 
     /**
      * The set of message types that should be handled.
      */
     private final Set<FeBeMessageType> messageTypes;
 
-    protected MessageFlowHandler(Set<FeBeMessageType> messageTypes) {
+    protected FlowHandler(Set<FeBeMessageType> messageTypes) {
         this.messageTypes = messageTypes;
     }
 

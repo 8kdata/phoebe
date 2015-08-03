@@ -17,7 +17,7 @@
 
 package com.eightkdata.phoebe.client.api;
 
-import com.eightkdata.phoebe.client.MessageFlowHandler;
+import com.eightkdata.phoebe.client.FlowHandler;
 import com.eightkdata.phoebe.client.StartupFlowHandler;
 import com.eightkdata.phoebe.client.decoder.BeMessageDecoder;
 import com.eightkdata.phoebe.client.decoder.BeMessageProcessor;
@@ -42,7 +42,7 @@ public class PGSession {
     private final Channel channel;
     private final List<MessageListener> listeners = new CopyOnWriteArrayList<MessageListener>();
     // todo: use ConcurrentLinkedDeque once we switch to Java 1.7 or later
-    private final Deque<MessageFlowHandler> handlers = new LinkedBlockingDeque<MessageFlowHandler>();
+    private final Deque<FlowHandler> handlers = new LinkedBlockingDeque<FlowHandler>();
 
     public PGSession(Channel channel) {
         this.channel = checkNotNull(channel, "channel");

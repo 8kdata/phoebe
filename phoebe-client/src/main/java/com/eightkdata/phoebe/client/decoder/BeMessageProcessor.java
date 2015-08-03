@@ -18,7 +18,7 @@
 
 package com.eightkdata.phoebe.client.decoder;
 
-import com.eightkdata.phoebe.client.MessageFlowHandler;
+import com.eightkdata.phoebe.client.FlowHandler;
 import com.eightkdata.phoebe.common.FeBeMessage;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
@@ -36,16 +36,16 @@ public class BeMessageProcessor extends MessageToMessageDecoder<FeBeMessage> {
 
     private final Charset encoding;
 
-    private final Deque<MessageFlowHandler> handlers;
+    private final Deque<FlowHandler> handlers;
 
-    public BeMessageProcessor(Deque<MessageFlowHandler> handlers, Charset encoding) {
+    public BeMessageProcessor(Deque<FlowHandler> handlers, Charset encoding) {
         this.handlers = handlers;
         this.encoding = encoding;
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, FeBeMessage message, List<Object> out) throws Exception {
-        MessageFlowHandler handler = handlers.peekFirst();
+        FlowHandler handler = handlers.peekFirst();
         if (handler != null && handler.isHandled(message.getType())) {
             if (handler.handle(ctx.channel(), message, encoding)) {
                 out.add(message);

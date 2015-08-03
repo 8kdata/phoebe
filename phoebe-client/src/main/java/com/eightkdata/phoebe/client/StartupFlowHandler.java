@@ -16,7 +16,7 @@ import static com.eightkdata.phoebe.common.FeBeMessageType.*;
  *
  * @see <a href="http://www.postgresql.org/docs/9.4/static/protocol-flow.html#AEN102761">PostgreSQL Documentation §49.2.1</a>
  */
-public class StartupFlowHandler extends MessageFlowHandler {
+public class StartupFlowHandler extends FlowHandler {
 
     private static final Set<FeBeMessageType> STARTUP_FLOW_MESSAGES = EnumSet.of(
             AuthenticationCleartextPassword, AuthenticationGSS, AuthenticationGSSContinue, AuthenticationKerberosV5,
