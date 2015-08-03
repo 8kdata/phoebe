@@ -17,13 +17,10 @@
 
 package com.eightkdata.phoebe.client.api;
 
-import com.eightkdata.phoebe.common.message.Query;
 import com.eightkdata.phoebe.common.message.ReadyForQuery;
 import org.junit.Test;
 
-import static com.eightkdata.phoebe.common.FeBeMessageType.EmptyQueryResponse;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link PGSession}.

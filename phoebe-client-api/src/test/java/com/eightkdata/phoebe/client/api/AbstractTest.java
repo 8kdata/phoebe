@@ -17,8 +17,6 @@
 
 package com.eightkdata.phoebe.client.api;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
-import com.eightkdata.phoebe.common.FeBeMessageType;
 import net.jodah.concurrentunit.Waiter;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -56,16 +54,4 @@ public class AbstractTest {
         session = client.connect();
     }
 
-    void expect(final FeBeMessageType messageType) {
-        session.addListener(new MessageListener<FeBeMessage>(FeBeMessage.class) {
-            @Override
-            public void onMessage(FeBeMessage message) {
-                System.out.println(">>> " + message);
-                if (message.getType() == messageType) {
-                    waiter.assertTrue(true);
-                    waiter.resume();
-                }
-            }
-        });
-    }
 }

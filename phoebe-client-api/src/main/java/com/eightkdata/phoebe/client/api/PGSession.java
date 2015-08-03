@@ -24,14 +24,10 @@ import com.eightkdata.phoebe.client.decoder.BeMessageDecoder;
 import com.eightkdata.phoebe.client.decoder.BeMessageProcessor;
 import com.eightkdata.phoebe.client.encoder.FeMessageEncoder;
 import com.eightkdata.phoebe.client.encoder.FeMessageProcessor;
-import com.eightkdata.phoebe.common.FeBeMessage;
-import com.eightkdata.phoebe.common.message.StartupMessage;
 import io.netty.channel.Channel;
 
 import java.nio.charset.Charset;
 import java.util.Deque;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -40,8 +36,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * A session represents a useable connection to the database, it is used to send and receive messages.
  */
 public class PGSession {
+
     private final Channel channel;
-    private final List<MessageListener> listeners = new CopyOnWriteArrayList<MessageListener>();
+
     // todo: use ConcurrentLinkedDeque once we switch to Java 1.7 or later
     private final Deque<FlowHandler> handlers = new LinkedBlockingDeque<FlowHandler>();
 
@@ -53,8 +50,6 @@ public class PGSession {
         channel.pipeline()
                 .addLast("PGInboundMessageDecoder", new BeMessageDecoder(encoding))
                 .addLast("PGInboundMessageProcessor", new BeMessageProcessor(handlers, encoding))
-
-                .addLast("PGMessageBroadcaster", new MessageBroadcaster(listeners))
 
                 .addLast("PGOutboundMessageEncoder", new FeMessageEncoder(encoding))
                 .addLast("PGOutboundMessageProcessor", new FeMessageProcessor());
@@ -71,51 +66,4 @@ public class PGSession {
         command.writeTo(channel);
     }
 
-
-
-    public void start(String user, String database) {
-        start(user, database, Charset.forName("UTF-8"));
-    }
-
-    /**
-     * Send the start message to the server.
-     */
-    public void start(String user, String database, Charset encoding) {
-        initChannel(encoding);
-        StartupMessage message = StartupMessage.builder()
-                .user(user)
-                .database(database)
-                .clientEncoding(encoding)
-                .build();
-        channel.writeAndFlush(message);
-    }
-
-    public void send(FeBeMessage message) {
-        channel.writeAndFlush(message);
-    }
-
-    public void send(FeBeMessage... messages) {
-        FeBeMessage lastMessage = messages[messages.length - 1];
-        for (FeBeMessage message : messages) {
-            if (message == lastMessage) {
-                channel.writeAndFlush(message);
-            } else {
-                channel.write(message);
-            }
-        }
-    }
-
-    /**
-     * Adds a listener which will be notified of any messages passing over this session.
-     */
-    public void addListener(MessageListener listener) {
-//        listeners.add(listener);
-    }
-
-    /**
-     * Removes a previously added listener.
-     */
-    public void removeListener(MessageListener listener) {
-        listeners.remove(listener);
-    }
 }
