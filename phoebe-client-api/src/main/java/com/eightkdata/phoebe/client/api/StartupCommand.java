@@ -48,12 +48,15 @@ public class StartupCommand implements StartupFlowHandler.Callback {
         channel.writeAndFlush(message);
     }
 
+    @Override
     public void onParameterStatus(ParameterStatus message) {
     }
 
+    @Override
     public void onBackendKeyData(BackendKeyData message) {
     }
 
+    @Override
     public void onCompleted(ReadyForQuery message) {
     }
 
