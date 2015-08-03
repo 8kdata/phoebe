@@ -18,11 +18,12 @@
 package com.eightkdata.phoebe.client.api;
 
 import com.eightkdata.phoebe.common.message.Query;
+import com.eightkdata.phoebe.common.message.ReadyForQuery;
 import org.junit.Test;
 
 import static com.eightkdata.phoebe.common.FeBeMessageType.EmptyQueryResponse;
-import static com.eightkdata.phoebe.common.FeBeMessageType.ReadyForQuery;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link PGSession}.
@@ -36,30 +37,42 @@ public class PGSessionTest extends AbstractTest {
 
     @Test
     public void testStart() throws Throwable {
-        expect(ReadyForQuery);
-        session.start(props.getProperty("db.user"), props.getProperty("db.name"));
+        String username = props.getProperty("db.user");
+        String database = props.getProperty("db.name");
+        session.start(new StartupCommand(username, null, database, UTF8) {
+            @Override
+            public void onCompleted(ReadyForQuery message) {
+                waiter.assertTrue(true);
+                waiter.resume();
+            }
+        });
         waiter.await(5, SECONDS);
     }
 
     @Test
     public void testEmptyQuery() throws Throwable {
-        expect(ReadyForQuery);
-        session.start(props.getProperty("db.user"), props.getProperty("db.name"));
+        testStart();
+        session.query(new SimpleQueryCommand("") {
+            @Override
+            public void onCompleted() {
+                waiter.assertTrue(true);
+                waiter.resume();
+            }
+        });
         waiter.await(5, SECONDS);
-
-        expect(EmptyQueryResponse);
-        session.send(new Query(""));
-        waiter.await(5, SECONDS, 2);
     }
 
 
     @Test
     public void testSimpleQuery() throws Throwable {
-        expect(ReadyForQuery);
-        session.start(props.getProperty("db.user"), props.getProperty("db.name"));
-        waiter.await(5, SECONDS);
-
-        session.send(new Query("select current_timestamp;"));
+        testStart();
+        session.query(new SimpleQueryCommand("select current_timestamp;") {
+            @Override
+            public void onCompleted(ReadyForQuery message) {
+                waiter.assertTrue(true);
+                waiter.resume();
+            }
+        });
         waiter.await(5, SECONDS);
     }
 

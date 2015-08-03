@@ -18,6 +18,7 @@
 package com.eightkdata.phoebe.client.api;
 
 import com.eightkdata.phoebe.client.FlowHandler;
+import com.eightkdata.phoebe.client.SimpleQueryFlowHandler;
 import com.eightkdata.phoebe.client.StartupFlowHandler;
 import com.eightkdata.phoebe.client.decoder.BeMessageDecoder;
 import com.eightkdata.phoebe.client.decoder.BeMessageProcessor;
@@ -65,6 +66,13 @@ public class PGSession {
         command.writeTo(channel);
     }
 
+    public void query(SimpleQueryCommand command) {
+        handlers.addLast(new SimpleQueryFlowHandler(command));
+        command.writeTo(channel);
+    }
+
+
+
     public void start(String user, String database) {
         start(user, database, Charset.forName("UTF-8"));
     }
@@ -101,7 +109,7 @@ public class PGSession {
      * Adds a listener which will be notified of any messages passing over this session.
      */
     public void addListener(MessageListener listener) {
-        listeners.add(listener);
+//        listeners.add(listener);
     }
 
     /**
