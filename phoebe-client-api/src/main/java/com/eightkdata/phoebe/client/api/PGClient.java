@@ -50,18 +50,12 @@ public class PGClient {
     private final int port;
 
     private final EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
-    private final Charset encoding;
 
     public PGClient(@Nonnull String host, int port) {
-        this(host, port, null);
-    }
-
-    public PGClient(@Nonnull String host, int port, Charset encoding) {
         checkArgument(!isNullOrEmpty(host), "host cannot be null or empty");
         checkArgument(port > 0, "port cannot be less than 1");
         this.host = host;
         this.port = port;
-        this.encoding = encoding != null ? encoding : Charset.forName("UTF-8");
     }
 
     /**
@@ -85,7 +79,7 @@ public class PGClient {
                 .await(timeout, unit);
 
         Channel channel = channelRef.get();
-        return channel != null ? new PGSession(channel, listeners, encoding) : null;
+        return channel != null ? new PGSession(channel, listeners) : null;
     }
 
     /**
@@ -98,7 +92,7 @@ public class PGClient {
     }
 
 
-    private class ClientChannelHandlerInitializer extends ChannelInitializer<Channel> {
+    private static class ClientChannelHandlerInitializer extends ChannelInitializer<Channel> {
         private final AtomicReference<Channel> channelRef;
         private final List<MessageListener> listeners;
 
@@ -109,14 +103,6 @@ public class PGClient {
 
         @Override
         protected void initChannel(Channel channel) throws Exception {
-            channel.pipeline()
-                    .addLast("PGInboundMessageDecoder", new BeMessageDecoder(encoding))
-                    .addLast("PGInboundMessageProcessor", new BeMessageProcessor())
-
-                    .addLast("PGMessageBroadcaster", new MessageBroadcaster(listeners))
-
-                    .addLast("PGOutboundMessageEncoder", new FeMessageEncoder(encoding))
-                    .addLast("PGOutboundMessageProcessor", new FeMessageProcessor());
             channelRef.set(channel);
         }
     }

@@ -17,6 +17,10 @@
 
 package com.eightkdata.phoebe.client.api;
 
+import com.eightkdata.phoebe.client.decoder.BeMessageDecoder;
+import com.eightkdata.phoebe.client.decoder.BeMessageProcessor;
+import com.eightkdata.phoebe.client.encoder.FeMessageEncoder;
+import com.eightkdata.phoebe.client.encoder.FeMessageProcessor;
 import com.eightkdata.phoebe.common.FeBeMessage;
 import com.eightkdata.phoebe.common.message.StartupMessage;
 import io.netty.channel.Channel;
@@ -32,18 +36,32 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class PGSession {
     private final Channel channel;
     private final List<MessageListener> listeners;
-    private final Charset encoding;
 
-    public PGSession(Channel channel, List<MessageListener> listeners, Charset encoding) {
+    public PGSession(Channel channel, List<MessageListener> listeners) {
         this.listeners = listeners;
-        this.encoding = encoding;
         this.channel = checkNotNull(channel, "channel");
+    }
+
+    private void initChannel(Charset encoding) {
+        channel.pipeline()
+                .addLast("PGInboundMessageDecoder", new BeMessageDecoder(encoding))
+                .addLast("PGInboundMessageProcessor", new BeMessageProcessor())
+
+                .addLast("PGMessageBroadcaster", new MessageBroadcaster(listeners))
+
+                .addLast("PGOutboundMessageEncoder", new FeMessageEncoder(encoding))
+                .addLast("PGOutboundMessageProcessor", new FeMessageProcessor());
+    }
+
+    public void start(String user, String database) {
+        start(user, database, Charset.forName("UTF-8"));
     }
 
     /**
      * Send the start message to the server.
      */
-    public void start(String user, String database) {
+    public void start(String user, String database, Charset encoding) {
+        initChannel(encoding);
         StartupMessage message = StartupMessage.builder()
                 .user(user)
                 .database(database)
