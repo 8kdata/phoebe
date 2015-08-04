@@ -42,7 +42,7 @@ public interface Message {
      */
     int computePayloadLength(Charset encoding);
 
-    
+
     /**
      * A Decoder that can read a specific message type from an input buffer.
      */
