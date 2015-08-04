@@ -17,7 +17,7 @@
 
 package com.eightkdata.phoebe.client.decoder;
 
-import com.eightkdata.phoebe.common.MessageDecoder;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.message.ReadyForQuery;
 import io.netty.buffer.ByteBuf;
 
@@ -29,7 +29,7 @@ import java.nio.charset.Charset;
  * Decoder for {@link ReadyForQuery} messages.
  */
 @Immutable
-class ReadyForQueryDecoder implements MessageDecoder<ReadyForQuery> {
+class ReadyForQueryDecoder implements Message.Decoder<ReadyForQuery> {
 
     // todo: this can use 3 singleton instances of ReadyForQuery instead of creating a new instance each time
 

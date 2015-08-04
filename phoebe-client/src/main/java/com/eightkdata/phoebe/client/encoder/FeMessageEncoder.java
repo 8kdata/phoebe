@@ -6,7 +6,6 @@ package com.eightkdata.phoebe.client.encoder;
 
 import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
-import com.eightkdata.phoebe.common.MessageEncoder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -49,7 +48,7 @@ public class FeMessageEncoder extends MessageToByteEncoder<Message> {
         }
 
         // Payload
-        MessageEncoder encoder = FeMessageTypeEncoder.valueOf(messageType.name()).getEncoder();
+        Message.Encoder encoder = FeMessageTypeEncoder.valueOf(messageType.name()).getEncoder();
         if (encoder == null) {
             throw new UnsupportedOperationException(messageType + " Encoder");
         }

@@ -24,7 +24,7 @@
 package com.eightkdata.phoebe.client.encoder;
 
 import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.MessageEncoder;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.message.Query;
 import io.netty.buffer.ByteBuf;
 
@@ -36,7 +36,7 @@ import java.nio.charset.Charset;
  * An ecoder for {@link Query} messages.
  */
 @Immutable
-class QueryMessageEncoder implements MessageEncoder<Query> {
+class QueryMessageEncoder implements Message.Encoder<Query> {
 
     @Override
     public void encode(@Nonnull Query message, @Nonnull ByteBuf out, @Nonnull Charset encoding) {

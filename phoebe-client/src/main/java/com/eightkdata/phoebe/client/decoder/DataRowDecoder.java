@@ -23,7 +23,7 @@
 
 package com.eightkdata.phoebe.client.decoder;
 
-import com.eightkdata.phoebe.common.MessageDecoder;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.message.DataRow;
 import io.netty.buffer.ByteBuf;
 
@@ -37,7 +37,7 @@ import java.util.List;
  * Decoder for {@link DataRow} messages.
  */
 @Immutable
-class DataRowDecoder implements MessageDecoder<DataRow> {
+class DataRowDecoder implements Message.Decoder<DataRow> {
 
     @Override
     public DataRow decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {

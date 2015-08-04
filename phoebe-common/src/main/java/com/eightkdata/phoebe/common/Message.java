@@ -23,6 +23,9 @@
 
 package com.eightkdata.phoebe.common;
 
+import io.netty.buffer.ByteBuf;
+
+import javax.annotation.Nonnull;
 import java.nio.charset.Charset;
 
 /**
@@ -38,5 +41,38 @@ public interface Message {
      * @return the length, in bytes
      */
     int computePayloadLength(Charset encoding);
+
+    
+    /**
+     * A Decoder that can read a specific message type from an input buffer.
+     */
+    interface Decoder<T extends Message> {
+
+        /**
+         * Read a message from {@code in}.
+         *
+         * @param in the buffer to read from
+         * @param encoding the character set encoding to use
+         */
+        T decode(@Nonnull ByteBuf in, @Nonnull Charset encoding);
+
+    }
+
+
+    /**
+     * An encoder that can write a specific message type to an output buffer.
+     */
+    interface Encoder<T extends Message> {
+
+        /**
+         * Write {@code message} to {@code out}.
+         *
+         * @param message the message to encode
+         * @param out the buffer to write to
+         * @param encoding the character set to use when encoding strings
+         */
+        void encode(@Nonnull T message, @Nonnull ByteBuf out, @Nonnull Charset encoding);
+
+    }
 
 }

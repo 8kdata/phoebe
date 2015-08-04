@@ -1,7 +1,7 @@
 package com.eightkdata.phoebe.client.decoder;
 
 import com.eightkdata.phoebe.common.Decoders;
-import com.eightkdata.phoebe.common.MessageDecoder;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.message.ErrorResponse;
 import io.netty.buffer.ByteBuf;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Decoder for {@link ErrorResponse} messages.
  */
-public class ErrorResponseDecoder implements MessageDecoder<ErrorResponse> {
+public class ErrorResponseDecoder implements Message.Decoder<ErrorResponse> {
 
     @Override
     public ErrorResponse decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {

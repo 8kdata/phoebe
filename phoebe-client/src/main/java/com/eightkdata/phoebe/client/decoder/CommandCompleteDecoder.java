@@ -24,7 +24,7 @@
 package com.eightkdata.phoebe.client.decoder;
 
 import com.eightkdata.phoebe.common.Decoders;
-import com.eightkdata.phoebe.common.MessageDecoder;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.message.CommandComplete;
 import io.netty.buffer.ByteBuf;
 
@@ -36,7 +36,7 @@ import java.nio.charset.Charset;
  * Decoder for {@link CommandComplete} messages.
  */
 @Immutable
-class CommandCompleteDecoder implements MessageDecoder<CommandComplete> {
+class CommandCompleteDecoder implements Message.Decoder<CommandComplete> {
 
     @Override
     public CommandComplete decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {

@@ -17,7 +17,7 @@
 
 package com.eightkdata.phoebe.client.decoder;
 
-import com.eightkdata.phoebe.common.MessageDecoder;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.message.BackendKeyData;
 import io.netty.buffer.ByteBuf;
 
@@ -29,7 +29,7 @@ import java.nio.charset.Charset;
  * Decoder for {@link BackendKeyData} messages.
  */
 @Immutable
-class BackendKeyDataDecoder implements MessageDecoder<BackendKeyData> {
+class BackendKeyDataDecoder implements Message.Decoder<BackendKeyData> {
 
     @Override
     public BackendKeyData decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {

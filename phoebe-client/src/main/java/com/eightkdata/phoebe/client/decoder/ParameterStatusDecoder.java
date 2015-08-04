@@ -17,7 +17,7 @@
 
 package com.eightkdata.phoebe.client.decoder;
 
-import com.eightkdata.phoebe.common.MessageDecoder;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.message.ParameterStatus;
 import io.netty.buffer.ByteBuf;
 
@@ -28,7 +28,7 @@ import java.nio.charset.Charset;
 import static com.eightkdata.phoebe.common.Decoders.readString;
 
 @Immutable
-class ParameterStatusDecoder implements MessageDecoder<ParameterStatus> {
+class ParameterStatusDecoder implements Message.Decoder<ParameterStatus> {
 
     @Override
     public ParameterStatus decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {

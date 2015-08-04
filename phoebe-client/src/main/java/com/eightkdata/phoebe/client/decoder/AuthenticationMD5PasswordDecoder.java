@@ -17,7 +17,7 @@
 
 package com.eightkdata.phoebe.client.decoder;
 
-import com.eightkdata.phoebe.common.MessageDecoder;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.message.AuthenticationMD5Password;
 import io.netty.buffer.ByteBuf;
 
@@ -31,7 +31,7 @@ import static com.eightkdata.phoebe.common.message.AuthenticationMD5Password.SAL
  * Decoder for {@link AuthenticationMD5Password} messages.
  */
 @Immutable
-class AuthenticationMD5PasswordDecoder implements MessageDecoder<AuthenticationMD5Password> {
+class AuthenticationMD5PasswordDecoder implements Message.Decoder<AuthenticationMD5Password> {
 
     @Override
     public AuthenticationMD5Password decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {

@@ -18,10 +18,7 @@
 
 package com.eightkdata.phoebe.client.decoder;
 
-import com.eightkdata.phoebe.common.BeMessageType;
-import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.FeBeMessageType;
-import com.eightkdata.phoebe.common.MessageDecoder;
+import com.eightkdata.phoebe.common.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -90,7 +87,7 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
             return;
         }
 
-        MessageDecoder<?> decoder = BeMessageTypeDecoder.valueOf(beMessageType.name()).getDecoder();
+        Message.Decoder<?> decoder = BeMessageTypeDecoder.valueOf(beMessageType.name()).getDecoder();
         if (decoder == null) {
             throw new UnsupportedOperationException(messageType + "Decoder");
         }

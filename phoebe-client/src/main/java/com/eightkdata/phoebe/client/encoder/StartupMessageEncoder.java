@@ -24,7 +24,7 @@
 
 package com.eightkdata.phoebe.client.encoder;
 
-import com.eightkdata.phoebe.common.MessageEncoder;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.message.StartupMessage;
 import io.netty.buffer.ByteBuf;
 
@@ -39,7 +39,7 @@ import static com.eightkdata.phoebe.common.Encoders.writeString;
  * Encoder for {@link StartupMessage}s.
  */
 @Immutable
-class StartupMessageEncoder implements MessageEncoder<StartupMessage> {
+class StartupMessageEncoder implements Message.Encoder<StartupMessage> {
 
     @Override
     public void encode(@Nonnull StartupMessage message, @Nonnull ByteBuf out, @Nonnull Charset encoding) {

@@ -24,7 +24,7 @@
 package com.eightkdata.phoebe.client.decoder;
 
 import com.eightkdata.phoebe.common.Decoders;
-import com.eightkdata.phoebe.common.MessageDecoder;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.message.RowDescription;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.CorruptedFrameException;
@@ -39,7 +39,7 @@ import java.util.List;
  * Decoder for {@link RowDescription} messages.
  */
 @Immutable
-class RowDescriptionDecoder implements MessageDecoder<RowDescription> {
+class RowDescriptionDecoder implements Message.Decoder<RowDescription> {
 
     @Override
     public RowDescription decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {
