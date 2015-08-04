@@ -1,13 +1,13 @@
 package com.eightkdata.phoebe.common.message;
 
 import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 import com.google.common.base.MoreObjects;
 
 import java.nio.charset.Charset;
 
-public class PasswordMessage implements FeBeMessage {
+public class PasswordMessage implements Message {
 
     private final Boolean encrypted;
 

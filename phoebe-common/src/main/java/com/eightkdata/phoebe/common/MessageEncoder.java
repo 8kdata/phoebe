@@ -25,7 +25,7 @@ import java.nio.charset.Charset;
 /**
  * An encoder that can write a specific message type to an output buffer.
  */
-public interface MessageEncoder<T extends FeBeMessage> {
+public interface MessageEncoder<T extends Message> {
 
     /**
      * Write {@code message} to {@code out}.

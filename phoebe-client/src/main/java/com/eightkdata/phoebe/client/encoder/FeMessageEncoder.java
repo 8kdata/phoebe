@@ -4,7 +4,7 @@
 
 package com.eightkdata.phoebe.client.encoder;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 import com.eightkdata.phoebe.common.MessageEncoder;
 import io.netty.buffer.ByteBuf;
@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
 @Immutable
-public class FeMessageEncoder extends MessageToByteEncoder<FeBeMessage> {
+public class FeMessageEncoder extends MessageToByteEncoder<Message> {
     private final Charset encoding;
 
     public FeMessageEncoder(Charset encoding) {
@@ -28,7 +28,7 @@ public class FeMessageEncoder extends MessageToByteEncoder<FeBeMessage> {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, FeBeMessage message, ByteBuf out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, Message message, ByteBuf out) throws Exception {
         FeBeMessageType messageType = message.getType();
         int payloadSize = message.computePayloadLength(encoding);
         int totalSize = messageType.getHeaderLength() + payloadSize;

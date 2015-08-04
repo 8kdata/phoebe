@@ -32,7 +32,7 @@ import java.nio.charset.Charset;
 /**
  * A Decoder that can read a specific message type from an input buffer.
  */
-public interface MessageDecoder<T extends FeBeMessage> {
+public interface MessageDecoder<T extends Message> {
 
     /**
      * Read a message from {@code in}.

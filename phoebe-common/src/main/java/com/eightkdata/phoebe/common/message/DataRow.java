@@ -23,7 +23,7 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 import io.netty.buffer.ByteBuf;
 
@@ -38,7 +38,7 @@ import java.util.List;
  * way, note also that the byte data is unretained, and so the field data
  * should not be accessed once it has passed through the pipeline.
  */
-public class DataRow implements FeBeMessage {
+public class DataRow implements Message {
 
     /**
      * Special marker for {@code null} field values.

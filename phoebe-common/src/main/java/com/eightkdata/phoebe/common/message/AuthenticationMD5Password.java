@@ -18,7 +18,7 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 
 import javax.annotation.Nonnull;
@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
 @Immutable
-public final class AuthenticationMD5Password implements FeBeMessage {
+public final class AuthenticationMD5Password implements Message {
     public static final int SALT_LENGTH = 4;
 
     private final byte[] salt;

@@ -85,7 +85,7 @@ public enum FeBeMessageType {
     private final Integer subtype;
     private final int headerLength;
     private final boolean hasPayload;
-    private final FeBeMessage headerOnlyInstance;
+    private final Message headerOnlyInstance;
 
     FeBeMessageType(Character type, Integer length, Integer subtype) {
         Preconditions.checkArgument(null == length || length > 0, "Illegal message length");
@@ -168,7 +168,7 @@ public enum FeBeMessageType {
     /**
      * Get the shared instance for header-only messages.
      */
-    public FeBeMessage getHeaderOnlyInstance() {
+    public Message getHeaderOnlyInstance() {
         return headerOnlyInstance;
     }
 }

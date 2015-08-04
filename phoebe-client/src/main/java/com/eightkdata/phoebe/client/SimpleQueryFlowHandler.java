@@ -1,6 +1,6 @@
 package com.eightkdata.phoebe.client;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 import com.eightkdata.phoebe.common.message.DataRow;
 import com.eightkdata.phoebe.common.message.ErrorResponse;
@@ -32,7 +32,7 @@ public class SimpleQueryFlowHandler extends FlowHandler {
     }
 
     @Override
-    public boolean handle(Channel channel, FeBeMessage message, Charset encoding) {
+    public boolean handle(Channel channel, Message message, Charset encoding) {
         switch (message.getType()) {
             case CommandComplete:
                 onCommandComplete();

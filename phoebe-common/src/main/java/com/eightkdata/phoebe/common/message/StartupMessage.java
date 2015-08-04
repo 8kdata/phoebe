@@ -24,7 +24,7 @@
 package com.eightkdata.phoebe.common.message;
 
 import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 
 import javax.annotation.Nonnull;
@@ -40,7 +40,7 @@ import static com.google.common.base.Preconditions.checkState;
  * The startup message that is sent to establish a new connection to a PostgreSQL server.
  */
 @Immutable
-public class StartupMessage implements FeBeMessage {
+public class StartupMessage implements Message {
 
     /**
      * A map of Java character set names to Postgres names.

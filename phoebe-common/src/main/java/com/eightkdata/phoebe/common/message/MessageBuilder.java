@@ -18,13 +18,13 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 
 /**
  * Created: 26/07/15
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
-public interface MessageBuilder<T extends FeBeMessage> {
+public interface MessageBuilder<T extends Message> {
     T build();
 }

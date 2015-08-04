@@ -25,8 +25,8 @@ import java.nio.charset.Charset;
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
-public abstract class BaseFixedLengthFeBeMessage extends BaseFeBeMessage {
-    public BaseFixedLengthFeBeMessage(FeBeMessageType febeMessageType) {
+public abstract class BaseFixedLengthMessage extends BaseMessage {
+    public BaseFixedLengthMessage(FeBeMessageType febeMessageType) {
         super(febeMessageType);
     }
 

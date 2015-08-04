@@ -24,7 +24,7 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 
 import javax.annotation.concurrent.Immutable;
@@ -36,7 +36,7 @@ import java.nio.charset.Charset;
  * Instances of this class are immutable and may be shared and reused across threads.
  */
 @Immutable
-public class HeaderOnlyMessage implements FeBeMessage {
+public class HeaderOnlyMessage implements Message {
 
     private final FeBeMessageType messageType;
 

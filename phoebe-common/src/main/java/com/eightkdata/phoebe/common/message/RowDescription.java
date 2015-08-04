@@ -24,7 +24,7 @@
 package com.eightkdata.phoebe.common.message;
 
 import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 
 import javax.annotation.concurrent.Immutable;
@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Immutable
-public class RowDescription implements FeBeMessage {
+public class RowDescription implements Message {
 
     private final List<Field> fields;
 

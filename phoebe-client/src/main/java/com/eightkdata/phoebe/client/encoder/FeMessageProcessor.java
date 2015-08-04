@@ -23,7 +23,7 @@
 
 package com.eightkdata.phoebe.client.encoder;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 
@@ -34,10 +34,10 @@ import java.util.List;
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
-public class FeMessageProcessor extends MessageToMessageEncoder<FeBeMessage> {
+public class FeMessageProcessor extends MessageToMessageEncoder<Message> {
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, FeBeMessage message, List<Object> out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, Message message, List<Object> out) throws Exception {
         System.out.println("<<< " + message);
         out.add(message);
     }

@@ -17,7 +17,7 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 
 import javax.annotation.concurrent.Immutable;
@@ -27,7 +27,7 @@ import java.nio.charset.Charset;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @Immutable
-public final class ParameterStatus implements FeBeMessage {
+public final class ParameterStatus implements Message {
 
     private final String name;
     private final String value;

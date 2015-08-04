@@ -24,14 +24,14 @@
 package com.eightkdata.phoebe.common.message;
 
 import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
 @Immutable
-public class CommandComplete implements FeBeMessage {
+public class CommandComplete implements Message {
 
     private final String commandTag;
 

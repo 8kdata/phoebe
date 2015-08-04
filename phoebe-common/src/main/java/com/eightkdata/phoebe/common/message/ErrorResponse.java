@@ -1,14 +1,14 @@
 package com.eightkdata.phoebe.common.message;
 
 import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
 
-public class ErrorResponse implements FeBeMessage {
+public class ErrorResponse implements Message {
 
     // todo: the field codes should probably use an enum
 

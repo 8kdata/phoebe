@@ -46,7 +46,7 @@ public enum FeMessageType {
     ;
 
     private final FeBeMessageType febeMessageType;
-    private final FeBeMessage headerOnlyInstance;
+    private final Message headerOnlyInstance;
 
     FeMessageType() {
         this.febeMessageType = FeBeMessageType.valueOf(name());

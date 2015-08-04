@@ -18,7 +18,7 @@
 
 package com.eightkdata.phoebe.client.encoder;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 import com.eightkdata.phoebe.common.FeMessageType;
 import com.eightkdata.phoebe.common.MessageEncoder;
@@ -51,9 +51,9 @@ public enum FeMessageTypeEncoder {
     ;
 
     private final FeMessageType feMessageType;
-    private final MessageEncoder<? extends FeBeMessage> decoder;
+    private final MessageEncoder<? extends Message> decoder;
 
-    FeMessageTypeEncoder(@Nullable MessageEncoder<? extends FeBeMessage> decoder) {
+    FeMessageTypeEncoder(@Nullable MessageEncoder<? extends Message> decoder) {
         this.feMessageType = FeMessageType.valueOf(name());
         this.decoder = decoder;
     }
@@ -62,7 +62,7 @@ public enum FeMessageTypeEncoder {
         return feMessageType.getFeBeMessageType();
     }
 
-    public MessageEncoder<? extends FeBeMessage> getEncoder() {
+    public MessageEncoder<? extends Message> getEncoder() {
         return decoder;
     }
 }

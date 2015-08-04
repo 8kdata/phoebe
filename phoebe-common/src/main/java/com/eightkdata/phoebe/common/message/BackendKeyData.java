@@ -17,12 +17,12 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 
 import java.nio.charset.Charset;
 
-public final class BackendKeyData implements FeBeMessage {
+public final class BackendKeyData implements Message {
 
     private final int processId;
 

@@ -1,6 +1,6 @@
 package com.eightkdata.phoebe.client;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 import io.netty.channel.Channel;
 
@@ -36,6 +36,6 @@ public abstract class FlowHandler {
      * @param encoding the current encoding.
      * @return {@code true} to keep propgating the message along the pipeline, {@code false} to consume it.
      */
-    public abstract boolean handle(Channel channel, FeBeMessage message, Charset encoding);
+    public abstract boolean handle(Channel channel, Message message, Charset encoding);
 
 }

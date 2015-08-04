@@ -25,10 +25,10 @@ import javax.annotation.Nonnull;
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
-public abstract class BaseFeBeMessage implements FeBeMessage {
+public abstract class BaseMessage implements Message {
     private final FeBeMessageType febeMessageType;
 
-    public BaseFeBeMessage(FeBeMessageType febeMessageType) {
+    public BaseMessage(FeBeMessageType febeMessageType) {
         this.febeMessageType = febeMessageType;
     }
 

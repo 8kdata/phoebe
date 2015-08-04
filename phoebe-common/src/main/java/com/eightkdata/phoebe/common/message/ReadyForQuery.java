@@ -17,14 +17,14 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.FeBeMessage;
+import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
 @Immutable
-public class ReadyForQuery implements FeBeMessage {
+public class ReadyForQuery implements Message {
 
     private final Status status;
 

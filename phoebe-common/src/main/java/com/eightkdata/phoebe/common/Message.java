@@ -28,7 +28,7 @@ import java.nio.charset.Charset;
 /**
  * Common interface for all messages.
  */
-public interface FeBeMessage {
+public interface Message {
 
     FeBeMessageType getType();
 
