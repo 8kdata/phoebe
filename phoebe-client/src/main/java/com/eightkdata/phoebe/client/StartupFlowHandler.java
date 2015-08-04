@@ -47,6 +47,7 @@ public class StartupFlowHandler extends FlowHandler {
                 onAuthenticationKerberosV5();
                 break;
             case AuthenticationMD5Password:
+                assert message instanceof AuthenticationMD5Password;
                 onAuthenticationMD5Password(channel, (AuthenticationMD5Password) message, encoding);
                 break;
             case AuthenticationOk:
@@ -59,15 +60,19 @@ public class StartupFlowHandler extends FlowHandler {
                 onAuthenticationSSPI();
                 break;
             case BackendKeyData:
+                assert message instanceof BackendKeyData;
                 callback.onBackendKeyData((BackendKeyData) message);
                 break;
             case ErrorResponse:
+                assert message instanceof ErrorResponse;
                 callback.onFailed((ErrorResponse) message);
                 break;
             case ParameterStatus:
+                assert message instanceof ParameterStatus;
                 callback.onParameterStatus((ParameterStatus) message);
                 break;
             case ReadyForQuery:
+                assert message instanceof ReadyForQuery;
                 callback.onCompleted((ReadyForQuery) message);
                 break;
             default:

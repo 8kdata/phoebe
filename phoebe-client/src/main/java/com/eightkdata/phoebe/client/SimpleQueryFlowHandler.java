@@ -44,12 +44,14 @@ public class SimpleQueryFlowHandler extends FlowHandler {
                 onCopyOutResponse();
                 break;
             case DataRow:
+                assert message instanceof DataRow;
                 onDataRow((DataRow) message);
                 break;
             case EmptyQueryResponse:
                 callback.onCompleted();
                 break;
             case ErrorResponse:
+                assert message instanceof ErrorResponse;
                 callback.onFailed((ErrorResponse) message);
                 break;
             case NoticeResponse:
@@ -59,6 +61,7 @@ public class SimpleQueryFlowHandler extends FlowHandler {
                 onRowDescription();
                 break;
             case ReadyForQuery:
+                assert message instanceof ReadyForQuery;
                 callback.onCompleted((ReadyForQuery) message);
                 break;
             default:
