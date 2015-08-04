@@ -14,8 +14,7 @@
 
     <groupId>com.8kdata.phoebe</groupId>
     <artifactId>phoebe-common</artifactId>
-
-    <name>Phoebe common</name>
+    <name>Phoebe Common</name>
 
     <dependencies>
         <dependency>
@@ -26,10 +25,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>annotations</artifactId>
+            <version>${guava.version}</version>
         </dependency>
     </dependencies>
 
