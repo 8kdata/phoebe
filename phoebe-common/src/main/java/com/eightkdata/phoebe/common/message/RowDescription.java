@@ -35,13 +35,13 @@ import java.util.List;
 @Immutable
 public class RowDescription implements Message {
 
-    private final List<Field> fields;
+    private final List<FieldDescription> fields;
 
-    public RowDescription(List<Field> fields) {
+    public RowDescription(List<FieldDescription> fields) {
         this.fields = Collections.unmodifiableList(fields);
     }
 
-    public List<Field> getFields() {
+    public List<FieldDescription> getFields() {
         return fields;
     }
 
@@ -53,8 +53,8 @@ public class RowDescription implements Message {
     @Override
     public int computePayloadLength(Charset encoding) {
         int length = 4; // number of fields
-        for (Field field : fields) {
-            length += Encoders.stringLength(field.name, encoding);
+        for (FieldDescription field : fields) {
+            length += Encoders.stringLength(field.getName(), encoding);
             length += 18; // non-name field data
         }
         return length;
@@ -64,60 +64,9 @@ public class RowDescription implements Message {
     public String toString() {
         StringBuilder builder = new StringBuilder(16 + fields.size() * 16);
         builder.append("RowDescription(");
-        for (Field field : fields) { builder.append(field.name).append(","); }
+        for (FieldDescription field : fields) { builder.append(field.getName()).append(","); }
         builder.setLength(builder.length() - 1);
         return builder.append(")").toString();
     }
 
-    public static class Field {
-        private final String name;
-        private final int tableId;
-        private final short columnId;
-        private final int typeId;
-        private final short typeSize;
-        private final int typeModifier;
-        private final Format format;
-
-        public Field(String name, int tableId, short columnId, int typeId, short typeSize, int typeModifier, Format format) {
-            this.name = name;
-            this.tableId = tableId;
-            this.columnId = columnId;
-            this.typeId = typeId;
-            this.typeSize = typeSize;
-            this.typeModifier = typeModifier;
-            this.format = format;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public int getTableId() {
-            return tableId;
-        }
-
-        public short getColumnId() {
-            return columnId;
-        }
-
-        public int getTypeId() {
-            return typeId;
-        }
-
-        public short getTypeSize() {
-            return typeSize;
-        }
-
-        public int getTypeModifier() {
-            return typeModifier;
-        }
-
-        public Format getFormat() {
-            return format;
-        }
-    }
-
-    public enum Format {
-        TEXT, BINARY
-    }
 }

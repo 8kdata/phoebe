@@ -25,7 +25,9 @@ package com.eightkdata.phoebe.client.decoder;
 
 import com.eightkdata.phoebe.common.Decoders;
 import com.eightkdata.phoebe.common.Message;
+import com.eightkdata.phoebe.common.message.FieldDescription;
 import com.eightkdata.phoebe.common.message.RowDescription;
+import com.eightkdata.phoebe.common.type.TypeFormat;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.CorruptedFrameException;
 
@@ -44,28 +46,28 @@ class RowDescriptionDecoder implements Message.Decoder<RowDescription> {
     @Override
     public RowDescription decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {
         int numFields = in.readShort();
-        List<RowDescription.Field> fields = new ArrayList<RowDescription.Field>(numFields);
+        List<FieldDescription> fields = new ArrayList<FieldDescription>(numFields);
         for (int i = 0; i < numFields; ++i) {
             fields.add(decodeField(in, encoding));
         }
         return new RowDescription(fields);
     }
 
-    private RowDescription.Field decodeField(ByteBuf in, Charset encoding) {
+    private FieldDescription decodeField(ByteBuf in, Charset encoding) {
         String name = Decoders.readString(in, encoding);
         int tableId = in.readInt();
         short columnId = in.readShort();
         int typeId = in.readInt();
         short typeSize = in.readShort();
         int typeModifier = in.readInt();
-        RowDescription.Format format = decodeFormat(in.readShort());
-        return new RowDescription.Field(name, tableId, columnId, typeId, typeSize, typeModifier, format);
+        TypeFormat format = decodeFormat(in.readShort());
+        return new FieldDescription(name, tableId, columnId, typeId, typeSize, typeModifier, format);
     }
 
-    private RowDescription.Format decodeFormat(short formatCode) {
+    private TypeFormat decodeFormat(short formatCode) {
         switch (formatCode) {
-            case 0: return RowDescription.Format.TEXT;
-            case 1: return RowDescription.Format.BINARY;
+            case 0: return TypeFormat.TEXT;
+            case 1: return TypeFormat.BINARY;
             default: throw new CorruptedFrameException("unknown field format code: " + formatCode);
         }
     }
