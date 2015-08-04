@@ -19,9 +19,9 @@
 package com.eightkdata.phoebe.client.decoder;
 
 import com.eightkdata.phoebe.common.BeMessageType;
+import com.eightkdata.phoebe.common.Encoders;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 import com.eightkdata.phoebe.common.MessageDecoder;
-import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -60,11 +60,11 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
         // Find exact type, checking subtype, if needed (only for auth messages)
         BeMessageType beMessageType;
         if (type == FeBeMessageType.AUTHENTICATION_TYPE) {
-            if(in.readableBytes() < Ints.BYTES) {
+            if(in.readableBytes() < Encoders.intLength()) {
                 return;
             }
             int subtype = in.readInt();
-            headerLength += Ints.BYTES;
+            headerLength += Encoders.intLength();
             beMessageType = BeMessageType.getAuthMessageBySubtype(subtype);
         } else {
             beMessageType = BeMessageType.getNonAuthMessageByType(type);

@@ -37,6 +37,37 @@ public class Encoders {
         buf.writeBytes(s.getBytes(encoding)).writeByte(0);
     }
 
+    // message field sizes, these may seem a bit superfluous but they match the data types described in
+    // http://www.postgresql.org/docs/9.4/static/protocol-message-types.html#PROTOCOL-MESSAGE-TYPES
+
+    /**
+     * The size of an 32-bit integer.
+     * @return the size in bytes
+     */
+    public static int intLength() {
+        return 4;
+    }
+
+    /**
+     * The size of an {@code n}-bit integer.
+     * @param n the integer size in bits
+     * @return the size in bytes
+     */
+    public static int intLength(int n) {
+        return n / 8;
+    }
+
+    /**
+     * The size of an array of {@code k} {@code n}-bit integers
+     * @param n the integer size in bits
+     * @param k the number of integers in the array
+     * @return the size in bytes
+     */
+    public static int intsLength(int n, int k) {
+        return (n / 8) * k;
+
+    }
+
     public static int stringLength(@Nonnull String s, @Nonnull Charset encoding) {
         return s.getBytes(encoding).length + 1;
     }
