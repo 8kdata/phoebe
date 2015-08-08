@@ -15,25 +15,31 @@
  *
  */
 
+
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.Message;
+import com.eightkdata.phoebe.common.BaseMessage;
+import com.eightkdata.phoebe.common.Encoders;
 import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.google.common.base.MoreObjects;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-
 import java.nio.charset.Charset;
 
+import static com.eightkdata.phoebe.common.util.Preconditions.checkTextNotNullNotEmpty;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
+ */
 @Immutable
-public final class ParameterStatus implements Message {
-
+public final class ParameterStatus extends BaseMessage {
     private final String name;
     private final String value;
 
-    public ParameterStatus(String name, String value) {
-        this.name = checkNotNull(name, "name");
+    public ParameterStatus(@Nonnull String name, @Nonnull String value) {
+        this.name = checkTextNotNullNotEmpty(name, "name");
         this.value = checkNotNull(value, "value");
     }
 
@@ -44,7 +50,7 @@ public final class ParameterStatus implements Message {
 
     @Override
     public int computePayloadLength(Charset encoding) {
-        return 0;
+        return Encoders.stringLength(name, encoding) + Encoders.stringLength(value, encoding);
     }
 
     public String getName() {
@@ -56,7 +62,8 @@ public final class ParameterStatus implements Message {
     }
 
     @Override
-    public String toString() {
-        return "ParameterStatus(" + name + "=" + value + ")";
+    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
+        toStringHelper.add("name", name);
+        toStringHelper.add("value", value);
     }
 }

@@ -21,22 +21,30 @@
  * maintenance, support, updates, enhancements, or modifications.
  */
 
+
 package com.eightkdata.phoebe.common.message;
 
+import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.google.common.base.MoreObjects;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
-@Immutable
-public class CommandComplete implements Message {
+import static com.eightkdata.phoebe.common.util.Preconditions.checkTextNotNullNotEmpty;
 
+
+/**
+ * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
+ */
+@Immutable
+public class CommandComplete extends BaseMessage {
     private final String commandTag;
 
-    public CommandComplete(String commandTag) {
-        this.commandTag = commandTag;
+    public CommandComplete(@Nonnull String commandTag) {
+        this.commandTag = checkTextNotNullNotEmpty(commandTag, "commandTag");
     }
 
     public String getCommandTag() {
@@ -54,8 +62,7 @@ public class CommandComplete implements Message {
     }
 
     @Override
-    public String toString() {
-        return "CommandComplete(" + commandTag + ")";
+    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
+        toStringHelper.add("commandTag", commandTag);
     }
-
 }

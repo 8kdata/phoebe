@@ -21,20 +21,29 @@
  * maintenance, support, updates, enhancements, or modifications.
  */
 
+
 package com.eightkdata.phoebe.common.message;
 
+import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.google.common.base.MoreObjects;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
-public class Query implements Message {
+import static com.eightkdata.phoebe.common.util.Preconditions.checkTextNotNullNotEmpty;
 
+/**
+ * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
+ */
+@Immutable
+public class Query extends BaseMessage {
     private final String query;
 
-    public Query(String query) {
-        this.query = query;
+    public Query(@Nonnull String query) {
+        this.query = checkTextNotNullNotEmpty(query, "query");
     }
 
     /**
@@ -56,7 +65,7 @@ public class Query implements Message {
     }
 
     @Override
-    public String toString() {
-        return "Query(" + query + ")";
+    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
+        toStringHelper.add("query", query);
     }
 }

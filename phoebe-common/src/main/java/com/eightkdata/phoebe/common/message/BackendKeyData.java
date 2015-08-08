@@ -15,17 +15,21 @@
  *
  */
 
+
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.Message;
+import com.eightkdata.phoebe.common.BaseFixedLengthMessage;
 import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.google.common.base.MoreObjects;
 
-import java.nio.charset.Charset;
+import javax.annotation.concurrent.Immutable;
 
-public final class BackendKeyData implements Message {
-
+/**
+ * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
+ */
+@Immutable
+public final class BackendKeyData extends BaseFixedLengthMessage {
     private final int processId;
-
     private final int secretKey;
 
     public BackendKeyData(int processId, int secretKey) {
@@ -47,13 +51,8 @@ public final class BackendKeyData implements Message {
     }
 
     @Override
-    public int computePayloadLength(Charset encoding) {
-        return 8; // 2 ints, 4 bytes each
+    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
+        toStringHelper.add("processId", processId);
+        toStringHelper.add("secretKey", secretKey);
     }
-
-    @Override
-    public String toString() {
-        return "BackendKeyData(processId=" + processId + ",secretKey=" + secretKey + ")";
-    }
-
 }

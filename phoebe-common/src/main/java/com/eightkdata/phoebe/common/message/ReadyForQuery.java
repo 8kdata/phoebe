@@ -15,21 +15,28 @@
  *
  */
 
+
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.Message;
+import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.google.common.base.MoreObjects;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
-@Immutable
-public class ReadyForQuery implements Message {
+import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
+ */
+@Immutable
+public class ReadyForQuery extends BaseMessage {
     private final Status status;
 
-    public ReadyForQuery(Status status) {
-        this.status = status;
+    public ReadyForQuery(@Nonnull Status status) {
+        this.status = checkNotNull(status);
     }
 
     public Status getStatus() {
@@ -43,28 +50,33 @@ public class ReadyForQuery implements Message {
 
     @Override
     public int computePayloadLength(Charset encoding) {
-        return 1; // 1 status code
+        return Byte.SIZE / 8;   // 1 byte = status code
     }
 
     @Override
-    public String toString() {
-        return "ReadyForQuery(" + status + ")";
+    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
+        toStringHelper.add("status", status.name());
     }
 
     public enum Status {
-        IDLE('I'), TRANSACTION('T'), ERROR('E');
+        IDLE('I'),
+        TRANSACTION('T'),
+        ERROR('E');
+
         final byte code;
+
         Status(int code) {
             this.code = (byte) code;
         }
+
         public static Status fromByte(byte b) {
             switch (b) {
                 case 'I': return IDLE;
                 case 'T': return TRANSACTION;
                 case 'E': return ERROR;
             }
-            throw new IllegalArgumentException("unknown status code: " + ((char) b));
+
+            throw new IllegalArgumentException("unknown status code: '" + ((char) b) + "'");
         }
     }
-
 }

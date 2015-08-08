@@ -21,27 +21,33 @@
  * maintenance, support, updates, enhancements, or modifications.
  */
 
+
 package com.eightkdata.phoebe.common.message;
 
+import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.google.common.base.MoreObjects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-
+import static com.eightkdata.phoebe.common.util.Preconditions.checkTextNotNullNotEmpty;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
  * The startup message that is sent to establish a new connection to a PostgreSQL server.
+ *
+ * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
  */
 @Immutable
-public class StartupMessage implements Message {
-
+public class StartupMessage extends BaseMessage {
     /**
      * A map of Java character set names to Postgres names.
      */
@@ -79,29 +85,24 @@ public class StartupMessage implements Message {
 
     @Override
     public int computePayloadLength(Charset encoding) {
-        int length = 1;     // end '0' byte
+        int length = Byte.SIZE / 8;     // end '0' byte
         for (Map.Entry<String,String> entry : parameters.entrySet()) {
             length += Encoders.stringLength(entry.getKey(), encoding);
             length += Encoders.stringLength(entry.getValue(), encoding);
         }
+
         return length;
     }
 
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder(parameters.size() * 16 + 16);
-        sb.append("StartupMessage(");
+    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
         for (Map.Entry<String, String> param : parameters.entrySet()) {
-            sb.append(param.getKey()).append('=').append(param.getValue()).append(", ");
+            toStringHelper.add(param.getKey(), param.getValue());
         }
-        sb.setLength(sb.length() - 2);
-        return sb.append(')').toString();
     }
 
     public static class Builder implements MessageBuilder<StartupMessage> {
         private final Map<String,String> parameters = new LinkedHashMap<String, String>();
-
-        Builder() {}
 
         public Builder user(@Nonnull String user) {
             return parameter("user", user);
@@ -116,15 +117,18 @@ public class StartupMessage implements Message {
             // what I have here and in MD5 works for the cases that I have tested but it probably
             // isn't a comprehensive solution. Some discussion about this issue on the lists here
             // http://www.postgresql.org/message-id/20081223212414.GD3894@merkur.hilbert.loc
+
             String pgCharsetName = pgCharsetNames.get(encoding.name());
             checkArgument(pgCharsetName != null, "unsupported client encoding: %s", encoding);
+
             return parameter("client_encoding", pgCharsetName);
         }
 
         public Builder parameter(@Nonnull String name, @Nonnull String value) {
-            checkArgument(name != null && !name.isEmpty(), "parameter name cannot be null or empty");
-            checkArgument(value != null && !value.isEmpty(), "%s parameter cannot be null or empty", name);
+            checkTextNotNullNotEmpty(name, name);
+            checkTextNotNullNotEmpty(value, value);
             parameters.put(name, value);
+
             return this;
         }
 
@@ -132,8 +136,8 @@ public class StartupMessage implements Message {
         public StartupMessage build() {
             checkState(parameters.get("user") != null, "no user specified");
             checkState(parameters.get("client_encoding") != null, "no encoding specified");
+
             return new StartupMessage(parameters);
         }
     }
-
 }

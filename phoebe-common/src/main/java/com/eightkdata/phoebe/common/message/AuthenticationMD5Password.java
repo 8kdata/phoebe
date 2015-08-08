@@ -18,8 +18,10 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.Message;
+import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.google.common.base.MoreObjects;
+import com.google.common.io.BaseEncoding;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -32,9 +34,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Created: 26/07/15
  *
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
  */
 @Immutable
-public final class AuthenticationMD5Password implements Message {
+public final class AuthenticationMD5Password extends BaseMessage {
     public static final int SALT_LENGTH = 4;
 
     private final byte[] salt;
@@ -72,17 +75,14 @@ public final class AuthenticationMD5Password implements Message {
 
     @Override
     public int computePayloadLength(Charset encoding) {
-        return 4; // 4 bytes of salt
+        return SALT_LENGTH;
     }
 
     @Override
-    public String toString() {
-        return String.format("%s(salt=0x%02x%02x%02x%02x)",
-                getType().name(),
-                salt[0] & 0xFF,
-                salt[1] & 0xFF,
-                salt[2] & 0xFF,
-                salt[3] & 0xFF);
+    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
+        toStringHelper.add(
+                "salt",
+                "0x" + BaseEncoding.base16().lowerCase().encode(salt)
+        );
     }
-
 }

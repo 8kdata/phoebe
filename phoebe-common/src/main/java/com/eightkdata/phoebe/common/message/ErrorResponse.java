@@ -1,14 +1,36 @@
+/*
+ * Copyright © 2015, 8Kdata Technologies, S.L.
+ *
+ * Permission to use, copy, modify, and distribute this software and its documentation for any purpose,
+ * without fee, and without a written agreement is hereby granted, provided that the above copyright notice and this
+ * paragraph and the following two paragraphs appear in all copies.
+ *
+ * IN NO EVENT SHALL 8Kdata BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,
+ * INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF 8Kdata HAS BEEN
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * 8Kdata SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS,
+ * AND 8Kdata HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+ *
+ */
+
+
 package com.eightkdata.phoebe.common.message;
 
+import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.google.common.base.MoreObjects;
 
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
 
-public class ErrorResponse implements Message {
+/**
+ * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
+ */
+public class ErrorResponse extends BaseMessage {
 
     // todo: the field codes should probably use an enum
 
@@ -50,8 +72,9 @@ public class ErrorResponse implements Message {
     }
 
     @Override
-    public String toString() {
-        return "ErrorResponse(" + getSeverity() + "," + getCode() + "," + getMessage() + ")";
+    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
+        toStringHelper.add("severity", getSeverity());
+        toStringHelper.add("code", getCode());
+        toStringHelper.add("message", getMessage());
     }
-
 }

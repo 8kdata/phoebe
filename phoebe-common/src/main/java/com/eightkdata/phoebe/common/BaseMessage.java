@@ -18,7 +18,7 @@
 
 package com.eightkdata.phoebe.common;
 
-import javax.annotation.Nonnull;
+import com.google.common.base.MoreObjects;
 
 /**
  * Created: 26/07/15
@@ -26,39 +26,23 @@ import javax.annotation.Nonnull;
  * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
 public abstract class BaseMessage implements Message {
-    private final FeBeMessageType febeMessageType;
-
-    public BaseMessage(FeBeMessageType febeMessageType) {
-        this.febeMessageType = febeMessageType;
-    }
-
-    @Override
-    public FeBeMessageType getType() {
-        return febeMessageType;
-    }
-
-    private static final String TO_STRING_VALUES_SEPARATOR = ", ";
-
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(febeMessageType.name())
-                .append("(");
+        MoreObjects.ToStringHelper toStringHelper = MoreObjects.toStringHelper(
+                getType().name()
+        ).omitNullValues();
 
-        return toStringMessagePayload(sb, TO_STRING_VALUES_SEPARATOR)
-                .append(")")
-                .toString();
+        fillInPayloadInformation(toStringHelper);
+
+        return toStringHelper.toString();
     }
 
     /**
      * toString()-type method to output information about this message's payload.
      * Default implementation does not print any payload information, override to do it.
-     * Implementations should output the separator first, and use it consistently to separate various pieces of
-     * information.
-     * @param sb a StringBuilder on which to output the payload information
-     * @return the same StringBuilder received as argument
+     * Call the add(String, xxx) methods to always include param name information.
+     * Null values are omitted, so it's fine to call add(String, null).
+     * @param toStringHelper the ToStringHelper where to write the payload information
      */
-    protected @Nonnull StringBuilder toStringMessagePayload(@Nonnull StringBuilder sb, @Nonnull String separator) {
-        return sb;
-    }
+    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {}
 }

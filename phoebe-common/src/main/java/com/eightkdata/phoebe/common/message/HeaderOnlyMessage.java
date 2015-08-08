@@ -24,11 +24,14 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.Message;
+import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.FeBeMessageType;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A simple message that contains no variable data.
@@ -36,12 +39,11 @@ import java.nio.charset.Charset;
  * Instances of this class are immutable and may be shared and reused across threads.
  */
 @Immutable
-public class HeaderOnlyMessage implements Message {
-
+public class HeaderOnlyMessage extends BaseMessage {
     private final FeBeMessageType messageType;
 
-    public HeaderOnlyMessage(FeBeMessageType messageType) {
-        this.messageType = messageType;
+    public HeaderOnlyMessage(@Nonnull FeBeMessageType messageType) {
+        this.messageType = checkNotNull(messageType);
     }
 
     @Override
@@ -53,10 +55,4 @@ public class HeaderOnlyMessage implements Message {
     public int computePayloadLength(Charset encoding) {
         return 0;
     }
-
-    @Override
-    public String toString() {
-        return getType().name() + "()";
-    }
-
 }

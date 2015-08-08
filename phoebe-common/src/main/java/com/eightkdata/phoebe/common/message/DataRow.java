@@ -21,10 +21,12 @@
  * maintenance, support, updates, enhancements, or modifications.
  */
 
+
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.Message;
+import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.Charset;
@@ -37,14 +39,14 @@ import java.util.List;
  * This message just holds the raw byte data, it is not interpreted in any
  * way, note also that the byte data is unretained, and so the field data
  * should not be accessed once it has passed through the pipeline.
+ *
+ * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
  */
-public class DataRow implements Message {
-
+public class DataRow extends BaseMessage {
     /**
      * Special marker for {@code null} field values.
      */
     public static final Object NULL = new Object();
-
 
     private final List<Object> fields;
 
@@ -80,8 +82,7 @@ public class DataRow implements Message {
     }
 
     @Override
-    public String toString() {
-        return "DataRow(" + fields.size() + ")";
+    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
+        toStringHelper.add("nFields", fields.size());
     }
-
 }

@@ -16,20 +16,19 @@
  */
 
 
-package com.eightkdata.phoebe.common;
+package com.eightkdata.phoebe.common.util;
 
-import java.nio.charset.Charset;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created: 26/07/15
- *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * Utility class with methods to help check class invariants
  */
-public abstract class BaseFixedLengthMessage extends BaseMessage {
-    @Override
-    public int computePayloadLength(Charset encoding) {
-        assert getType().hasFixedLength();
+public class Preconditions {
+    public static <T extends CharSequence> T checkTextNotNullNotEmpty(T argument, String message) {
+        checkNotNull(argument, message);
+        checkArgument(argument.length() > 0, "'" + message + "' must be non-empty");
 
-        return getType().getLength();
+        return argument;
     }
 }
