@@ -30,7 +30,7 @@ public abstract class BaseMessage implements Message {
     public String toString() {
         MoreObjects.ToStringHelper toStringHelper = MoreObjects.toStringHelper(
                 getType().name()
-        ).omitNullValues();
+        );
 
         fillInPayloadInformation(toStringHelper);
 
