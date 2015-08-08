@@ -26,6 +26,7 @@ package com.eightkdata.phoebe.common.message;
 
 import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.MessageType;
+import com.google.common.base.MoreObjects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -54,5 +55,10 @@ public class HeaderOnlyMessage extends BaseMessage {
     @Override
     public int computePayloadLength(Charset encoding) {
         return 0;
+    }
+
+    @Override
+    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
+        // Do nothing. Header-only messages contain no payload
     }
 }

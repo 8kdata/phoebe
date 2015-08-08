@@ -40,9 +40,9 @@ public abstract class BaseMessage implements Message {
     /**
      * toString()-type method to output information about this message's payload.
      * Default implementation does not print any payload information, override to do it.
-     * Call the add(String, xxx) methods to always include param name information.
-     * Null values are omitted, so it's fine to call add(String, null).
+     * Call the ToStringHelper.add(String, xxx) methods to always include param name information.
+     *
      * @param toStringHelper the ToStringHelper where to write the payload information
      */
-    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {}
+    public abstract void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper);
 }

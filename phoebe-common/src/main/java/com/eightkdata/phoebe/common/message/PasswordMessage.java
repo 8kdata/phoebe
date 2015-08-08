@@ -21,6 +21,7 @@ package com.eightkdata.phoebe.common.message;
 import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.Encoders;
 import com.eightkdata.phoebe.common.MessageType;
+import com.google.common.base.MoreObjects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -51,5 +52,10 @@ public class PasswordMessage extends BaseMessage {
     @Override
     public int computePayloadLength(Charset encoding) {
         return Encoders.stringLength(password, encoding);
+    }
+
+    @Override
+    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
+        toStringHelper.add("password", "********");
     }
 }
