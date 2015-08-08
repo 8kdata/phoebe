@@ -20,14 +20,15 @@ package com.eightkdata.phoebe.common;
 
 import com.eightkdata.phoebe.common.util.ByteSize;
 import com.google.common.base.Preconditions;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nullable;
 
 /**
- * Created: 21/07/15
- *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * Defines every type of possible message in the protocol.
+ * The message type defines the byte type and integer subtype identifiers, whether it has a fixed or variable length
+ * and provides several convenient methods to query these and other properties of the message type.
  */
 public enum MessageType {
     AuthenticationOk                    (   'R',  	8,      0                               			),
@@ -90,7 +91,11 @@ public enum MessageType {
     private final boolean isFixedLengthMessage;
     @Nonnegative private final int headerLength;
 
-    MessageType(@Nullable Character type, @Nullable @Nonnegative Integer length, @Nullable Integer subType) {
+    @SuppressFBWarnings(
+            value = "BX_UNBOXED_AND_COERCED_FOR_TERNARY_OPERATOR",
+            justification = "this.type initialization should not be performing any implicit unboxing"
+    )
+    MessageType(@Nullable Character type, @Nullable Integer length, @Nullable Integer subType) {
         Preconditions.checkArgument(null == length || length > 0, "Illegal message length");
 
         this.hasType = (null != type);
