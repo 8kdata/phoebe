@@ -20,7 +20,7 @@ package com.eightkdata.phoebe.common.message;
 
 import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.eightkdata.phoebe.common.MessageType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -44,8 +44,8 @@ public class PasswordMessage extends BaseMessage {
     }
 
     @Override
-    public FeBeMessageType getType() {
-        return FeBeMessageType.PasswordMessage;
+    public MessageType getType() {
+        return MessageType.PasswordMessage;
     }
 
     @Override

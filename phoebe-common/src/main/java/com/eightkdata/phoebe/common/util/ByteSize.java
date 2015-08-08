@@ -16,44 +16,18 @@
  */
 
 
-package com.eightkdata.phoebe.common;
-
-import com.eightkdata.phoebe.common.message.HeaderOnlyMessage;
+package com.eightkdata.phoebe.common.util;
 
 /**
- * Created: 25/07/15
- *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * Class to emulate in Java6 some fields present only in Java8
  */
-public enum FeMessageType {
-    Bind,
-    CancelRequest,
-    Close,
-    CopyData,
-    CopyDone,
-    CopyFail,
-    Describe,
-    Execute,
-    Flush,
-    FunctionCall,
-    Parse,
-    PasswordMessage,
-    Query,
-    SSLRequest,
-    StartupMessage,
-    Sync,
-    Terminate
-    ;
+public class ByteSize {
+    public static final int BYTE = sizeInBytes(Byte.SIZE);          // = Java8's Byte.BYTES
+    public static final int SHORT = sizeInBytes(Short.SIZE);        // = Java8's Short.BYTES
+    public static final int INTEGER = sizeInBytes(Integer.SIZE);    // = Java8's Integer.BYTES
+    public static final int LONG = sizeInBytes(Long.SIZE);          // = Java8's Long.BYTES
 
-    private final MessageType febeMessageType;
-    private final Message headerOnlyInstance;
-
-    FeMessageType() {
-        this.febeMessageType = MessageType.valueOf(name());
-        this.headerOnlyInstance = febeMessageType.hasPayload() ? null : new HeaderOnlyMessage(febeMessageType);
-    }
-
-    public MessageType getFeBeMessageType() {
-        return febeMessageType;
+    private static int sizeInBytes(int bits) {
+        return bits >> 3;
     }
 }

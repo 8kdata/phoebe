@@ -18,6 +18,8 @@
 
 package com.eightkdata.phoebe.common;
 
+import com.eightkdata.phoebe.common.message.AuthenticationMD5Password;
+
 import java.nio.charset.Charset;
 
 /**
@@ -28,8 +30,13 @@ import java.nio.charset.Charset;
 public abstract class BaseFixedLengthMessage extends BaseMessage {
     @Override
     public int computePayloadLength(Charset encoding) {
-        assert getType().hasFixedLength();
+        assert getType().hasPayload();
 
-        return getType().getLength();
+        return getType().payloadLength();
+    }
+
+    public static void main(String[] args) {
+        Message m = new AuthenticationMD5Password(new byte[] { 0, 0, 0, 0});
+        System.out.println(m.computePayloadLength(Charset.forName("UTF-8")));
     }
 }

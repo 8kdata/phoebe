@@ -1,31 +1,31 @@
 package com.eightkdata.phoebe.client;
 
 import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.eightkdata.phoebe.common.MessageType;
 import io.netty.channel.Channel;
 
 import java.nio.charset.Charset;
 import java.util.Set;
 
-import static com.eightkdata.phoebe.common.FeBeMessageType.ErrorResponse;
-import static com.eightkdata.phoebe.common.FeBeMessageType.ReadyForQuery;
+import static com.eightkdata.phoebe.common.MessageType.ErrorResponse;
+import static com.eightkdata.phoebe.common.MessageType.ReadyForQuery;
 
 public abstract class FlowHandler {
 
     /**
      * The set of message types that should be handled.
      */
-    private final Set<FeBeMessageType> messageTypes;
+    private final Set<MessageType> messageTypes;
 
-    protected FlowHandler(Set<FeBeMessageType> messageTypes) {
+    protected FlowHandler(Set<MessageType> messageTypes) {
         this.messageTypes = messageTypes;
     }
 
-    public boolean isHandled(FeBeMessageType messageType) {
+    public boolean isHandled(MessageType messageType) {
         return messageTypes.contains(messageType);
     }
 
-    public boolean isComplete(FeBeMessageType messageType) {
+    public boolean isComplete(MessageType messageType) {
         return messageType == ReadyForQuery || messageType == ErrorResponse;
     }
 

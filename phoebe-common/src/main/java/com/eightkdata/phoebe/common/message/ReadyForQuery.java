@@ -19,7 +19,7 @@
 package com.eightkdata.phoebe.common.message;
 
 import com.eightkdata.phoebe.common.BaseMessage;
-import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.eightkdata.phoebe.common.MessageType;
 import com.google.common.base.MoreObjects;
 
 import javax.annotation.Nonnull;
@@ -44,8 +44,8 @@ public class ReadyForQuery extends BaseMessage {
     }
 
     @Override
-    public FeBeMessageType getType() {
-        return FeBeMessageType.ReadyForQuery;
+    public MessageType getType() {
+        return MessageType.ReadyForQuery;
     }
 
     @Override

@@ -33,7 +33,7 @@ import java.nio.charset.Charset;
  */
 public interface Message {
 
-    FeBeMessageType getType();
+    MessageType getType();
 
     /**
      * Calculate the amount of storage needed for this messages payload.

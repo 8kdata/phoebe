@@ -26,7 +26,7 @@ package com.eightkdata.phoebe.common.message;
 
 import com.eightkdata.phoebe.common.Encoders;
 import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.eightkdata.phoebe.common.MessageType;
 
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
@@ -47,8 +47,8 @@ public class RowDescription implements Message {
     }
 
     @Override
-    public FeBeMessageType getType() {
-        return FeBeMessageType.RowDescription;
+    public MessageType getType() {
+        return MessageType.RowDescription;
     }
 
     @Override

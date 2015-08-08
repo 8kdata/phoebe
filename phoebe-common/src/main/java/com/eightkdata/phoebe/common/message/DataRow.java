@@ -25,7 +25,7 @@
 package com.eightkdata.phoebe.common.message;
 
 import com.eightkdata.phoebe.common.BaseMessage;
-import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.eightkdata.phoebe.common.MessageType;
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 
@@ -65,8 +65,8 @@ public class DataRow extends BaseMessage {
     }
 
     @Override
-    public FeBeMessageType getType() {
-        return FeBeMessageType.DataRow;
+    public MessageType getType() {
+        return MessageType.DataRow;
     }
 
     @Override

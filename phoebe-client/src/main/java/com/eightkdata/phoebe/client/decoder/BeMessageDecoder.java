@@ -19,6 +19,7 @@
 package com.eightkdata.phoebe.client.decoder;
 
 import com.eightkdata.phoebe.common.*;
+import com.eightkdata.phoebe.common.message.HeaderOnlyMessages;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -56,7 +57,7 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
 
         // Find exact type, checking subtype, if needed (only for auth messages)
         BeMessageType beMessageType;
-        if (type == FeBeMessageType.AUTHENTICATION_TYPE) {
+        if (type == MessageType.AUTHENTICATION_TYPE) {
             if(in.readableBytes() < Encoders.intLength()) {
                 return;
             }
@@ -71,8 +72,8 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
         if (beMessageType == null) {
             throw new CorruptedFrameException("unknown message type (" + type + ")");
         }
-        FeBeMessageType messageType = beMessageType.getFeBeMessageType();
-        if (messageType.hasFixedLength() && length != messageType.getLength()) {
+        MessageType messageType = beMessageType.getMessageType();
+        if (messageType.isFixedLengthMessage() && length != messageType.getFixedMessageLength()) {
             throw new CorruptedFrameException(
                     "unexpected length (" + length + ") for " + messageType + "(" + (char) type + ") message.");
         }
@@ -82,16 +83,17 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
 
         // Extract payload, if any
         int payloadLength = 1 + (int) length - headerLength;
-        if(payloadLength == 0) {
-            out.add(messageType.getHeaderOnlyInstance());
-            return;
-        }
+        if(! messageType.hasPayload()) {
+            assert payloadLength == 0 : "Message type indicates no payload, but payload found";
 
-        Message.Decoder<?> decoder = BeMessageTypeDecoder.valueOf(beMessageType.name()).getDecoder();
-        if (decoder == null) {
-            throw new UnsupportedOperationException(messageType + "Decoder");
+            out.add(HeaderOnlyMessages.getInstance(messageType));
+        } else {
+            Message.Decoder<?> decoder = BeMessageTypeDecoder.valueOf(beMessageType.name()).getDecoder();
+            if (decoder == null) {
+                throw new UnsupportedOperationException(messageType + "Decoder");
+            }
+
+            out.add(decoder.decode(in.readSlice(payloadLength), encoding));
         }
-        out.add(decoder.decode(in.readSlice(payloadLength), encoding));
     }
-
 }

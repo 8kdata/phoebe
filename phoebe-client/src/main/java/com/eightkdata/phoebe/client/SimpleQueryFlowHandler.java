@@ -1,7 +1,7 @@
 package com.eightkdata.phoebe.client;
 
 import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.eightkdata.phoebe.common.MessageType;
 import com.eightkdata.phoebe.common.message.DataRow;
 import com.eightkdata.phoebe.common.message.ErrorResponse;
 import com.eightkdata.phoebe.common.message.ReadyForQuery;
@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static com.eightkdata.phoebe.common.FeBeMessageType.*;
+import static com.eightkdata.phoebe.common.MessageType.*;
 
 /**
  * Handler for the simple query message flow.
@@ -20,7 +20,7 @@ import static com.eightkdata.phoebe.common.FeBeMessageType.*;
  */
 public class SimpleQueryFlowHandler extends FlowHandler {
 
-    private static final Set<FeBeMessageType> MESSAGE_TYPES = EnumSet.of(
+    private static final Set<MessageType> MESSAGE_TYPES = EnumSet.of(
             CommandComplete, CopyInResponse, CopyOutResponse, DataRow, EmptyQueryResponse,
             ErrorResponse, NoticeResponse, RowDescription, ReadyForQuery
     );

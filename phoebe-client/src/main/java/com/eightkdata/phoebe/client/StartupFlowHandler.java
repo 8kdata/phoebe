@@ -25,7 +25,7 @@
 package com.eightkdata.phoebe.client;
 
 import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.eightkdata.phoebe.common.MessageType;
 import com.eightkdata.phoebe.common.message.*;
 import io.netty.channel.Channel;
 
@@ -33,7 +33,7 @@ import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static com.eightkdata.phoebe.common.FeBeMessageType.*;
+import static com.eightkdata.phoebe.common.MessageType.*;
 
 /**
  * Handler for the startup message flow.
@@ -42,7 +42,7 @@ import static com.eightkdata.phoebe.common.FeBeMessageType.*;
  */
 public class StartupFlowHandler extends FlowHandler {
 
-    private static final Set<FeBeMessageType> STARTUP_FLOW_MESSAGES = EnumSet.of(
+    private static final Set<MessageType> STARTUP_FLOW_MESSAGES = EnumSet.of(
             AuthenticationCleartextPassword, AuthenticationGSS, AuthenticationGSSContinue, AuthenticationKerberosV5,
             AuthenticationMD5Password, AuthenticationOk, AuthenticationSCMCredential, AuthenticationSSPI,
             BackendKeyData, ErrorResponse, ParameterStatus, ReadyForQuery

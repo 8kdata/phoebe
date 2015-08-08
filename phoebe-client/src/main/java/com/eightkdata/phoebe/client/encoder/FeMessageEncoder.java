@@ -5,7 +5,7 @@
 package com.eightkdata.phoebe.client.encoder;
 
 import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.eightkdata.phoebe.common.MessageType;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -28,10 +28,10 @@ public class FeMessageEncoder extends MessageToByteEncoder<Message> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Message message, ByteBuf out) throws Exception {
-        FeBeMessageType messageType = message.getType();
         int payloadSize = message.computePayloadLength(encoding);
-        int totalSize = messageType.getHeaderLength() + payloadSize;
-        int feMessageSize = (messageType.hasType() ? totalSize -1 : totalSize);
+        MessageType messageType = message.getType();
+        int totalSize = messageType.headerLength() + payloadSize;
+        int feMessageSize = messageType.hasType() ? totalSize - 1 : totalSize;
 
         // reserve extra space if necessary
         if (totalSize > out.capacity()) {
@@ -43,13 +43,13 @@ public class FeMessageEncoder extends MessageToByteEncoder<Message> {
             out.writeByte(messageType.getType());
         }
         out.writeInt(feMessageSize);
-        if(null != messageType.getSubtype()) {
+        if(messageType.hasSubType()) {
             out.writeInt(messageType.getSubtype());
         }
 
         // Payload
         Message.Encoder encoder = FeMessageTypeEncoder.valueOf(messageType.name()).getEncoder();
-        if (encoder == null) {
+        if(null == encoder) {
             throw new UnsupportedOperationException(messageType + " Encoder");
         }
 

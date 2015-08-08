@@ -24,35 +24,33 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.MessageType;
+import org.junit.Test;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.nio.charset.Charset;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-/**
- * A simple message that contains no variable data.
- *
- * Instances of this class are immutable and may be shared and reused across threads.
- */
-@Immutable
-public class HeaderOnlyMessage extends BaseMessage {
-    private final MessageType messageType;
-
-    public HeaderOnlyMessage(@Nonnull MessageType messageType) {
-        this.messageType = checkNotNull(messageType);
+public class HeaderOnlyMessagesTest {
+    @Test
+    public void everyInstanceIsHeaderOnlyMessage() {
+        for(HeaderOnlyMessages value : HeaderOnlyMessages.values()) {
+            assertTrue(
+                    "Header-only instance '" + value.name() + "' has payload, when it shouldn't",
+                    ! value.getHeaderOnlyMessage().getType().hasPayload()
+            );
+        }
     }
 
-    @Override
-    public MessageType getType() {
-        return messageType;
-    }
-
-    @Override
-    public int computePayloadLength(Charset encoding) {
-        return 0;
+    @Test
+    public void allHeaderOnlyMessagesArePresent() {
+        for(MessageType messageType : MessageType.values()) {
+            if(! messageType.hasPayload()) {
+                assertNotNull(
+                        "Header-only message '" + messageType.name() + "' is not added to the instances in "
+                                + HeaderOnlyMessages.class.getSimpleName(),
+                        HeaderOnlyMessages.getInstance(messageType)
+                );
+            }
+        }
     }
 }

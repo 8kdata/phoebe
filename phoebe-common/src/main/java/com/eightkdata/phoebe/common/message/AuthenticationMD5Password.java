@@ -18,8 +18,8 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.BaseMessage;
-import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.eightkdata.phoebe.common.BaseFixedLengthMessage;
+import com.eightkdata.phoebe.common.MessageType;
 import com.google.common.base.MoreObjects;
 import com.google.common.io.BaseEncoding;
 
@@ -37,7 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
  */
 @Immutable
-public final class AuthenticationMD5Password extends BaseMessage {
+public final class AuthenticationMD5Password extends BaseFixedLengthMessage {
     public static final int SALT_LENGTH = 4;
 
     private final byte[] salt;
@@ -69,13 +69,8 @@ public final class AuthenticationMD5Password extends BaseMessage {
     }
 
     @Override
-    public FeBeMessageType getType() {
-        return FeBeMessageType.AuthenticationMD5Password;
-    }
-
-    @Override
-    public int computePayloadLength(Charset encoding) {
-        return SALT_LENGTH;
+    public MessageType getType() {
+        return MessageType.AuthenticationMD5Password;
     }
 
     @Override

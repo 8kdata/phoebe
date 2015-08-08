@@ -64,10 +64,10 @@ public enum BeMessageType {
     RowDescription
     ;
 
-    private final FeBeMessageType febeMessageType;
+    private final MessageType febeMessageType;
 
     BeMessageType() {
-        this.febeMessageType = FeBeMessageType.valueOf(name());
+        this.febeMessageType = MessageType.valueOf(name());
     }
 
     private static final Map<Byte,BeMessageType> nonAuthMessageTypes = new HashMap<Byte,BeMessageType>();
@@ -79,7 +79,7 @@ public enum BeMessageType {
         for(BeMessageType beMessageType : values()) {
             assert beMessageType.febeMessageType.hasType() : "Backend messages must have a type byte";
 
-            if (beMessageType.getId() == FeBeMessageType.AUTHENTICATION_TYPE) {
+            if (beMessageType.getId() == MessageType.AUTHENTICATION_TYPE) {
                 assert beMessageType.getSubtype() != null : "Auth be messages must have a subtype";
                 authMessageTypes.put(beMessageType.getSubtype(), beMessageType);
             } else {
@@ -109,7 +109,7 @@ public enum BeMessageType {
         return nonAuthMessageTypes.get(type);
     }
 
-    public FeBeMessageType getFeBeMessageType() {
+    public MessageType getMessageType() {
         return febeMessageType;
     }
 
@@ -126,6 +126,6 @@ public enum BeMessageType {
     }
 
     public int getHeaderLength() {
-        return febeMessageType.getHeaderLength();
+        return febeMessageType.headerLength();
     }
 }

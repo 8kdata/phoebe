@@ -19,7 +19,7 @@
 package com.eightkdata.phoebe.common.message;
 
 import com.eightkdata.phoebe.common.BaseFixedLengthMessage;
-import com.eightkdata.phoebe.common.FeBeMessageType;
+import com.eightkdata.phoebe.common.MessageType;
 import com.google.common.base.MoreObjects;
 
 import javax.annotation.concurrent.Immutable;
@@ -46,8 +46,8 @@ public final class BackendKeyData extends BaseFixedLengthMessage {
     }
 
     @Override
-    public FeBeMessageType getType() {
-        return FeBeMessageType.BackendKeyData;
+    public MessageType getType() {
+        return MessageType.BackendKeyData;
     }
 
     @Override
