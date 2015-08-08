@@ -17,11 +17,6 @@
 
 package com.eightkdata.phoebe.client.api;
 
-import com.eightkdata.phoebe.common.message.ReadyForQuery;
-import org.junit.Test;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 /**
  * Unit tests for {@link PGSession}.
  *
@@ -31,6 +26,13 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  * authentication protocols.
  */
 public class PGSessionTest extends AbstractTest {
+
+    /*
+     * TODO: uncomment the tests and fix them. Testing code is ok, but it assumes a certain given environment.
+     * This is problematic for builds as by default they are broken. And they depend on external systems.
+     * A general framework for testing with a real PostgreSQL server should be developed for these kind of tests.
+     * One way of doing that could be using this: https://github.com/airlift/testing-postgresql-server
+     *
 
     @Test
     public void testStart() throws Throwable {
@@ -72,5 +74,6 @@ public class PGSessionTest extends AbstractTest {
         });
         waiter.await(5, SECONDS);
     }
+    */
 
 }
