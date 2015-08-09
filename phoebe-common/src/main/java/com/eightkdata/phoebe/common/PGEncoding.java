@@ -189,7 +189,7 @@ public enum PGEncoding {
     private static final Lock charsetMappingLock = new ReentrantLock();
 
     @GuardedBy(value = "charsetMappingLock")
-    private static final Map<String,Charset> charsetMapping;
+    private static final Map<String,Charset> charsetMapping;    // cache Charsets. They are @Immutable
     static {
         // Compute the maximum size of the mapping
         TreeSet<String> uniqueCharsets = new TreeSet<String>();
@@ -218,6 +218,7 @@ public enum PGEncoding {
 
     /**
      * Performs lazy initialization of requested Charset.
+     * This method should be thread safe.
      */
     private static Charset initializeCharset(String charsetName) throws UnsupportedCharsetException {
         charsetMappingLock.lock();
