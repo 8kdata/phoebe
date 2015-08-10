@@ -198,6 +198,14 @@ public enum PGEncoding {
         }
 
         charsetMapping = new HashMap<String, Charset>(uniqueCharsets.size(), 0.9f);     // Dense packing
+
+        // Initialize the two, most used encodings (UTF-8 should be the default, US-ASCII used during startup phase)
+        try {
+            initializeCharset("US-ASCII");
+            initializeCharset("UTF-8");
+        } catch (UnsupportedCharsetException ex) {
+            assert false : "Should not happen, both UTF-8 and US-ASCII are part of the StandardCharsets";
+        }
     }
 
     /**
@@ -216,6 +224,8 @@ public enum PGEncoding {
         return initializeCharset(charsetName);
     }
 
+    private static volatile Charset charsetSafePublication;
+
     /**
      * Performs lazy initialization of requested Charset.
      * This method should be thread safe.
@@ -232,6 +242,7 @@ public enum PGEncoding {
 
             charset = Charset.forName(charsetName);
             charsetMapping.put(charsetName, charset);
+            charsetSafePublication = charset;               // memory barrier, ensure put is finished before returning
             return charset;
 
         } finally {
