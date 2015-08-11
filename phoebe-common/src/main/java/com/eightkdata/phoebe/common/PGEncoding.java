@@ -18,18 +18,14 @@
 
 package com.eightkdata.phoebe.common;
 
+import com.eightkdata.phoebe.common.util.Charsets;
+
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-import static com.eightkdata.phoebe.common.util.Preconditions.checkTextNotNullNotEmpty;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * <p>Enum class to map between PostgreSQL encodings and Java encodings.
@@ -54,199 +50,141 @@ import static com.eightkdata.phoebe.common.util.Preconditions.checkTextNotNullNo
  *      </a>
  */
 @ThreadSafe
-public enum PGEncoding {
+public enum PGEncoding implements CharsetHolder {
     /** Alias for WIN1258 **/
-    ABC("windows-1258"),
+    ABC(Charsets.WINDOWS_1258),
     /** Alias for IBM866 **/
-    ALT("IBM866"),
+    ALT(Charsets.IBM866),
     /** Big5; Chinese for Taiwan multibyte set **/
-    BIG5("Big5"),
+    BIG5(Charsets.BIG5),
     /** EUC-CN; Extended Unix Code for simplified Chinese **/
-    EUC_CN("GB2312"),
+    EUC_CN(Charsets.GB2312),
     /** EUC-JIS-2004; Extended UNIX Code fixed Width for Japanese, standard JIS X 0213 **/
-    EUC_JIS_2004("x-SJIS_0213"),
+    EUC_JIS_2004(Charsets.X_SJIS_0213),
     /** EUC-JP; Extended UNIX Code fixed Width for Japanese, standard OSF **/
-    EUC_JP("EUC-JP"),
+    EUC_JP(Charsets.EUC_JP),
     /** EUC-KR; Extended Unix Code for Korean , KS X 1001 standard **/
-    EUC_KR("EUC-KR"),
+    EUC_KR(Charsets.EUC_KR),
     /** EUC-TW; Extended Unix Code for traditional Chinese **/
-    EUC_TW("x-EUC-TW"),
+    EUC_TW(Charsets.X_EUC_TW),
     /** GB18030;GB18030 **/
-    GB18030("GB18030"),
+    GB18030(Charsets.GB18030),
     /** GBK; Chinese Windows CodePage 936 simplified Chinese **/
-    GBK("GBK"),
+    GBK(Charsets.GBK),
     /** ISO-8859-1; RFC1345,KXS2 **/
-    ISO88591("ISO-8859-1"),
+    ISO88591(Charsets.ISO_8859_1),
     /** ISO-8859-2; RFC1345,KXS2 **/
-    ISO88592("ISO-8859-2"),
+    ISO88592(Charsets.ISO_8859_2),
     /** ISO-8859-3; RFC1345,KXS2 **/
-    ISO88593("ISO-8859-3"),
+    ISO88593(Charsets.ISO_8859_3),
     /** ISO-8859-4; RFC1345,KXS2 **/
-    ISO88594("ISO-8859-4"),
+    ISO88594(Charsets.ISO_8859_4),
     /** ISO-8859-5; RFC1345,KXS2 **/
-    ISO_8859_5("ISO-8859-5"),
+    ISO_8859_5(Charsets.ISO_8859_5),
     /** ISO-8859-6; RFC1345,KXS2 **/
-    ISO_8859_6("ISO-8859-6"),
+    ISO_8859_6(Charsets.ISO_8859_6),
     /** ISO-8859-7; RFC1345,KXS2 **/
-    ISO_8859_7("ISO-8859-7"),
+    ISO_8859_7(Charsets.ISO_8859_7),
     /** ISO-8859-8; RFC1345,KXS2 **/
-    ISO_8859_8("ISO-8859-8"),
+    ISO_8859_8(Charsets.ISO_8859_8),
     /** ISO-8859-9; RFC1345,KXS2 **/
-    ISO88599("ISO-8859-9"),
+    ISO88599(Charsets.ISO_8859_9),
     /** ISO-8859-13; RFC1345,KXS2 **/
-    ISO885913("ISO-8859-13"),
+    ISO885913(Charsets.ISO_8859_13),
     /** ISO-8859-15; RFC1345,KXS2 **/
-    ISO885915("ISO-8859-15"),
+    ISO885915(Charsets.ISO_8859_15),
     /** JOHAB; Extended Unix Code for simplified Chinese **/
-    JOHAB("x-Johab"),
+    JOHAB(Charsets.X_JOHAB),
     /** Alias for KOI8-R **/
-    KOI8("KOI8-R"),
+    KOI8(Charsets.KOI8_R),
     /** KOI8-R; RFC1489 **/
-    KOI8R("KOI8-R"),
+    KOI8R(Charsets.KOI8_R),
     /** KOI8-U; RFC2319 **/
-    KOI8U("KOI8-U"),
+    KOI8U(Charsets.KOI8_U),
     /** Alias for ISO-8859-1 **/
-    LATIN1("ISO-8859-1"),
+    LATIN1(Charsets.ISO_8859_1),
     /** Alias for ISO-8859-2 **/
-    LATIN2("ISO-8859-2"),
+    LATIN2(Charsets.ISO_8859_2),
     /** Alias for ISO-8859-3 **/
-    LATIN3("ISO-8859-3"),
+    LATIN3(Charsets.ISO_8859_3),
     /** Alias for ISO-8859-4 **/
-    LATIN4("ISO-8859-4"),
+    LATIN4(Charsets.ISO_8859_4),
     /** Alias for ISO-8859-9 **/
-    LATIN5("ISO-8859-9"),
+    LATIN5(Charsets.ISO_8859_9),
     /** Alias for ISO-8859-13 **/
-    LATIN7("ISO-8859-13"),
+    LATIN7(Charsets.ISO_8859_13),
     /** Alias for ISO-8859-15 **/
-    LATIN9("ISO-8859-15"),
+    LATIN9(Charsets.ISO_8859_15),
     /** Alias for Shift_JIS **/
-    Mskanji("Shift_JIS"),
+    Mskanji(Charsets.SHIFT_JIS),
     /** SHIFT-JIS-2004; Shift JIS for Japanese, standard JIS X 0213 **/
-    SHIFT_JIS_2004("x-SJIS_0213"),
+    SHIFT_JIS_2004(Charsets.X_SJIS_0213),
     /** Shift_JIS; JIS X 0202-1991 **/
-    ShiftJIS("Shift_JIS"),
+    ShiftJIS(Charsets.SHIFT_JIS),
     /** Alias for Shift_JIS **/
-    SJIS("Shift_JIS"),
+    SJIS(Charsets.SHIFT_JIS),
     /** Declaration of ignorance about the encoding.
      * Server interprets byte values 0-127 according to the ASCII standard,
      * while byte values 128-255 are taken as uninterpreted characters.
      * No encoding conversion will be done when the setting is SQL_ASCII.
      * Thus, this setting is not so much a declaration that a specific encoding is in use.
      **/
-    SQL_ASCII("US-ASCII"),
+    SQL_ASCII(Charsets.US_ASCII),
     /** Alias for WIN1258 **/
-    TCVN("windows-1258"),
+    TCVN(Charsets.WINDOWS_1258),
     /** Alias for WIN1258 **/
-    TCVN5712("windows-1258"),
+    TCVN5712(Charsets.WINDOWS_1258),
     /** UHC; Korean Windows CodePage 949 **/
-    UHC("x-windows-949"),
+    UHC(Charsets.X_WINDOWS_949),
     /** Alias for UTF8 **/
-    Unicode("UTF-8"),
+    Unicode(Charsets.UTF_8),
     /** UTF8 **/
-    UTF8("UTF-8"),
+    UTF8(Charsets.UTF_8),
     /** Alias for WIN1258 **/
-    VSCII("windows-1258"),
+    VSCII(Charsets.WINDOWS_1258),
     /** Alias for Windows-1251 **/
-    WIN("windows-1251"),
+    WIN(Charsets.WINDOWS_1251),
     /** Windows-1250; Microsoft **/
-    WIN1250("windows-1250"),
+    WIN1250(Charsets.WINDOWS_1250),
     /** Windows-1251; Microsoft **/
-    WIN1251("windows-1251"),
+    WIN1251(Charsets.WINDOWS_1251),
     /** Windows-1252; Microsoft **/
-    WIN1252("windows-1252"),
+    WIN1252(Charsets.WINDOWS_1252),
     /** Windows-1253; Microsoft **/
-    WIN1253("windows-1253"),
+    WIN1253(Charsets.WINDOWS_1253),
     /** Windows-1254; Microsoft **/
-    WIN1254("windows-1254"),
+    WIN1254(Charsets.WINDOWS_1254),
     /** Windows-1255; Microsoft **/
-    WIN1255("windows-1255"),
+    WIN1255(Charsets.WINDOWS_1255),
     /** Windows-1256; Microsoft **/
-    WIN1256("windows-1256"),
+    WIN1256(Charsets.WINDOWS_1256),
     /** Windows-1257; Microsoft **/
-    WIN1257("windows-1257"),
+    WIN1257(Charsets.WINDOWS_1257),
     /** Windows-1258; Microsoft **/
-    WIN1258("windows-1258"),
+    WIN1258(Charsets.WINDOWS_1258),
     /** IBM866 **/
-    WIN866("IBM866"),
+    WIN866(Charsets.IBM866),
     /** Windows-874; Microsoft **/
-    WIN874("x-IBM874"),
+    WIN874(Charsets.X_IBM874),
     /** Alias for Shift_JIS **/
-    WIN932("Shift_JIS"),
+    WIN932(Charsets.SHIFT_JIS),
     /** Alias for GBK **/
-    WIN936("GBK"),
+    WIN936(Charsets.GBK),
     /** Alias for UHC **/
-    WIN949("x-windows-949"),
+    WIN949(Charsets.X_WINDOWS_949),
     /** Alias for BIG5 **/
-    WIN950("Big5")
+    WIN950(Charsets.BIG5)
     ;
 
-    private final String charsetName;
+    private final Charsets charset;
 
-    PGEncoding(@Nonnull String charsetName) {
-        this.charsetName = checkTextNotNullNotEmpty(charsetName, "Invalid Java charset name '" + charsetName + "'");
+    PGEncoding(@Nonnull Charsets charset) {
+        this.charset = checkNotNull(charset);
     }
 
-    private static final Lock charsetMappingLock = new ReentrantLock();
-
-    @GuardedBy(value = "charsetMappingLock")
-    private static final Map<String,Charset> charsetMapping;    // cache Charsets. They are @Immutable
-    static {
-        // Compute the maximum size of the mapping
-        TreeSet<String> uniqueCharsets = new TreeSet<String>();
-        for(PGEncoding pgEncoding : values()) {
-            uniqueCharsets.add(pgEncoding.charsetName);
-        }
-
-        charsetMapping = new HashMap<String, Charset>(uniqueCharsets.size(), 0.9f);     // Dense packing
-
-        // Initialize the two, most used encodings (UTF-8 should be the default, US-ASCII used during startup phase)
-        try {
-            initializeCharset("US-ASCII");
-            initializeCharset("UTF-8");
-        } catch (UnsupportedCharsetException ex) {
-            assert false : "Should not happen, both UTF-8 and US-ASCII are part of the StandardCharsets";
-        }
-    }
-
-    /**
-     * Gets the Java Charset associated with this PGEncoding.
-     *
-     * @return the associated Java Charset
-     * @throws UnsupportedCharsetException if this PGEncoding is associated with a Java Charset
-     *                                     not supported by this JVM
-     */
-    public Charset getCharset() throws UnsupportedCharsetException {
-        Charset charset = charsetMapping.get(charsetName);
-        if(null != charset) {
-            return charset;
-        }
-
-        return initializeCharset(charsetName);
-    }
-
-    private static volatile Charset charsetSafePublication;
-
-    /**
-     * Performs lazy initialization of requested Charset.
-     * This method should be thread safe.
-     */
-    private static Charset initializeCharset(String charsetName) throws UnsupportedCharsetException {
-        charsetMappingLock.lock();
-        try {
-            Charset charset;
-
-            charset = charsetMapping.get(charsetName);
-            if(null != charset) {
-                return charset;
-            }
-
-            charset = Charset.forName(charsetName);
-            charsetMapping.put(charsetName, charset);
-            charsetSafePublication = charset;               // memory barrier, ensure put is finished before returning
-            return charset;
-
-        } finally {
-            charsetMappingLock.unlock();
-        }
+    @Nullable
+    @Override
+    public Charset getCharset() {
+        return charset.getCharset();
     }
 }
