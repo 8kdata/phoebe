@@ -15,6 +15,7 @@
  *
  */
 
+
 package com.eightkdata.phoebe.client.api;
 
 import com.eightkdata.phoebe.client.FlowHandler;
@@ -56,7 +57,7 @@ public class PGSession {
     }
 
     public void start(StartupCommand command) {
-        initChannel(command.getEncoding());
+        initChannel(command.getCharset());
         handlers.addLast(new StartupFlowHandler(command));
         command.writeTo(channel);
     }

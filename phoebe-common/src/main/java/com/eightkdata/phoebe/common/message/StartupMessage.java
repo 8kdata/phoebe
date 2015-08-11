@@ -27,13 +27,14 @@ package com.eightkdata.phoebe.common.message;
 import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.Encoders;
 import com.eightkdata.phoebe.common.MessageType;
+import com.eightkdata.phoebe.common.PGEncoding;
+import com.eightkdata.phoebe.common.util.ByteSize;
 import com.google.common.base.MoreObjects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -48,32 +49,19 @@ import static com.google.common.base.Preconditions.checkState;
  */
 @Immutable
 public class StartupMessage extends BaseMessage {
-    /**
-     * A map of Java character set names to Postgres names.
-     */
-    private static final Map<String, String> pgCharsetNames = new HashMap<String, String>();
-    static {
-        pgCharsetNames.put("US-ASCII", "SQL_ASCII");
-        pgCharsetNames.put("ISO-8859-1", "LATIN1");
-        pgCharsetNames.put("ISO-8859-15", "LATIN15");
-        pgCharsetNames.put("UTF-8", "UTF8");
-    }
-
-    /**
-     * Get a builder suitable for creating new startup messages.
-     *
-     * @return a new builder.
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
+    private static final String PARAMETER_USER = "user";
+    private static final String PARAMETER_DATABASE = "database";
+    private static final String PARAMETER_CLIENT_ENCODING = "client_encoding";
 
     private final Map<String,String> parameters;
 
-    StartupMessage(@Nonnull Map<String,String> parameters) {
+    private StartupMessage(@Nonnull Map<String,String> parameters) {
         this.parameters = Collections.unmodifiableMap(parameters);
     }
 
+    /**
+     * Gets an unmodifiable Map of the parameters
+     */
     public Map<String, String> getParameters() {
         return parameters;
     }
@@ -85,7 +73,7 @@ public class StartupMessage extends BaseMessage {
 
     @Override
     public int computePayloadLength(Charset encoding) {
-        int length = Byte.SIZE / 8;     // end '0' byte
+        int length = ByteSize.BYTE;     // ending '0' byte
         for (Map.Entry<String,String> entry : parameters.entrySet()) {
             length += Encoders.stringLength(entry.getKey(), encoding);
             length += Encoders.stringLength(entry.getValue(), encoding);
@@ -105,23 +93,17 @@ public class StartupMessage extends BaseMessage {
         private final Map<String,String> parameters = new LinkedHashMap<String, String>();
 
         public Builder user(@Nonnull String user) {
-            return parameter("user", user);
+            return parameter(PARAMETER_USER, user);
         }
 
         public Builder database(@Nonnull String database) {
-            return parameter("database", database);
+            return parameter(PARAMETER_DATABASE, database);
         }
 
-        public Builder clientEncoding(@Nonnull Charset encoding) {
-            // todo: startup encoding seems to be a bit of a mess
-            // what I have here and in MD5 works for the cases that I have tested but it probably
-            // isn't a comprehensive solution. Some discussion about this issue on the lists here
-            // http://www.postgresql.org/message-id/20081223212414.GD3894@merkur.hilbert.loc
+        public Builder clientEncoding(@Nonnull PGEncoding encoding) {
+            checkArgument(encoding.getCharset() != null, "unsupported client encoding: %s", encoding);
 
-            String pgCharsetName = pgCharsetNames.get(encoding.name());
-            checkArgument(pgCharsetName != null, "unsupported client encoding: %s", encoding);
-
-            return parameter("client_encoding", pgCharsetName);
+            return parameter(PARAMETER_CLIENT_ENCODING, encoding.name());
         }
 
         public Builder parameter(@Nonnull String name, @Nonnull String value) {
@@ -134,10 +116,24 @@ public class StartupMessage extends BaseMessage {
 
         @Override
         public StartupMessage build() {
-            checkState(parameters.get("user") != null, "no user specified");
-            checkState(parameters.get("client_encoding") != null, "no encoding specified");
+            checkState(parameters.get(PARAMETER_USER) != null, "no user specified");
+            if(null == parameters.get(PARAMETER_DATABASE)) {
+                database(parameters.get(PARAMETER_USER));       // Default database is the same as the username
+            }
+            if(null == parameters.get(PARAMETER_CLIENT_ENCODING)) {
+                clientEncoding(PGEncoding.UTF8);                // Default encoding
+            }
 
             return new StartupMessage(parameters);
         }
+    }
+
+    /**
+     * Get a builder suitable for creating new startup messages.
+     *
+     * @return a new builder.
+     */
+    public static Builder builder() {
+        return new Builder();
     }
 }
