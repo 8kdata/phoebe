@@ -27,7 +27,7 @@ package com.eightkdata.phoebe.common.message;
 import com.eightkdata.phoebe.common.BaseMessage;
 import com.eightkdata.phoebe.common.Encoders;
 import com.eightkdata.phoebe.common.MessageType;
-import com.eightkdata.phoebe.common.PGEncoding;
+import com.eightkdata.phoebe.common.PostgresEncoding;
 import com.eightkdata.phoebe.common.util.ByteSize;
 import com.google.common.base.MoreObjects;
 
@@ -100,7 +100,7 @@ public class StartupMessage extends BaseMessage {
             return parameter(PARAMETER_DATABASE, database);
         }
 
-        public Builder clientEncoding(@Nonnull PGEncoding encoding) {
+        public Builder clientEncoding(@Nonnull PostgresEncoding encoding) {
             checkArgument(encoding.getCharset() != null, "unsupported client encoding: %s", encoding);
 
             return parameter(PARAMETER_CLIENT_ENCODING, encoding.name());
@@ -121,7 +121,7 @@ public class StartupMessage extends BaseMessage {
                 database(parameters.get(PARAMETER_USER));       // Default database is the same as the username
             }
             if(null == parameters.get(PARAMETER_CLIENT_ENCODING)) {
-                clientEncoding(PGEncoding.UTF8);                // Default encoding
+                clientEncoding(PostgresEncoding.UTF8); // Default encoding
             }
 
             return new StartupMessage(parameters);

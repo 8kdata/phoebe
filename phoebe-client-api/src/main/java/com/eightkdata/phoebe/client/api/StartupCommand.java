@@ -19,7 +19,7 @@
 package com.eightkdata.phoebe.client.api;
 
 import com.eightkdata.phoebe.client.StartupFlowHandler;
-import com.eightkdata.phoebe.common.PGEncoding;
+import com.eightkdata.phoebe.common.PostgresEncoding;
 import com.eightkdata.phoebe.common.message.*;
 import io.netty.channel.Channel;
 
@@ -35,9 +35,9 @@ public class StartupCommand implements StartupFlowHandler.Callback {
     private final String user;
     private final String password;
     private final String database;
-    private final PGEncoding encoding;
+    private final PostgresEncoding encoding;
 
-    public StartupCommand(@Nonnull String username, String password, String database, @Nonnull PGEncoding encoding) {
+    public StartupCommand(@Nonnull String username, String password, String database, @Nonnull PostgresEncoding encoding) {
         this.user = checkNotNull(username, "username");
         this.password = password;
         this.database = database;
@@ -45,7 +45,7 @@ public class StartupCommand implements StartupFlowHandler.Callback {
     }
 
     public StartupCommand(@Nonnull String username, String password, String database) {
-        this(username, password, database, PGEncoding.UTF8);
+        this(username, password, database, PostgresEncoding.UTF8);
     }
 
     public Charset getCharset() {
