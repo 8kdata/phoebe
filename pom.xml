@@ -31,6 +31,7 @@
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <surefire.version>2.18.1</surefire.version>
         <findbugs.version>3.0.0</findbugs.version>
         <guava.version>18.0</guava.version>
         <netty.version>4.0.30.Final</netty.version>
