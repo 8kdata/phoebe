@@ -18,8 +18,6 @@
 
 package com.eightkdata.phoebe.common;
 
-import com.eightkdata.phoebe.common.message.HeaderOnlyMessage;
-
 /**
  * Created: 25/07/15
  *
@@ -46,11 +44,9 @@ public enum FeMessageType {
     ;
 
     private final MessageType febeMessageType;
-    private final Message headerOnlyInstance;
 
     FeMessageType() {
         this.febeMessageType = MessageType.valueOf(name());
-        this.headerOnlyInstance = febeMessageType.hasPayload() ? null : new HeaderOnlyMessage(febeMessageType);
     }
 
     public MessageType getFeBeMessageType() {
