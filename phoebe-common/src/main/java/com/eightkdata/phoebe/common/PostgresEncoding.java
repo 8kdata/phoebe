@@ -28,12 +28,16 @@ import java.nio.charset.Charset;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * <p>Enum class to map between PostgreSQL encodings and Java encodings.
- * See PostgreSQL's source file {@code src/backend/utils/mb/encnames.c} for more information.
+ * All PostgreSQL character encodings, and their Java equivalents.
  *
- * <p>Please note that the following PostgreSQL encodings are not supported here
- * (there are no equivalent Java charsets):
- * {@code LATIN6}, {@code LATIN8}, {@code LATIN10} and {@code MULE_INTERNAL}.
+ * <p>See PostgreSQL's source file {@code src/backend/utils/mb/encnames.c} for more information.
+ * The following PostgreSQL encodings are not supported here as there are no equivalent Java charsets:
+ * <ul>
+ * <li>{@code LATIN6}
+ * <li>{@code LATIN8}
+ * <li>{@code LATIN10}
+ * <li>{@code MULE_INTERNAL}
+ * </ul>
  * Not all of the encodings here may be supported by a given JVM (provider and version),
  * and as such methods will throw exceptions if an unsupported encoding is requested.
  *
@@ -46,11 +50,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @see <a href="http://www.postgresql.org/docs/9.4/static/multibyte.html">Character Set Support</a>
  * @see <a href="http://www.postgresql.org/docs/9.4/static/multibyte.html#MULTIBYTE-TRANSLATION-TABLE">
- *      Automatic Character Set Conversion Between Server and Client
- *      </a>
+ *      Automatic Character Set Conversion Between Server and Client</a>
  */
 @ThreadSafe
-public enum PGEncoding implements CharsetHolder {
+public enum PostgresEncoding implements CharsetHolder {
+
     /** Alias for WIN1258 **/
     ABC(Charsets.WINDOWS_1258),
     /** Alias for IBM866 **/
@@ -178,7 +182,7 @@ public enum PGEncoding implements CharsetHolder {
 
     private final Charsets charset;
 
-    PGEncoding(@Nonnull Charsets charset) {
+    PostgresEncoding(@Nonnull Charsets charset) {
         this.charset = checkNotNull(charset);
     }
 
@@ -187,4 +191,5 @@ public enum PGEncoding implements CharsetHolder {
     public Charset getCharset() {
         return charset.getCharset();
     }
+
 }

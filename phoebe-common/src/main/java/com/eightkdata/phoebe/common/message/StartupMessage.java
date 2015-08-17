@@ -50,7 +50,7 @@ public class StartupMessage extends BaseMessage {
      * Regardless of the user-requested encoding, the StartupMessage should always be encoded in UTF8.
      * The server knows how to encode/decode from any server encoding, so this is the way to go.
      */
-    public static final Charset FIXED_CHARSET = PGEncoding.UTF8.getCharset();
+    public static final Charset FIXED_CHARSET = PostgresEncoding.UTF8.getCharset();
 
     private final Map<String,String> parameters;
 
@@ -82,7 +82,7 @@ public class StartupMessage extends BaseMessage {
             this.parameters.put(SessionParameters.DATABASE, parameters.getParameter(SessionParameters.USER));
         }
         if(! parameters.parameterIsSet(SessionParameters.CLIENT_ENCODING)) {
-            this.parameters.put(SessionParameters.CLIENT_ENCODING, PGEncoding.UTF8.name());
+            this.parameters.put(SessionParameters.CLIENT_ENCODING, PostgresEncoding.UTF8.name());
         }
         if(! parameters.parameterIsSet(SessionParameters.LC_MESSAGES)) {
             this.parameters.put(SessionParameters.LC_MESSAGES, "C");
