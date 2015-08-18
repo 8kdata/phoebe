@@ -26,12 +26,13 @@ package com.eightkdata.phoebe.client.encoder;
 
 import com.eightkdata.phoebe.common.Message;
 import com.eightkdata.phoebe.common.message.StartupMessage;
+import com.eightkdata.phoebe.common.util.KeyValueIterator;
 import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
-import java.util.Map;
 
 import static com.eightkdata.phoebe.common.Encoders.writeString;
 
@@ -41,14 +42,26 @@ import static com.eightkdata.phoebe.common.Encoders.writeString;
 @Immutable
 class StartupMessageEncoder implements Message.Encoder<StartupMessage> {
 
-    @Override
-    public void encode(@Nonnull StartupMessage message, @Nonnull ByteBuf out, @Nonnull Charset encoding) {
-        for (Map.Entry<String, String> param : message.getParameters().entrySet()) {
-            writeString(out, param.getKey(), encoding);
-            writeString(out, param.getValue(), encoding);
+    private static class ParametersEncoder implements KeyValueIterator {
+        private final ByteBuf byteBuf;
 
+        public ParametersEncoder(ByteBuf byteBuf) {
+            this.byteBuf = byteBuf;
         }
-        out.writeByte(0);
+
+        @Override
+        public void doWith(@Nonnull String key, @Nullable String value) {
+            if(null != value) {
+                writeString(byteBuf, key, StartupMessage.FIXED_CHARSET);
+                writeString(byteBuf, value, StartupMessage.FIXED_CHARSET);
+            }
+        }
     }
 
+    @Override
+    public void encode(@Nonnull StartupMessage message, @Nonnull final ByteBuf out, @Nonnull Charset encoding) {
+        message.iterateParameters(new ParametersEncoder(out));
+
+        out.writeByte(0);       // Signal end-of parameter list
+    }
 }

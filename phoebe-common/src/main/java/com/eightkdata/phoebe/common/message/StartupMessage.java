@@ -24,46 +24,69 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.BaseMessage;
-import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.MessageType;
-import com.eightkdata.phoebe.common.PostgresEncoding;
+import com.eightkdata.phoebe.common.*;
 import com.eightkdata.phoebe.common.util.ByteSize;
+import com.eightkdata.phoebe.common.util.KeyValueIterator;
 import com.google.common.base.MoreObjects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
-import static com.eightkdata.phoebe.common.util.Preconditions.checkTextNotNullNotEmpty;
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The startup message that is sent to establish a new connection to a PostgreSQL server.
+ * StartupMessages are always sent in SQL_ASCII encoding, as the database server may not have initialized yet the
+ * {@code client_encoding}.
  *
  * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
  */
 @Immutable
 public class StartupMessage extends BaseMessage {
-    private static final String PARAMETER_USER = "user";
-    private static final String PARAMETER_DATABASE = "database";
-    private static final String PARAMETER_CLIENT_ENCODING = "client_encoding";
+    /**
+     * Regardless of the user-requested encoding, the StartupMessage should always be encoded in UTF8.
+     * The server knows how to encode/decode from any server encoding, so this is the way to go.
+     */
+    public static final Charset FIXED_CHARSET = PostgresEncoding.UTF8.getCharset();
 
     private final Map<String,String> parameters;
 
-    private StartupMessage(@Nonnull Map<String,String> parameters) {
-        this.parameters = Collections.unmodifiableMap(parameters);
-    }
-
     /**
-     * Gets an unmodifiable Map of the parameters
+     * <p>Constructs a StartupMessage.
+     * The parameters need at lest to contain compulsory parameters {@code user}.
+     *
+     * <p>If not set:
+     * <ul>
+     *     <li>{@code database}: defaults to the {@code user}</li>
+     *     <li>{@code client_encoding}: defaults to UTF-8</li>
+     *     <li>{@code lc_messages}: defauls to C, to guarantee messages are correctly encoded
+     *     in the event of a server error when {@code client_encoding} is not set yet
+     *     (see <a href="http://www.postgresql.org/message-id/4678.1438350389@sss.pgh.pa.us">
+     *         Re: Encoding of early PG messages
+     *         </a>
+     *     )</li>
+     * </ul>
+     *
+     * @param parameters the session parameters
      */
-    public Map<String, String> getParameters() {
-        return parameters;
+    public StartupMessage(@Nonnull SessionParameters parameters) {
+        checkNotNull(parameters);
+        checkNotNull(parameters.getParameter(SessionParameters.USER));
+        this.parameters = new HashMap<String, String>(parameters.numberParameters());
+        parameters.copyTo(this.parameters);
+
+        if(! parameters.parameterIsSet(SessionParameters.DATABASE)) {
+            this.parameters.put(SessionParameters.DATABASE, parameters.getParameter(SessionParameters.USER));
+        }
+        if(! parameters.parameterIsSet(SessionParameters.CLIENT_ENCODING)) {
+            this.parameters.put(SessionParameters.CLIENT_ENCODING, PostgresEncoding.UTF8.name());
+        }
+        if(! parameters.parameterIsSet(SessionParameters.LC_MESSAGES)) {
+            this.parameters.put(SessionParameters.LC_MESSAGES, "C");
+        }
     }
 
     @Override
@@ -73,10 +96,11 @@ public class StartupMessage extends BaseMessage {
 
     @Override
     public int computePayloadLength(Charset encoding) {
-        int length = ByteSize.BYTE;     // ending '0' byte
-        for (Map.Entry<String,String> entry : parameters.entrySet()) {
-            length += Encoders.stringLength(entry.getKey(), encoding);
-            length += Encoders.stringLength(entry.getValue(), encoding);
+        int length = ByteSize.BYTE;      // ending '0' byte
+
+        for(Map.Entry<String, String> param : parameters.entrySet()) {
+            length += Encoders.stringLength(param.getKey(), FIXED_CHARSET);
+            length += Encoders.stringLength(param.getValue(), FIXED_CHARSET);
         }
 
         return length;
@@ -89,51 +113,9 @@ public class StartupMessage extends BaseMessage {
         }
     }
 
-    public static class Builder implements MessageBuilder<StartupMessage> {
-        private final Map<String,String> parameters = new LinkedHashMap<String, String>();
-
-        public Builder user(@Nonnull String user) {
-            return parameter(PARAMETER_USER, user);
+    public void iterateParameters(KeyValueIterator keyValueIterator) {
+        for (Map.Entry<String, String> param : parameters.entrySet()) {
+            keyValueIterator.doWith(param.getKey(), param.getValue());
         }
-
-        public Builder database(@Nonnull String database) {
-            return parameter(PARAMETER_DATABASE, database);
-        }
-
-        public Builder clientEncoding(@Nonnull PostgresEncoding encoding) {
-            checkArgument(encoding.getCharset() != null, "unsupported client encoding: %s", encoding);
-
-            return parameter(PARAMETER_CLIENT_ENCODING, encoding.name());
-        }
-
-        public Builder parameter(@Nonnull String name, @Nonnull String value) {
-            checkTextNotNullNotEmpty(name, name);
-            checkTextNotNullNotEmpty(value, value);
-            parameters.put(name, value);
-
-            return this;
-        }
-
-        @Override
-        public StartupMessage build() {
-            checkState(parameters.get(PARAMETER_USER) != null, "no user specified");
-            if(null == parameters.get(PARAMETER_DATABASE)) {
-                database(parameters.get(PARAMETER_USER));       // Default database is the same as the username
-            }
-            if(null == parameters.get(PARAMETER_CLIENT_ENCODING)) {
-                clientEncoding(PostgresEncoding.UTF8); // Default encoding
-            }
-
-            return new StartupMessage(parameters);
-        }
-    }
-
-    /**
-     * Get a builder suitable for creating new startup messages.
-     *
-     * @return a new builder.
-     */
-    public static Builder builder() {
-        return new Builder();
     }
 }

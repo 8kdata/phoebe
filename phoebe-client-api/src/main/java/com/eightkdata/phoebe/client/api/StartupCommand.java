@@ -18,8 +18,10 @@
 
 package com.eightkdata.phoebe.client.api;
 
+
 import com.eightkdata.phoebe.client.StartupFlowHandler;
 import com.eightkdata.phoebe.common.PostgresEncoding;
+import com.eightkdata.phoebe.common.SessionParameters;
 import com.eightkdata.phoebe.common.message.*;
 import io.netty.channel.Channel;
 
@@ -63,12 +65,12 @@ public class StartupCommand implements StartupFlowHandler.Callback {
     }
 
     void writeTo(Channel channel) {
-        StartupMessage message = StartupMessage.builder()
-                .user(user)
-                .database(database)
-                .clientEncoding(encoding)
-                .build();
-        channel.writeAndFlush(message);
+        SessionParameters sessionParameters = new SessionParameters()
+                .setParameter(SessionParameters.USER, user)
+                .setParameter(SessionParameters.DATABASE, database)
+                .setParameter(SessionParameters.CLIENT_ENCODING, encoding.name());
+
+        channel.writeAndFlush(new StartupMessage(sessionParameters));
     }
 
     @Override
