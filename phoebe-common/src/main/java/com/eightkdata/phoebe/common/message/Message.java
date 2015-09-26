@@ -21,26 +21,21 @@
  * maintenance, support, updates, enhancements, or modifications.
  */
 
-package com.eightkdata.phoebe.client.decoder;
 
-import com.eightkdata.phoebe.common.Decoders;
-import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.message.CommandComplete;
-import io.netty.buffer.ByteBuf;
+package com.eightkdata.phoebe.common.message;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.nio.charset.Charset;
 
 /**
- * Decoder for {@link CommandComplete} messages.
+ * <p>Common interface for all {@code Message}s.
+ *
+ * <p>This contract expects {@code Message}s to be immutable.
  */
-@Immutable
-class CommandCompleteDecoder implements Message.Decoder<CommandComplete> {
+public interface Message {
 
-    @Override
-    public CommandComplete decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {
-        return new CommandComplete(Decoders.readString(in, encoding));
-    }
+    @Nonnull MessageType getType();
+
+    @Nonnegative int size();
 
 }

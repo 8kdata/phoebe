@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015, 8Kdata Technologies, S.L.
+ * Copyright (c) 2015, 8Kdata Technology S.L.
  *
  * Permission to use, copy, modify, and distribute this software and its documentation for any purpose,
  * without fee, and without a written agreement is hereby granted, provided that the above copyright notice and this
@@ -15,26 +15,33 @@
  *
  */
 
-package com.eightkdata.phoebe.client.decoder;
 
-import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.message.ParameterStatus;
+package com.eightkdata.phoebe.common.message;
+
 import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
-import static com.eightkdata.phoebe.common.Decoders.readString;
+import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ *
+ */
 @Immutable
-class ParameterStatusDecoder implements Message.Decoder<ParameterStatus> {
+public abstract class AbstractCharsetByteBufMessage extends AbstractByteBufMessage implements CharsetMessage {
 
-    @Override
-    public ParameterStatus decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {
-        String name = readString(in, encoding);
-        String value = readString(in, encoding);
-        return new ParameterStatus(name, value);
+    protected final Charset charset;
+
+    public AbstractCharsetByteBufMessage(@Nonnull ByteBuf byteBuf, @Nonnull Charset charset) {
+        super(byteBuf);
+        this.charset = checkNotNull(charset);
+    }
+
+    @Override @Nonnull
+    public Charset getCharset() {
+        return charset;
     }
 
 }

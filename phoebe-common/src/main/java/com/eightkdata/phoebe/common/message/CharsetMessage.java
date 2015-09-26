@@ -21,27 +21,17 @@
  * maintenance, support, updates, enhancements, or modifications.
  */
 
-package com.eightkdata.phoebe.client.encoder;
 
-import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.message.Query;
-import io.netty.buffer.ByteBuf;
+package com.eightkdata.phoebe.common.message;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
 /**
- * An ecoder for {@link Query} messages.
+ * A {@link Message} with a {@link Charset}-dependant content
  */
-@Immutable
-class QueryMessageEncoder implements Message.Encoder<Query> {
+public interface CharsetMessage extends Message {
 
-    @Override
-    public void encode(@Nonnull Query message, @Nonnull ByteBuf out, @Nonnull Charset encoding) {
-        Encoders.writeString(out, message.getQuery(), encoding);
-
-    }
+    @Nonnull Charset getCharset();
 
 }

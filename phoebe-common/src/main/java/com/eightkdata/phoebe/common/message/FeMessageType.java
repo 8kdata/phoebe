@@ -15,29 +15,41 @@
  *
  */
 
-package com.eightkdata.phoebe.client.decoder;
 
-import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.message.AuthenticationMD5Password;
-import io.netty.buffer.ByteBuf;
-
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.nio.charset.Charset;
-
-import static com.eightkdata.phoebe.common.message.AuthenticationMD5Password.SALT_LENGTH;
+package com.eightkdata.phoebe.common.message;
 
 /**
- * Decoder for {@link AuthenticationMD5Password} messages.
+ * Created: 25/07/15
+ *
+ * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
-@Immutable
-class AuthenticationMD5PasswordDecoder implements Message.Decoder<AuthenticationMD5Password> {
+public enum FeMessageType {
+    Bind,
+    CancelRequest,
+    Close,
+    CopyData,
+    CopyDone,
+    CopyFail,
+    Describe,
+    Execute,
+    Flush,
+    FunctionCall,
+    Parse,
+    PasswordMessage,
+    Query,
+    SSLRequest,
+    StartupMessage,
+    Sync,
+    Terminate
+    ;
 
-    @Override
-    public AuthenticationMD5Password decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {
-        byte[] salt = new byte[SALT_LENGTH];
-        in.readBytes(salt);
-        return new AuthenticationMD5Password(salt);
+    private final MessageType febeMessageType;
+
+    FeMessageType() {
+        this.febeMessageType = MessageType.valueOf(name());
     }
 
+    public MessageType getFeBeMessageType() {
+        return febeMessageType;
+    }
 }

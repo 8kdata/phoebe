@@ -23,16 +23,14 @@
 
 package com.eightkdata.phoebe.client.encoder;
 
-import com.eightkdata.phoebe.common.Message;
+import com.eightkdata.phoebe.common.message.Message;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 
 import java.util.List;
 
 /**
- * Created: 30/07/15
  *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
 public class FeMessageProcessor extends MessageToMessageEncoder<Message> {
 

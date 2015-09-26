@@ -24,16 +24,18 @@
 
 package com.eightkdata.phoebe.client;
 
-import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.MessageType;
-import com.eightkdata.phoebe.common.message.*;
+import com.eightkdata.phoebe.common.message.Message;
+import com.eightkdata.phoebe.common.message.MessageType;
+import com.eightkdata.phoebe.common.messages.AuthenticationMD5Password;
+import com.eightkdata.phoebe.common.messages.MessageEncoders;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 
 import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static com.eightkdata.phoebe.common.MessageType.*;
+import static com.eightkdata.phoebe.common.message.MessageType.*;
 
 /**
  * Handler for the startup message flow.
@@ -49,18 +51,17 @@ public class StartupFlowHandler extends FlowHandler {
     );
 
     private final Callback callback;
+    private final MessageEncoders messageEncoders;
 
-    public StartupFlowHandler(Callback callback) {
+    public StartupFlowHandler(Callback callback, ByteBufAllocator byteBufAllocator) {
         super(STARTUP_FLOW_MESSAGES);
         this.callback = callback;
+        messageEncoders = new MessageEncoders(byteBufAllocator);
     }
 
     @Override
     public boolean handle(Channel channel, Message message, Charset encoding) {
         switch (message.getType()) {
-            case AuthenticationCleartextPassword:
-                onAuthenticationCleartextPassword(channel);
-                break;
             case AuthenticationGSS:
                 onAuthenticationGSS();
                 break;
@@ -83,21 +84,14 @@ public class StartupFlowHandler extends FlowHandler {
             case AuthenticationSSPI:
                 onAuthenticationSSPI();
                 break;
-            case BackendKeyData:
-                assert message instanceof BackendKeyData;
-                callback.onBackendKeyData((BackendKeyData) message);
-                break;
-            case ErrorResponse:
-                assert message instanceof ErrorResponse;
-                callback.onFailed((ErrorResponse) message);
-                break;
             case ParameterStatus:
-                assert message instanceof ParameterStatus;
-                callback.onParameterStatus((ParameterStatus) message);
+                onParameterStatus();
+                break;
+            case BackendKeyData:
+                onBackendKeyData();
                 break;
             case ReadyForQuery:
-                assert message instanceof ReadyForQuery;
-                callback.onCompleted((ReadyForQuery) message);
+                onReadyForQuery();
                 break;
             default:
                 throw new UnsupportedOperationException(message.getType().name() + " is not part of the startup message flow");
@@ -105,14 +99,24 @@ public class StartupFlowHandler extends FlowHandler {
         return false;
     }
 
+    public void onParameterStatus() {
+        // Do nothing, needs no reply.
+        // TODO: provide a callback to update session information with the value of these parameters
+    }
+
+    public void onBackendKeyData() {
+        // Do nothing, needs no reply.
+        // TODO: provide a callback to update session information with the value of these parameters
+    }
+
+    public void onReadyForQuery() {
+        // TODO: report to the flow we're ready for user queries
+    }
+
     /**
      * Called when the authentication exchange is successfully completed.
      */
     public void onAuthenticationOk() {
-    }
-
-    public void onAuthenticationCleartextPassword(Channel channel) {
-        channel.writeAndFlush(new PasswordMessage(callback.getPassword()));
     }
 
     public void onAuthenticationGSS() {
@@ -128,9 +132,8 @@ public class StartupFlowHandler extends FlowHandler {
     }
 
     public void onAuthenticationMD5Password(Channel channel, AuthenticationMD5Password message, Charset encoding) {
-        System.out.println(">>> " + message);
         String passwordHash = message.response(callback.getUsername(), callback.getPassword(), encoding);
-        channel.writeAndFlush(new PasswordMessage(passwordHash));
+        channel.writeAndFlush(messageEncoders.passwordMessage(encoding, passwordHash));
     }
 
     public void onAuthenticationSCMCredential() {
@@ -145,10 +148,7 @@ public class StartupFlowHandler extends FlowHandler {
         String getUsername();
         String getPassword();
 
-        void onBackendKeyData(BackendKeyData message);
-        void onParameterStatus(ParameterStatus message);
-        void onCompleted(ReadyForQuery message);
-        void onFailed(ErrorResponse message);
+
         // todo: onNoticeResponse
     }
 

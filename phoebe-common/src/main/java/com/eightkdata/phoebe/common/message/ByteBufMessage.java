@@ -21,37 +21,20 @@
  * maintenance, support, updates, enhancements, or modifications.
  */
 
-package com.eightkdata.phoebe.client.decoder;
 
-import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.message.DataRow;
+package com.eightkdata.phoebe.common.message;
+
 import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Decoder for {@link DataRow} messages.
+ * A {@link CharsetMessage} backed by a {@link ByteBuf}.
+ * It should provide getters as wrapper methods to read from the ByteBuf.
+ * ByteBuf needs to be of exactly the size of the serialized message and initialized at construction time.
  */
-@Immutable
-class DataRowDecoder implements Message.Decoder<DataRow> {
+public interface ByteBufMessage extends Message {
 
-    @Override
-    public DataRow decode(@Nonnull ByteBuf in, @Nonnull Charset encoding) {
-        int numFields = in.readShort();
-        List<Object> fields = new ArrayList<Object>(numFields);
-        for (int i = 0; i < numFields; ++i) {
-            int fieldLength = in.readInt();
-            if (fieldLength == -1) {
-                fields.add(DataRow.NULL);
-            } else {
-                fields.add(in.readSlice(fieldLength));
-            }
-        }
-        return new DataRow(fields);
-    }
+    @Nonnull ByteBuf getByteBuf();
 
 }

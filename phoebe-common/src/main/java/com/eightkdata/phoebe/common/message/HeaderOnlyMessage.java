@@ -24,15 +24,11 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.BaseMessage;
-import com.eightkdata.phoebe.common.MessageType;
+
 import com.google.common.base.MoreObjects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.nio.charset.Charset;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A simple message that contains no variable data.
@@ -40,25 +36,25 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Instances of this class are immutable and may be shared and reused across threads.
  */
 @Immutable
-public class HeaderOnlyMessage extends BaseMessage {
+public class HeaderOnlyMessage extends AbstractMessage {
     private final MessageType messageType;
 
-    public HeaderOnlyMessage(@Nonnull MessageType messageType) {
-        this.messageType = checkNotNull(messageType);
+    public HeaderOnlyMessage(MessageType messageType) {
+        this.messageType = messageType;
     }
 
-    @Override
+    @Override @Nonnull
     public MessageType getType() {
         return messageType;
     }
 
     @Override
-    public int computePayloadLength(Charset encoding) {
-        return 0;
+    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
+        // Do nothing. Message contains no payload
     }
 
     @Override
-    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
-        // Do nothing. Header-only messages contain no payload
+    public int size() {
+        return 0;
     }
 }

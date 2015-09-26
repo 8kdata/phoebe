@@ -1,58 +1,63 @@
 /*
- * Copyright (c) 2009-2014, 8Kdata Technologies, S.L.
+ * Copyright (c) 2015, 8Kdata Technology S.L.
+ *
+ * Permission to use, copy, modify, and distribute this software and its documentation for any purpose,
+ * without fee, and without a written agreement is hereby granted, provided that the above copyright notice and this
+ * paragraph and the following two paragraphs appear in all copies.
+ *
+ * IN NO EVENT SHALL 8Kdata BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES,
+ * INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF 8Kdata HAS BEEN
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * 8Kdata SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS,
+ * AND 8Kdata HAS NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+ *
  */
+
 
 package com.eightkdata.phoebe.client.encoder;
 
-import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.MessageType;
+import com.eightkdata.phoebe.common.message.ByteBufMessage;
+import com.eightkdata.phoebe.common.message.MessageType;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
 import javax.annotation.concurrent.Immutable;
-import java.nio.charset.Charset;
 
 /**
- * Created: 29/07/15
  *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
 @Immutable
-public class FeMessageEncoder extends MessageToByteEncoder<Message> {
-    private final Charset encoding;
+public class FeMessageEncoder extends MessageToByteEncoder<ByteBufMessage> {
 
-    public FeMessageEncoder(Charset encoding) {
-        this.encoding = encoding;
+    @Override
+    protected void encode(ChannelHandlerContext ctx, ByteBufMessage message, ByteBuf out) throws Exception {
+        assert out instanceof CompositeByteBuf : "out ByteBuf must be a composite ByteBuf";
+
+        MessageType messageType = message.getType();
+
+        // Write Header
+        ByteBuf header = ctx.alloc().directBuffer(messageType.headerLength(), messageType.headerLength());
+        if (messageType.hasType()) {
+            header.writeByte(messageType.getType());
+        }
+        header.writeInt(messageType.headerLength() + message.size());
+        if(messageType.hasSubType()) {
+            header.writeInt(messageType.getSubtype());
+        }
+
+        // Compose the header + body message
+        CompositeByteBuf wholeMessage = (CompositeByteBuf) out;
+        wholeMessage.addComponent(header);
+        wholeMessage.addComponent(message.getByteBuf());
+        wholeMessage.writerIndex(wholeMessage.capacity());
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, Message message, ByteBuf out) throws Exception {
-        int payloadSize = message.computePayloadLength(encoding);
-        MessageType messageType = message.getType();
-        int totalSize = messageType.headerLength() + payloadSize;
-        int feMessageSize = messageType.hasType() ? totalSize - 1 : totalSize;
-
-        // reserve extra space if necessary
-        if (totalSize > out.capacity()) {
-            out.capacity(totalSize);
-        }
-
-        // Header
-        if (messageType.hasType()) {
-            out.writeByte(messageType.getType());
-        }
-        out.writeInt(feMessageSize);
-        if(messageType.hasSubType()) {
-            out.writeInt(messageType.getSubtype());
-        }
-
-        // Payload
-        Message.Encoder encoder = FeMessageTypeEncoder.valueOf(messageType.name()).getEncoder();
-        if(null == encoder) {
-            throw new UnsupportedOperationException(messageType + " Encoder");
-        }
-
-        encoder.encode(message, out, encoding);
+    protected ByteBuf allocateBuffer(ChannelHandlerContext ctx, ByteBufMessage msg, boolean preferDirect) throws Exception {
+        return new CompositeByteBuf(ctx.alloc(), true, 2);
     }
 }

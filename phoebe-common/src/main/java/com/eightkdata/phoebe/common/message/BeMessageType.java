@@ -16,7 +16,7 @@
  */
 
 
-package com.eightkdata.phoebe.common;
+package com.eightkdata.phoebe.common.message;
 
 import com.google.common.base.Preconditions;
 

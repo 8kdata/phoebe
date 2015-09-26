@@ -30,6 +30,6 @@ import javax.annotation.Nullable;
 /**
  * A SAM-type interface for read-only iteration of key-value data structures.
  */
-public interface KeyValueIterator {
-    void doWith(@Nonnull String key, @Nullable String value);
+public interface KeyValueIterator<K,V> {
+    void doWith(@Nonnull K key, @Nullable V value);
 }

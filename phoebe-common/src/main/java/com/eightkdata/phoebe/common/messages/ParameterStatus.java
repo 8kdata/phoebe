@@ -22,50 +22,42 @@
  */
 
 
-package com.eightkdata.phoebe.common.message;
+package com.eightkdata.phoebe.common.messages;
 
-import com.eightkdata.phoebe.common.BaseMessage;
-import com.eightkdata.phoebe.common.Encoders;
-import com.eightkdata.phoebe.common.MessageType;
-import com.google.common.base.MoreObjects;
+import com.eightkdata.phoebe.common.SessionParameters;
+import com.eightkdata.phoebe.common.message.MessageType;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 
-import static com.eightkdata.phoebe.common.util.Preconditions.checkTextNotNullNotEmpty;
-
 /**
+ *
  * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
  */
 @Immutable
-public class Query extends BaseMessage {
-    private final String query;
+public class ParameterStatus extends AbstractSetKeyValueMessage {
 
-    public Query(@Nonnull String query) {
-        this.query = checkTextNotNullNotEmpty(query, "query");
+    public ParameterStatus(@Nonnull ByteBuf byteBuf, @Nonnull Charset charset) {
+        super(byteBuf, charset);
     }
 
-    /**
-     * Get the query that this message represents.
-     * @return the SQL query
-     */
-    public String getQuery() {
-        return query;
+    static ParameterStatus encode(
+            @Nonnull ByteBufAllocator byteBufAllocator, @Nonnull Charset charset,
+            @Nonnull SessionParameters sessionParameters
+    ) {
+        return new ParameterStatus(
+                encodeToByteBuf(byteBufAllocator, charset, sessionParameters.parametersMap()),
+                charset
+        );
     }
+
 
     @Override
     public MessageType getType() {
-        return MessageType.Query;
+        return MessageType.ParameterStatus;
     }
 
-    @Override
-    public int computePayloadLength(Charset encoding) {
-        return Encoders.stringLength(query, encoding);
-    }
-
-    @Override
-    public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
-        toStringHelper.add("query", query);
-    }
 }

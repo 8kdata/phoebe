@@ -1,17 +1,14 @@
 package com.eightkdata.phoebe.client;
 
-import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.MessageType;
-import com.eightkdata.phoebe.common.message.DataRow;
-import com.eightkdata.phoebe.common.message.ErrorResponse;
-import com.eightkdata.phoebe.common.message.ReadyForQuery;
+import com.eightkdata.phoebe.common.message.Message;
+import com.eightkdata.phoebe.common.message.MessageType;
 import io.netty.channel.Channel;
 
 import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static com.eightkdata.phoebe.common.MessageType.*;
+import static com.eightkdata.phoebe.common.message.MessageType.*;
 
 /**
  * Handler for the simple query message flow.
@@ -43,26 +40,11 @@ public class SimpleQueryFlowHandler extends FlowHandler {
             case CopyOutResponse:
                 onCopyOutResponse();
                 break;
-            case DataRow:
-                assert message instanceof DataRow;
-                onDataRow((DataRow) message);
-                break;
             case EmptyQueryResponse:
                 callback.onCompleted();
                 break;
-            case ErrorResponse:
-                assert message instanceof ErrorResponse;
-                callback.onFailed((ErrorResponse) message);
-                break;
             case NoticeResponse:
                 onNoticeResponse();
-                break;
-            case RowDescription:
-                onRowDescription();
-                break;
-            case ReadyForQuery:
-                assert message instanceof ReadyForQuery;
-                callback.onCompleted((ReadyForQuery) message);
                 break;
             default:
                 throw new UnsupportedOperationException(message.getType().name() + " is not part of the startup message flow");
@@ -91,20 +73,7 @@ public class SimpleQueryFlowHandler extends FlowHandler {
         throw new UnsupportedOperationException("");
     }
 
-    /**
-     * Called when rows are about to be returned.
-     *
-     * This will be followed by a call to {@link #onDataRow(DataRow)} for each row being returned.
-     */
-    public void onRowDescription() {
-        // fixme: handle RowDescription
-        // this should call a handler method with useful column information, probably not the raw message data
-    }
 
-    public void onDataRow(DataRow message) {
-        // fixme: handle DataRow
-        // this should call a handler method with useful column information, probably not the raw message data
-    }
 
     public void onNoticeResponse() {
         throw new UnsupportedOperationException("NoticeResponse");
@@ -113,8 +82,6 @@ public class SimpleQueryFlowHandler extends FlowHandler {
 
     public interface Callback {
         void onCompleted(/* EmptyQueryResponse */);
-        void onCompleted(ReadyForQuery message);
-        void onFailed(ErrorResponse message);
     }
 
 }

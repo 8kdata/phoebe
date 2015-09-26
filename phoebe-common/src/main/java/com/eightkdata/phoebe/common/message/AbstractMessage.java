@@ -18,13 +18,31 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.Message;
+import com.google.common.base.MoreObjects;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
- * Created: 26/07/15
  *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
-public interface MessageBuilder<T extends Message> {
-    T build();
+@Immutable
+public abstract class AbstractMessage implements Message {
+
+    @Override
+    public String toString() {
+        MoreObjects.ToStringHelper toStringHelper = MoreObjects.toStringHelper(getType().name());
+        fillInPayloadInformation(toStringHelper);
+
+        return toStringHelper.toString();
+    }
+
+    /**
+     * toString()-type method to output information about this message's payload.
+     * Default implementation does not print any payload information, override to do it.
+     * Call the ToStringHelper.add(String, xxx) methods to always include param name information.
+     *
+     * @param toStringHelper the ToStringHelper where to write the payload information
+     */
+    public abstract void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper);
+
 }

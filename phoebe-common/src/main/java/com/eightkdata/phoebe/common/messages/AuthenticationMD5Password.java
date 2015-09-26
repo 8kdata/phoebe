@@ -16,12 +16,15 @@
  */
 
 
-package com.eightkdata.phoebe.common.message;
+package com.eightkdata.phoebe.common.messages;
 
-import com.eightkdata.phoebe.common.BaseFixedLengthMessage;
-import com.eightkdata.phoebe.common.MessageType;
+import com.eightkdata.phoebe.common.message.AbstractByteBufMessage;
+import com.eightkdata.phoebe.common.message.MessageType;
+import com.eightkdata.phoebe.common.util.MD5;
 import com.google.common.base.MoreObjects;
 import com.google.common.io.BaseEncoding;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -31,20 +34,25 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created: 26/07/15
  *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
  */
 @Immutable
-public final class AuthenticationMD5Password extends BaseFixedLengthMessage {
+public final class AuthenticationMD5Password extends AbstractByteBufMessage {
     public static final int SALT_LENGTH = 4;
 
-    private final byte[] salt;
+    public AuthenticationMD5Password(@Nonnull ByteBuf byteBuf) {
+        super(byteBuf);
+    }
 
-    public AuthenticationMD5Password(@Nonnull byte[] salt) {
-        this.salt = checkNotNull(salt, "salt");
-        checkArgument(salt.length == SALT_LENGTH, "salt must be %s bytes, found %d", SALT_LENGTH, salt.length);
+    static AuthenticationMD5Password encode(@Nonnull ByteBufAllocator byteBufAllocator, @Nonnull byte[] salt) {
+        checkNotNull(salt);
+        checkArgument(SALT_LENGTH == salt.length, "salt must be %s bytes, found %d", SALT_LENGTH, salt.length);
+
+        ByteBuf byteBuf = allocateByteBuf(byteBufAllocator, SALT_LENGTH);
+        byteBuf.writeBytes(salt);
+
+        return new AuthenticationMD5Password(byteBuf);
     }
 
     /**
@@ -54,7 +62,10 @@ public final class AuthenticationMD5Password extends BaseFixedLengthMessage {
      * @return the salt
      */
     public @Nonnull byte[] getSalt() {
-        return salt.clone();
+        byte[] salt = new byte[SALT_LENGTH];
+        byteBuf.getBytes(0, salt);
+
+        return salt;
     }
 
     /**
@@ -65,7 +76,7 @@ public final class AuthenticationMD5Password extends BaseFixedLengthMessage {
      * @return the response string, suitable for using with a {@link PasswordMessage}.
      */
     public String response(String username, String password, Charset encoding) {
-        return MD5.encode(username, password, salt, encoding);
+        return MD5.encode(username, password, getSalt(), encoding);
     }
 
     @Override
@@ -77,7 +88,7 @@ public final class AuthenticationMD5Password extends BaseFixedLengthMessage {
     public void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper) {
         toStringHelper.add(
                 "salt",
-                "0x" + BaseEncoding.base16().lowerCase().encode(salt)
+                "0x" + BaseEncoding.base16().lowerCase().encode(getSalt())
         );
     }
 }

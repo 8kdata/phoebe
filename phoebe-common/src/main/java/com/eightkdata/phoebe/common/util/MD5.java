@@ -16,7 +16,7 @@
  */
 
 
-package com.eightkdata.phoebe.common.message;
+package com.eightkdata.phoebe.common.util;
 
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
@@ -25,7 +25,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Static methods for working with MD5 passwords.
  */
-class MD5 {
+public class MD5 {
 
     private static final Charset ASCII = Charset.forName("US-ASCII");
 

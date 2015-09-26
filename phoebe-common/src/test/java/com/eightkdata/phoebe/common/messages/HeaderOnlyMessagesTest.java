@@ -22,9 +22,10 @@
  */
 
 
-package com.eightkdata.phoebe.common.message;
+package com.eightkdata.phoebe.common.messages;
 
-import com.eightkdata.phoebe.common.MessageType;
+import com.eightkdata.phoebe.common.message.HeaderOnlyMessages;
+import com.eightkdata.phoebe.common.message.MessageType;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -35,8 +36,8 @@ public class HeaderOnlyMessagesTest {
     public void everyInstanceIsHeaderOnlyMessage() {
         for(HeaderOnlyMessages value : HeaderOnlyMessages.values()) {
             assertTrue(
-                    "Header-only instance '" + value.name() + "' has payload, when it shouldn't",
-                    ! value.getHeaderOnlyMessage().getType().hasPayload()
+                    "Header-only get '" + value.name() + "' has payload, when it shouldn't",
+                    ! value.getInstance().getType().hasPayload()
             );
         }
     }
@@ -48,7 +49,7 @@ public class HeaderOnlyMessagesTest {
                 assertNotNull(
                         "Header-only message '" + messageType.name() + "' is not added to the instances in "
                                 + HeaderOnlyMessages.class.getSimpleName(),
-                        HeaderOnlyMessages.getInstance(messageType)
+                        HeaderOnlyMessages.getByMessageType(messageType)
                 );
             }
         }

@@ -22,7 +22,7 @@
  */
 
 
-package com.eightkdata.phoebe.common.message;
+package com.eightkdata.phoebe.common;
 
 import com.eightkdata.phoebe.common.type.TypeFormat;
 

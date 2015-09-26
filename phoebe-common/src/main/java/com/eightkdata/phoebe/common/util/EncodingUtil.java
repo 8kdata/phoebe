@@ -21,9 +21,10 @@
  * maintenance, support, updates, enhancements, or modifications.
  */
 
-package com.eightkdata.phoebe.common;
+package com.eightkdata.phoebe.common.util;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 
 import javax.annotation.Nonnull;
 import java.nio.charset.Charset;
@@ -31,10 +32,25 @@ import java.nio.charset.Charset;
 /**
  * Static helper methods useful when writing encoders.
  */
-public class Encoders {
+public class EncodingUtil {
+    private EncodingUtil() {}
 
-    public static void writeString(@Nonnull ByteBuf buf, @Nonnull String s, @Nonnull Charset encoding) {
-        buf.writeBytes(s.getBytes(encoding)).writeByte(0);
+    /**
+     * Writes the given String to the ByteBuf as a C-String, i.e., a string terminated by the null byte ('0')
+     *
+     * @param buf The buffer where to write
+     * @param s The string
+     * @param encoding Encoding to use to write the string
+     */
+    public static void writeCString(@Nonnull ByteBuf buf, @Nonnull String s, @Nonnull Charset encoding) {
+        if(Charsets.US_ASCII.getCharset() == encoding)
+            ByteBufUtil.writeAscii(buf, s);
+        else if(Charsets.UTF_8.getCharset() == encoding)
+            ByteBufUtil.writeUtf8(buf, s);
+        else
+            buf.writeBytes(s.getBytes(encoding));
+
+        buf.writeByte(0);
     }
 
     // message field sizes, these may seem a bit superfluous but they match the data types described in
@@ -68,10 +84,10 @@ public class Encoders {
 
     }
 
-    public static int stringLength(@Nonnull String s, @Nonnull Charset encoding) {
-        return s.getBytes(encoding).length + 1;
+    public static int lengthCString(@Nonnull String s, @Nonnull Charset encoding) {
+        // TODO: compute the length without producing and copying the byte[] of getBytes, at least for
+        // UTF-8 and ASCII/iso-8859-1 encodings
+
+        return s.getBytes(encoding).length + ByteSize.BYTE;     // null ending byte
     }
-
-    private Encoders() {}
-
 }

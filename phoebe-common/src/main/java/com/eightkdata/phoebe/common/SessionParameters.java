@@ -20,6 +20,7 @@ package com.eightkdata.phoebe.common;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,6 +58,14 @@ public class SessionParameters {
         return this;
     }
 
+    public SessionParameters user(@Nonnull String user) {
+        return setParameter(USER, user);
+    }
+
+    public SessionParameters database(@Nonnull String database) {
+        return setParameter(USER, database);
+    }
+
     @Nullable
     public String getParameter(@Nonnull String name) {
         checkTextNotNullNotEmpty(name, "Parameter name cannot be empty");
@@ -74,7 +83,14 @@ public class SessionParameters {
         return parameters.size();
     }
 
-    public void copyTo(Map<String,String> map) {
-        map.putAll(parameters);
+    /**
+     * Returns a deep copy of the session parameters
+     * @return
+     */
+    public Map<String,String> parametersMap() {
+        Map<String,String> result = new HashMap<String, String>(parameters.size());
+        result.putAll(parameters);
+
+        return result;
     }
 }

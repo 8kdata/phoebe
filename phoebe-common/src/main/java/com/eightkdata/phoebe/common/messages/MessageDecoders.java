@@ -21,39 +21,32 @@
  * maintenance, support, updates, enhancements, or modifications.
  */
 
-package com.eightkdata.phoebe.common;
 
+package com.eightkdata.phoebe.common.messages;
+
+import com.eightkdata.phoebe.common.message.Message;
+import com.eightkdata.phoebe.common.message.MessageType;
 import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.CorruptedFrameException;
 
+import javax.annotation.Nonnull;
 import java.nio.charset.Charset;
 
 /**
- * Static helper methods, needed because Java 6 does not support extension methods.
+ *
  */
-public class Decoders {
+public class MessageDecoders {
 
-    public static String checkNotNullOrEmpty(String value, String name) {
-        if (value == null || value.isEmpty()) {
-            throw new NullPointerException(name);
-        }
-        return value;
-    }
+    public static Message decode(@Nonnull MessageType messageType, @Nonnull ByteBuf byteBuf, @Nonnull Charset charset) {
+        switch (messageType) {
+            case AuthenticationMD5Password:     return new AuthenticationMD5Password(byteBuf);
+            case PasswordMessage:               return new PasswordMessage(byteBuf, charset);
+            case StartupMessage:                return new StartupMessage(byteBuf, charset);
+            case ParameterStatus:               return new ParameterStatus(byteBuf, charset);
+            case BackendKeyData:                return new BackendKeyData(byteBuf);
+            case ReadyForQuery:                 return new ReadyForQuery(byteBuf);
 
-    public static String readString(ByteBuf in, Charset encoding) {
-        int length = in.bytesBefore((byte) 0);
-        switch (length) {
-            case -1: throw new CorruptedFrameException("unterminated string");
-            case 0:
-                in.readByte(); // discard the trailing zero
-                return "";
-            default:
-                String s = in.readSlice(length).toString(encoding);
-                in.readByte(); // discard the trailing zero
-                return s;
+            default:    throw new UnsupportedOperationException("No decoder for message type " + messageType);
         }
     }
-
-    private Decoders() {}
 
 }

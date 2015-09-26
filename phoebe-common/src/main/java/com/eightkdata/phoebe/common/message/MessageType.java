@@ -16,7 +16,7 @@
  */
 
 
-package com.eightkdata.phoebe.common;
+package com.eightkdata.phoebe.common.message;
 
 import com.eightkdata.phoebe.common.util.ByteSize;
 import com.google.common.base.Preconditions;
@@ -30,7 +30,7 @@ import static com.eightkdata.phoebe.common.FeBe.*;
 
 /**
  * Defines every type of possible message in the protocol.
- * The message type defines the byte type and integer subtype identifiers, whether it has a fixed or variable length
+ * The message type defines the byte type and integer subtype identifiers, whether it has a fixed or variable decodingLength
  * and provides several convenient methods to query these and other properties of the message type.
  */
 public enum MessageType {
@@ -99,7 +99,7 @@ public enum MessageType {
             justification = "this.type initialization should not be performing any implicit unboxing"
     )
     MessageType(@Nullable Character type, @Nullable Integer length, @Nullable Integer subType) {
-        Preconditions.checkArgument(null == length || length > 0, "Illegal message length");
+        Preconditions.checkArgument(null == length || length > 0, "Illegal message decodingLength");
 
         this.hasType = (null != type);
         this.type = this.hasType ? (byte) type.charValue() : NOT_APPLICABLE;
@@ -120,7 +120,7 @@ public enum MessageType {
     }
 
     private int computeHeaderLength(Character type, Integer subtype) {
-        int headerLength = ByteSize.INTEGER;                        // length field
+        int headerLength = ByteSize.INTEGER;                        // decodingLength field
         if (null != type) { headerLength += ByteSize.BYTE; }        // byte field
         if (null != subtype) { headerLength += ByteSize.INTEGER; }  // subtype field
 
@@ -163,32 +163,32 @@ public enum MessageType {
     }
 
     /**
-     * Whether the message has a pre-defined or variable length
+     * Whether the message has a pre-defined or variable decodingLength
      *
-     * @return true if the length of every message of this type is known a priori, independently of the message payload
+     * @return true if the decodingLength of every message of this type is known a priori, independently of the message payload
      */
     public boolean isFixedLengthMessage() {
         return isFixedLengthMessage;
     }
 
     /**
-     * The length in bytes for fixed-length messages, or {@code -1} if the length is variable.
-     * This is the length considered by PostgreSQL. It does exclude the byte type, if present.
+     * The decodingLength in bytes for fixed-decodingLength messages, or {@code -1} if the decodingLength is variable.
+     * This is the decodingLength considered by PostgreSQL. It does exclude the byte type, if present.
      */
     public int getFixedMessageLength() {
         return fixedMessageLength;
     }
 
     /**
-     * The total length in bytes for fixed-length messages, or {@code -1} if the length is variable.
-     * This is the total length of the message, including the byte type, if present.
+     * The total decodingLength in bytes for fixed-decodingLength messages, or {@code -1} if the decodingLength is variable.
+     * This is the total decodingLength of the message, including the byte type, if present.
      */
     public int getFixedTotalMessageLength() {
         return fixedTotalMessageLength;
     }
 
     /**
-     * The header length, including the byte type, if present
+     * The header decodingLength, including the byte type, if present
      */
     @Nonnegative
     public int headerLength() {
@@ -196,9 +196,9 @@ public enum MessageType {
     }
 
     /**
-     * If the message has fixed length, then returns the length of the payload
+     * If the message has fixed decodingLength, then returns the decodingLength of the payload
      *
-     * @return the length of the payload for fixed-length messages or {@code -1} for variable-length messages
+     * @return the decodingLength of the payload for fixed-decodingLength messages or {@code -1} for variable-decodingLength messages
      */
     public int payloadLength() {
         return isFixedLengthMessage ? fixedTotalMessageLength - headerLength : NOT_APPLICABLE;
