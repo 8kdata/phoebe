@@ -19,8 +19,8 @@
 package com.eightkdata.phoebe.client.encoder;
 
 import com.eightkdata.phoebe.common.message.ByteBufMessage;
+import com.eightkdata.phoebe.common.message.MessageHeaderEncoder;
 import com.eightkdata.phoebe.common.message.MessageType;
-import com.eightkdata.phoebe.common.util.ByteBufAllocatorUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -34,6 +34,12 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class FeMessageEncoder extends MessageToByteEncoder<ByteBufMessage> {
 
+    private final MessageHeaderEncoder messageHeaderEncoder;
+
+    public FeMessageEncoder(MessageHeaderEncoder messageHeaderEncoder) {
+        this.messageHeaderEncoder = messageHeaderEncoder;
+    }
+
     @Override
     protected void encode(ChannelHandlerContext ctx, ByteBufMessage message, ByteBuf out) throws Exception {
         assert out instanceof CompositeByteBuf : "out ByteBuf must be a composite ByteBuf";
@@ -41,14 +47,7 @@ public class FeMessageEncoder extends MessageToByteEncoder<ByteBufMessage> {
         MessageType messageType = message.getType();
 
         // Write Header
-        ByteBuf header = ByteBufAllocatorUtil.allocNonStringByteBuf(ctx.alloc(), messageType.headerLength());
-        if (messageType.hasType()) {
-            header.writeByte(messageType.getType());
-        }
-        header.writeInt(messageType.headerLength() + message.size());
-        if(messageType.hasSubType()) {
-            header.writeInt(messageType.getSubtype());
-        }
+        ByteBuf header = messageHeaderEncoder.encodeHeader(messageType, message.size());
 
         // Compose the header + body message
         CompositeByteBuf wholeMessage = (CompositeByteBuf) out;
@@ -62,4 +61,5 @@ public class FeMessageEncoder extends MessageToByteEncoder<ByteBufMessage> {
     throws Exception {
         return new CompositeByteBuf(ctx.alloc(), true, 2);
     }
+
 }

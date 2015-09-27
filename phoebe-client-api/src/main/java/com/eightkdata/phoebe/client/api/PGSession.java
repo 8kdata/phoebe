@@ -25,6 +25,7 @@ import com.eightkdata.phoebe.client.decoder.BeMessageProcessor;
 import com.eightkdata.phoebe.client.encoder.FeMessageEncoder;
 import com.eightkdata.phoebe.client.encoder.FeMessageProcessor;
 import com.eightkdata.phoebe.common.SessionParameters;
+import com.eightkdata.phoebe.common.message.MessageHeaderEncoder;
 import com.eightkdata.phoebe.common.messages.MessageEncoders;
 import com.eightkdata.phoebe.common.messages.StartupMessage;
 import io.netty.channel.Channel;
@@ -42,6 +43,7 @@ public class PGSession {
 
     private final Channel channel;
     private final MessageEncoders messageEncoders;
+    private final MessageHeaderEncoder messageHeaderEncoder;
 
     // todo: use ConcurrentLinkedDeque once we switch to Java 1.7 or later
     private final Deque<FlowHandler> handlers = new LinkedBlockingDeque<FlowHandler>();
@@ -49,6 +51,7 @@ public class PGSession {
     public PGSession(Channel channel) {
         this.channel = checkNotNull(channel, "channel");
         messageEncoders = new MessageEncoders(channel.alloc());
+        messageHeaderEncoder = new MessageHeaderEncoder(channel.alloc());
     }
 
     private void initChannel(Charset encoding) {
@@ -56,7 +59,7 @@ public class PGSession {
                 .addLast("PGInboundMessageDecoder", new BeMessageDecoder(encoding))
                 .addLast("PGInboundMessageProcessor", new BeMessageProcessor(handlers, encoding))
 
-                .addLast("PGOutboundMessageEncoder", new FeMessageEncoder())
+                .addLast("PGOutboundMessageEncoder", new FeMessageEncoder(messageHeaderEncoder))
                 .addLast("PGOutboundMessageProcessor", new FeMessageProcessor());
     }
 
@@ -73,6 +76,7 @@ public class PGSession {
 
     public void close() {
         // Release any acquired resources
+        messageHeaderEncoder.releaseByteBufs();
     }
 
 }
