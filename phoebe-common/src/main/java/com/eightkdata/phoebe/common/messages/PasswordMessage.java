@@ -20,6 +20,7 @@ package com.eightkdata.phoebe.common.messages;
 
 import com.eightkdata.phoebe.common.message.AbstractCharsetByteBufMessage;
 import com.eightkdata.phoebe.common.message.MessageType;
+import com.eightkdata.phoebe.common.util.ByteBufAllocatorUtil;
 import com.eightkdata.phoebe.common.util.ByteSize;
 import com.eightkdata.phoebe.common.util.DecodingUtil;
 import com.eightkdata.phoebe.common.util.EncodingUtil;
@@ -48,7 +49,7 @@ public final class PasswordMessage extends AbstractCharsetByteBufMessage {
             @Nonnull ByteBufAllocator byteBufAllocator, @Nonnull Charset charset, @Nonnull CharSequence password
     ) {
         checkNotNull(password);
-        ByteBuf byteBuf = allocateByteBuf(
+        ByteBuf byteBuf = ByteBufAllocatorUtil.allocStringByteBuf(
                 byteBufAllocator, EncodingUtil.lengthCString(password.toString(), charset)
         );
         EncodingUtil.writeCString(byteBuf, password.toString(), charset);

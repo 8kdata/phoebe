@@ -20,6 +20,7 @@ package com.eightkdata.phoebe.common.messages;
 
 import com.eightkdata.phoebe.common.message.AbstractByteBufMessage;
 import com.eightkdata.phoebe.common.message.MessageType;
+import com.eightkdata.phoebe.common.util.ByteBufAllocatorUtil;
 import com.eightkdata.phoebe.common.util.ByteSize;
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
@@ -48,7 +49,9 @@ public final class BackendKeyData extends AbstractByteBufMessage {
         checkArgument(pid > 0, "Pid must be a positive number (was: " + pid + ")");
         checkArgument(secret >= 0, "Secret must be a non-negative number (was: " + secret + ")");
 
-        ByteBuf byteBuf = allocateByteBuf(byteBufAllocator, MessageType.BackendKeyData.getFixedMessageLength());
+        ByteBuf byteBuf = ByteBufAllocatorUtil.allocNonStringByteBuf(
+                byteBufAllocator, MessageType.BackendKeyData.getFixedMessageLength()
+        );
         byteBuf.writeInt(pid);
         byteBuf.writeInt(secret);
 

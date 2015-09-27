@@ -18,16 +18,11 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.google.common.math.DoubleMath;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ReadOnlyByteBuf;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-
-import java.math.RoundingMode;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -51,17 +46,6 @@ public abstract class AbstractByteBufMessage extends AbstractMessage implements 
     @Override
     public int size() {
         return byteBuf.readableBytes();
-    }
-
-    protected static @Nonnull ByteBuf allocateByteBuf(
-            @Nonnull ByteBufAllocator byteBufAllocator, @Nonnegative int size
-    ) {
-        // Due to Netty's internal implementation, max capacity should be at least max-bytes-per-char * n_chars
-        // That means at least 4 times number of characters. We round to the next power of two.
-        // Netty does that internally anyway
-        int maxCapacity = (int) Math.pow(2, DoubleMath.log2(size * 4, RoundingMode.CEILING));
-
-        return byteBufAllocator.directBuffer(size, maxCapacity);
     }
 
 }

@@ -20,6 +20,7 @@ package com.eightkdata.phoebe.common.messages;
 
 import com.eightkdata.phoebe.common.message.AbstractByteBufMessage;
 import com.eightkdata.phoebe.common.message.MessageType;
+import com.eightkdata.phoebe.common.util.ByteBufAllocatorUtil;
 import com.eightkdata.phoebe.common.util.MD5;
 import com.google.common.base.MoreObjects;
 import com.google.common.io.BaseEncoding;
@@ -46,10 +47,14 @@ public final class AuthenticationMD5Password extends AbstractByteBufMessage {
     }
 
     static AuthenticationMD5Password encode(@Nonnull ByteBufAllocator byteBufAllocator, @Nonnull byte[] salt) {
+        assert MessageType.AuthenticationMD5Password.getFixedMessageLength() == SALT_LENGTH;
+
         checkNotNull(salt);
         checkArgument(SALT_LENGTH == salt.length, "salt must be %s bytes, found %d", SALT_LENGTH, salt.length);
 
-        ByteBuf byteBuf = allocateByteBuf(byteBufAllocator, SALT_LENGTH);
+        ByteBuf byteBuf = ByteBufAllocatorUtil.allocNonStringByteBuf(
+                byteBufAllocator, MessageType.AuthenticationMD5Password.getFixedMessageLength()
+        );
         byteBuf.writeBytes(salt);
 
         return new AuthenticationMD5Password(byteBuf);

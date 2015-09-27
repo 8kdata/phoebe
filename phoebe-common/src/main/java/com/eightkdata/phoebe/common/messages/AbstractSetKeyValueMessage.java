@@ -25,10 +25,7 @@
 package com.eightkdata.phoebe.common.messages;
 
 import com.eightkdata.phoebe.common.message.AbstractCharsetByteBufMessage;
-import com.eightkdata.phoebe.common.util.ByteSize;
-import com.eightkdata.phoebe.common.util.DecodingUtil;
-import com.eightkdata.phoebe.common.util.EncodingUtil;
-import com.eightkdata.phoebe.common.util.KeyValueIterator;
+import com.eightkdata.phoebe.common.util.*;
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -63,7 +60,9 @@ public abstract class AbstractSetKeyValueMessage extends AbstractCharsetByteBufM
         checkNotNull(charset);
 
         // Encode
-        ByteBuf byteBuf = allocateByteBuf(byteBufAllocator, computePayloadLength(parameters, charset));
+        ByteBuf byteBuf = ByteBufAllocatorUtil.allocStringByteBuf(
+                byteBufAllocator, computePayloadLength(parameters, charset)
+        );
 
         for(Map.Entry<String,String> param : parameters.entrySet()) {
             if(null != param.getValue()) {

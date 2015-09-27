@@ -20,6 +20,7 @@ package com.eightkdata.phoebe.common.messages;
 
 import com.eightkdata.phoebe.common.message.AbstractByteBufMessage;
 import com.eightkdata.phoebe.common.message.MessageType;
+import com.eightkdata.phoebe.common.util.ByteBufAllocatorUtil;
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -82,7 +83,9 @@ public final class ReadyForQuery extends AbstractByteBufMessage {
     ) {
         checkNotNull(statusIndicator);
 
-        ByteBuf byteBuf = allocateByteBuf(byteBufAllocator, MessageType.ReadyForQuery.getFixedMessageLength());
+        ByteBuf byteBuf = ByteBufAllocatorUtil.allocNonStringByteBuf(
+                byteBufAllocator, MessageType.ReadyForQuery.getFixedMessageLength()
+        );
         byteBuf.writeByte(statusIndicator.statusByte);
 
         return new ReadyForQuery(byteBuf);

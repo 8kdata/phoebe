@@ -20,6 +20,7 @@ package com.eightkdata.phoebe.client.encoder;
 
 import com.eightkdata.phoebe.common.message.ByteBufMessage;
 import com.eightkdata.phoebe.common.message.MessageType;
+import com.eightkdata.phoebe.common.util.ByteBufAllocatorUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -40,7 +41,7 @@ public class FeMessageEncoder extends MessageToByteEncoder<ByteBufMessage> {
         MessageType messageType = message.getType();
 
         // Write Header
-        ByteBuf header = ctx.alloc().directBuffer(messageType.headerLength(), messageType.headerLength());
+        ByteBuf header = ByteBufAllocatorUtil.allocNonStringByteBuf(ctx.alloc(), messageType.headerLength());
         if (messageType.hasType()) {
             header.writeByte(messageType.getType());
         }
@@ -57,7 +58,8 @@ public class FeMessageEncoder extends MessageToByteEncoder<ByteBufMessage> {
     }
 
     @Override
-    protected ByteBuf allocateBuffer(ChannelHandlerContext ctx, ByteBufMessage msg, boolean preferDirect) throws Exception {
+    protected ByteBuf allocateBuffer(ChannelHandlerContext ctx, ByteBufMessage msg, boolean preferDirect)
+    throws Exception {
         return new CompositeByteBuf(ctx.alloc(), true, 2);
     }
 }
