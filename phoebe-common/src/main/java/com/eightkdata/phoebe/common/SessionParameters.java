@@ -63,7 +63,7 @@ public class SessionParameters {
     }
 
     public SessionParameters database(@Nonnull String database) {
-        return setParameter(USER, database);
+        return setParameter(DATABASE, database);
     }
 
     @Nullable

@@ -95,7 +95,7 @@ public class StartupMessage extends AbstractSetKeyValueMessage {
         }
 
         return new StartupMessage(
-                encodeToByteBuf(byteBufAllocator, FIXED_CHARSET, sessionParameters.parametersMap()),
+                encodeToByteBuf(byteBufAllocator, FIXED_CHARSET, parameters),
                 FIXED_CHARSET
         );
     }
