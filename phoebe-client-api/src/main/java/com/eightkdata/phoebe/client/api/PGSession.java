@@ -60,7 +60,7 @@ public class PGSession {
                 .addLast("PGOutboundMessageProcessor", new FeMessageProcessor());
     }
 
-    public void start(StartupCommand command) {
+    public void start(StartupCommand command) throws InterruptedException {
         initChannel(command.getCharset());
         handlers.addLast(new StartupFlowHandler(command, channel.alloc()));
         SessionParameters sessionParameters = new SessionParameters()
@@ -69,6 +69,10 @@ public class PGSession {
 
         StartupMessage startupMessage = messageEncoders.startupMessage(command.getCharset(), sessionParameters);
         channel.writeAndFlush(startupMessage);
+    }
+
+    public void close() {
+        // Release any acquired resources
     }
 
 }

@@ -41,14 +41,24 @@ public class PGClient {
 
     private final String host;
     private final int port;
-
     private final EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+    private PGSession currentSession;
 
     public PGClient(@Nonnull String host, int port) {
         checkArgument(!isNullOrEmpty(host), "host cannot be null or empty");
         checkArgument(port > 0, "port cannot be less than 1");
         this.host = host;
         this.port = port;
+    }
+
+    private PGSession clearAndSetCurrentSession(@Nullable  PGSession pgSession) {
+        synchronized (this) {
+            if(null != currentSession)
+                currentSession.close();
+            this.currentSession = pgSession;
+        }
+
+        return pgSession;
     }
 
     /**
@@ -70,7 +80,8 @@ public class PGClient {
                 .await(timeout, unit);
 
         Channel channel = channelRef.get();
-        return channel != null ? new PGSession(channel) : null;
+
+        return clearAndSetCurrentSession(channel != null ? new PGSession(channel) : null);
     }
 
     /**
@@ -81,7 +92,6 @@ public class PGClient {
     public PGSession connect() throws InterruptedException {
         return connect(DEFAULT_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_TIMEUNIT);
     }
-
 
     private static class ClientChannelHandlerInitializer extends ChannelInitializer<Channel> {
         private final AtomicReference<Channel> channelRef;
@@ -94,6 +104,11 @@ public class PGClient {
         protected void initChannel(Channel channel) throws Exception {
             channelRef.set(channel);
         }
+    }
+
+    public void disconnect() throws InterruptedException {
+        clearAndSetCurrentSession(null);
+        eventLoopGroup.shutdownGracefully().sync();
     }
 
 }
