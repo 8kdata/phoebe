@@ -19,11 +19,28 @@
 package com.eightkdata.phoebe.common;
 
 /**
- * Created: 24/07/15
- *
- * @author Álvaro Hernández Tortosa <aht@8kdata.com>
+ * Container for some FeBe (FrontEnd-BackEnd) protocol definitions
  */
-public class FeBe {
+public final class FeBe {
+
+    /**
+     * PostgreSQL's current (and only supported in Phoebe) protocol major number
+     */
     public static final int PROTOCOL_MAJOR = 3;
+
+    /**
+     * PostgreSQL's current (and only supported in Phoebe) protocol minor number
+     */
     public static final int PROTOCOL_MINOR = 0;
+
+    /**
+     * IANA's assigned TCP/UDP port for PostgreSQL
+     * @see <a href="http://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml?&page=92">
+     *      Service Name and Transport Protocol Port Number Registry (page 92)
+     *      </a>
+     */
+    public static final int IANA_TCP_PORT = 5432;
+
+    private FeBe() {}
+
 }

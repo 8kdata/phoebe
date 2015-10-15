@@ -18,17 +18,28 @@
 
 package com.eightkdata.phoebe.common.util;
 
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
+
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Utility class with methods to help check class invariants
  */
 public class Preconditions {
-    public static <T extends CharSequence> T checkTextNotNullNotEmpty(T argument, String message) {
-        checkNotNull(argument, message);
+    public static <T extends CharSequence> T checkTextNotNullNotEmpty(@Nonnull T argument, @Nonnull String message) {
+        checkNotNull(argument, "argument");
+        checkNotNull(message, "message");
         checkArgument(argument.length() > 0, "'" + message + "' must be non-empty");
 
         return argument;
+    }
+
+    public static int checkTcpPort(@Nonnegative int port) {
+        checkState(port > 0 && port <= (1 << 16) - 1, "port");
+
+        return port;
     }
 }
