@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>phoebe</artifactId>
+        <groupId>com.8kdata</groupId>
+        <version>0.10-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.8kdata.phoebe</groupId>
+    <artifactId>phoebe-client-rs</artifactId>
+    <name>Phoebe Client - Reactive Streams</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.8kdata.phoebe</groupId>
+            <artifactId>phoebe-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- TODO: this dependency should be removed and the code moved to phoebe-client-rs -->
+        <dependency>
+            <groupId>com.8kdata.phoebe</groupId>
+            <artifactId>phoebe-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- TODO: this dependency should be removed and the code moved to phoebe-client-rs -->
+
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>${findbugs.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+    </dependencies>
+
+</project>

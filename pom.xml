@@ -14,6 +14,8 @@
         <module>phoebe-common</module>
         <module>phoebe-client</module>
         <module>phoebe-client-api</module>
+        <module>phoebe-client-rs</module>
+        <module>phoebe-client-rs-rxjava</module>
     </modules>
 
     <packaging>pom</packaging>
