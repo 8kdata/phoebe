@@ -23,7 +23,6 @@
 
 package com.eightkdata.phoebe.common.util;
 
-import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.AsciiString;
 
@@ -31,6 +30,8 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import java.nio.charset.Charset;
 
+import static com.google.common.base.Charsets.ISO_8859_1;
+import static com.google.common.base.Charsets.US_ASCII;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -40,30 +41,24 @@ import static com.google.common.base.Preconditions.checkState;
 public class DecodingUtil {
     private DecodingUtil() {}
 
-    public static CharSequence getCString(@Nonnull ByteBuf buf, @Nonnegative int offset, @Nonnull Charset charset) {
-        checkNotNull(buf);
-        checkState(offset >= 0);
-        checkNotNull(charset);
+    public static CharSequence getCString(@Nonnull ByteBuf buffer, @Nonnegative int offset, @Nonnull Charset charset) {
+        checkNotNull(buffer, "buffer");
+        checkState(offset >= 0, "offset cannot be negative (%s)", offset);
+        checkNotNull(charset, "charset");
 
-        int length = buf.bytesBefore(offset, buf.capacity() - offset, (byte) 0);
+        int length = buffer.bytesBefore(offset, buffer.capacity() - offset, (byte) 0);
 
-        switch(length) {
-            case -1:    throw new IllegalStateException("No null-byte terminator found in the buffer");
-            case 0:     return AsciiString.EMPTY_STRING;
-            default:    assert length > 0 : "Length position of a string in a ByteBuffer cannot be negative";
-                        return getNonEmptyCString(buf, offset, length, charset);
+        checkState(length >= 0, "unterminated string found at offset %s", offset);
+        return length == 0 ? AsciiString.EMPTY_STRING : getNonEmptyCString(buffer, offset, length, charset);
+    }
+
+    /** Return a single-byte-per-char AsciiString if charset is single byte and ByteBuf is NIO buffer. */
+    private static CharSequence getNonEmptyCString(ByteBuf buffer, int offset, int length, Charset charset) {
+        if ((charset == US_ASCII || charset == ISO_8859_1) && buffer.nioBufferCount() == 1) {
+            return new AsciiString(buffer.nioBuffer(), offset, offset + length, false);
+        } else {
+            return buffer.toString(offset, length, charset);
         }
     }
 
-    private static CharSequence getNonEmptyCString(ByteBuf buf, int offset, int length, Charset charset) {
-        // Return a single-byte-per-char AsciiString if charset is single byte and ByteBuf is NIO buffer
-        if(
-                (Charsets.US_ASCII == charset || Charsets.ISO_8859_1 == charset)
-                && buf.nioBufferCount() == 1
-        ) {
-            return new AsciiString(buf.nioBuffer(), offset, offset + length, false);
-        }
-
-        return buf.toString(offset, length, charset);
-    }
 }

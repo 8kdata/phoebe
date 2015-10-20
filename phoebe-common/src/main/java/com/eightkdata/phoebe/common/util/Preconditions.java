@@ -32,7 +32,7 @@ public class Preconditions {
     public static <T extends CharSequence> T checkTextNotNullNotEmpty(@Nonnull T argument, @Nonnull String message) {
         checkNotNull(argument, "argument");
         checkNotNull(message, "message");
-        checkArgument(argument.length() > 0, "'" + message + "' must be non-empty");
+        checkArgument(argument.length() > 0, "'%s' must be non-empty", message);
 
         return argument;
     }
