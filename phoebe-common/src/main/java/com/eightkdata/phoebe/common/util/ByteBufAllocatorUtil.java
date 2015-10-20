@@ -30,7 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
- * Convenience methods to help allocate {@see ByteBuf}s
+ * Convenience methods to help allocate {@link ByteBuf}s
  */
 public class ByteBufAllocatorUtil {
 
@@ -51,7 +51,7 @@ public class ByteBufAllocatorUtil {
     }
 
     /**
-     * Allocates a {@see ByteBuf} suitable to have strings encoded into it.
+     * Allocates a {@link ByteBuf} suitable to have strings encoded into it.
      * More specifically, it will reserve enough capacity to write strings in any available encoding.
      */
     public static @Nonnull ByteBuf allocStringByteBuf(
@@ -64,8 +64,8 @@ public class ByteBufAllocatorUtil {
     }
 
     /**
-     * Allocates a {@see ByteBuf} which won't strings encoded into it.
-     * This will create a {@see ByteBuf} with a capacity equal to the requested size.
+     * Allocates a {@link ByteBuf} which won't strings encoded into it.
+     * This will create a {@link ByteBuf} with a capacity equal to the requested size.
      */
     public static @Nonnull ByteBuf allocNonStringByteBuf(
             @Nonnull ByteBufAllocator byteBufAllocator, @Nonnegative int size
