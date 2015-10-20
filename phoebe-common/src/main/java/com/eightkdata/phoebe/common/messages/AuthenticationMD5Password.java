@@ -50,7 +50,7 @@ public final class AuthenticationMD5Password extends AbstractByteBufMessage {
         assert MessageType.AuthenticationMD5Password.getFixedMessageLength() == SALT_LENGTH;
 
         checkNotNull(salt);
-        checkArgument(SALT_LENGTH == salt.length, "salt must be %s bytes, found %d", SALT_LENGTH, salt.length);
+        checkArgument(SALT_LENGTH == salt.length, "salt must be %s bytes, found %s", SALT_LENGTH, salt.length);
 
         ByteBuf byteBuf = ByteBufAllocatorUtil.allocNonStringByteBuf(
                 byteBufAllocator, MessageType.AuthenticationMD5Password.getFixedMessageLength()
