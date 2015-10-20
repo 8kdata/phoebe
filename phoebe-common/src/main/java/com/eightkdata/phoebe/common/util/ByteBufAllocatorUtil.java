@@ -38,7 +38,7 @@ public class ByteBufAllocatorUtil {
             @Nonnull ByteBufAllocator byteBufAllocator, @Nonnegative int size, @Nonnegative int capacity
     ) {
         checkNotNull(byteBufAllocator);
-        checkState(size > 0, "Requested size for the allocated ByteBuf must be non-zero (given = " + size + ")");
+        checkState(size > 0, "Requested size for the allocated ByteBuf must be non-zero (given = %s)", size);
         assert capacity >= size : "Capacity (" + capacity + ") must be >= size (" + size + ")";
 
         // We call ioBuffer to return a suitable ByteBuf for I/O.
