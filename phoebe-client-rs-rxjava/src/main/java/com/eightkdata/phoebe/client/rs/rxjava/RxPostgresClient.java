@@ -238,7 +238,7 @@ public class RxPostgresClient implements PostgresClient {
 
         private final ArrayList<HostPort> hostPorts = new ArrayList<HostPort>();
         private boolean onlyOneHost = true;
-        private boolean errorsViaSubscribeOnError = true;
+        private boolean abortOnError = true;
 
         public Builder tcpIp(@Nonnull String host, @Nonnegative int port) {
             hostPorts.add(new HostPort(host, port));
@@ -293,7 +293,7 @@ public class RxPostgresClient implements PostgresClient {
          * @return
          */
         public Builder abortOnError() {
-            errorsViaSubscribeOnError = false;
+            abortOnError = false;
             return this;
         }
 
@@ -313,7 +313,7 @@ public class RxPostgresClient implements PostgresClient {
                             try {
                                 addresses = InetAddress.getAllByName(hostPort.host);
                             } catch (UnknownHostException e) {
-                                return errorsViaSubscribeOnError ?
+                                return abortOnError ?
                                         Observable.<Map.Entry<InetAddress,Integer>>empty()
                                         : Observable.<Map.Entry<InetAddress,Integer>>error(e);
                             }
@@ -331,7 +331,7 @@ public class RxPostgresClient implements PostgresClient {
                     })
             ;
 
-            return new RxPostgresClient(hosts, onlyOneHost, errorsViaSubscribeOnError, timeout, unit);
+            return new RxPostgresClient(hosts, onlyOneHost, abortOnError, timeout, unit);
         }
 
         public RxPostgresClient create() {
