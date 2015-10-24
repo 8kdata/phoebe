@@ -25,6 +25,7 @@ import com.eightkdata.phoebe.client.rs.TcpIpPostgresConnection;
 import com.eightkdata.phoebe.common.FeBe;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import org.reactivestreams.Publisher;
 import rx.Observable;
 import rx.Subscriber;
@@ -55,7 +56,8 @@ public class RxPostgresClient implements PostgresClient {
     public static final long DEFAULT_TIMEOUT = 10;
     public static final TimeUnit DEFAULT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    private final EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+    private final EventLoopGroup eventLoopGroup;
+
     private final Observable<PostgresConnection> connections;
 
     private RxPostgresClient(
@@ -63,8 +65,23 @@ public class RxPostgresClient implements PostgresClient {
             final boolean onlyOneHost, final boolean errorsAsFailedConnections,
             @Nonnegative final long timeout, @Nonnull final TimeUnit unit
     ) {
-        final int nConnections = postgresHosts.count().toBlocking().single();
+        // Init event loop and make sure daemon connections will be closed properly
+        eventLoopGroup = new NioEventLoopGroup(
+                0,                                              // use default number of threads (queries system CPUs)
+                new DefaultThreadFactory("netty", true)         // Use daemon threads, JVM will always exit
+        );
 
+        // Make sure proper cleanup is performed even if the user does not explicitly call .close()
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                if(null != connections)
+                    close();
+            }
+        });
+
+        // Establish the connections
+        final int nConnections = postgresHosts.count().toBlocking().single();
         connections = Observable.create(new Observable.OnSubscribe<PostgresConnection>() {
             @Override
             public void call(final Subscriber<? super PostgresConnection> subscriber) {
