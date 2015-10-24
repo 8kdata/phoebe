@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.eightkdata.phoebe.common.util.Preconditions.checkTextNotNullNotEmpty;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -241,11 +242,13 @@ public class RxPostgresClient implements PostgresClient {
         private boolean abortOnError = true;
 
         public Builder tcpIp(@Nonnull String host, @Nonnegative int port) {
+            checkTextNotNullNotEmpty(host, "host");
             hostPorts.add(new HostPort(host, port));
             return this;
         }
 
         public Builder tcpIp(@Nonnull String host) {
+            checkTextNotNullNotEmpty(host, "host");
             hostPorts.add(new HostPort(host));
             return this;
         }
@@ -299,7 +302,7 @@ public class RxPostgresClient implements PostgresClient {
 
         public RxPostgresClient create(@Nonnegative long timeout, @Nonnull TimeUnit unit) {
             checkState(timeout > 0, "timeout");
-            checkNotNull(unit);
+            checkNotNull(unit, "unit");
 
             if(hostPorts.isEmpty())
                 tcpIp();
