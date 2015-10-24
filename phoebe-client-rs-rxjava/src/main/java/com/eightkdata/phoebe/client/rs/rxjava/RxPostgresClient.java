@@ -204,7 +204,7 @@ public class RxPostgresClient implements PostgresClient {
         eventLoopGroup.shutdownGracefully();
     }
 
-    public static Builder create() {
+    public static Builder newClient() {
         return new Builder();
     }
 
@@ -266,7 +266,7 @@ public class RxPostgresClient implements PostgresClient {
          * to return the Observables corresponding to the successful and failed connections, respectively.
          *
          * <p>
-         * If {@link #errorsViaSubscribeOnError()} is called,
+         * If {@link #abortOnError()} is called,
          * Subscriber's {@code onError()} handler will be called instead.
          * Any previosuly stablished connection will be closed, and the Subscriber will be forced to provide
          * an implementation of the {@code onError()} handler. In this case, it's better to use the
@@ -274,12 +274,12 @@ public class RxPostgresClient implements PostgresClient {
          *
          * @return
          */
-        public Builder errorsViaSubscribeOnError() {
+        public Builder abortOnError() {
             errorsViaSubscribeOnError = false;
             return this;
         }
 
-        public RxPostgresClient init(@Nonnegative long timeout, @Nonnull TimeUnit unit) {
+        public RxPostgresClient create(@Nonnegative long timeout, @Nonnull TimeUnit unit) {
             checkState(timeout > 0, "timeout");
             checkNotNull(unit);
 
@@ -316,8 +316,8 @@ public class RxPostgresClient implements PostgresClient {
             return new RxPostgresClient(hosts, onlyOneHost, errorsViaSubscribeOnError, timeout, unit);
         }
 
-        public RxPostgresClient init() {
-            return init(DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_UNIT);
+        public RxPostgresClient create() {
+            return create(DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_UNIT);
         }
     }
 
