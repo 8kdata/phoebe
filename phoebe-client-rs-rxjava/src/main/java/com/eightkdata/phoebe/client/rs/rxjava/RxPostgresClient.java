@@ -68,9 +68,6 @@ public class RxPostgresClient implements PostgresClient {
         connections = Observable.create(new Observable.OnSubscribe<PostgresConnection>() {
             @Override
             public void call(final Subscriber<? super PostgresConnection> subscriber) {
-                if (subscriber.isUnsubscribed())
-                    return;
-
                 final CountDownLatch latch = new CountDownLatch(nConnections);
                 final AtomicBoolean someConnected = new AtomicBoolean(false);
                 final AtomicReference<Throwable> error = new AtomicReference<Throwable>(null);
@@ -79,7 +76,7 @@ public class RxPostgresClient implements PostgresClient {
                 postgresHosts.forEach(new Action1<Map.Entry<InetAddress,Integer>>() {
                     @Override
                     public void call(final Map.Entry<InetAddress,Integer> host) {
-                        if(null != error.get())
+                        if(subscriber.isUnsubscribed() || null != error.get())
                             return;
 
                         Schedulers
