@@ -24,12 +24,11 @@
 
 package com.eightkdata.phoebe.common.util;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /**
  * A SAM-type interface for read-only iteration of key-value data structures.
+ * This functional interface mimicks the interface of the Java8 interface of the same name.
+ * If Phoebe is upgraded to Java8+ only, this interface will be removed and the import statements updated.
  */
-public interface KeyValueIterator<K,V> {
-    void doWith(@Nonnull K key, @Nullable V value);
+public interface BiConsumer<T,U> {
+    void accept(T t, U u);
 }

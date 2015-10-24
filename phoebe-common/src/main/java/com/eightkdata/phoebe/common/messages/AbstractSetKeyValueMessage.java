@@ -31,7 +31,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -87,7 +86,7 @@ public abstract class AbstractSetKeyValueMessage extends AbstractCharsetByteBufM
         return length;
     }
 
-    private static final class PayloadInformationFiller implements KeyValueIterator<CharSequence,CharSequence> {
+    private static final class PayloadInformationFiller implements BiConsumer<CharSequence,CharSequence> {
         private final MoreObjects.ToStringHelper toStringHelper;
 
         public PayloadInformationFiller(MoreObjects.ToStringHelper toStringHelper) {
@@ -95,8 +94,9 @@ public abstract class AbstractSetKeyValueMessage extends AbstractCharsetByteBufM
         }
 
         @Override
-        public void doWith(@Nonnull CharSequence key, @Nullable CharSequence value) {
-            toStringHelper.add(key.toString(), value);
+        public void accept(CharSequence key, CharSequence value) {
+            if(null != key)
+                toStringHelper.add(key.toString(), value);
         }
     }
 
@@ -105,7 +105,7 @@ public abstract class AbstractSetKeyValueMessage extends AbstractCharsetByteBufM
         iterateParameters(new PayloadInformationFiller(toStringHelper));
     }
 
-    public void iterateParameters(KeyValueIterator<CharSequence,CharSequence> keyValueIterator) {
+    public void iterateParameters(BiConsumer<CharSequence,CharSequence> biConsumer) {
         assert byteBuf.readableBytes() > 0 : "Empty Startup Message";
 
         int offset = 0;
@@ -117,7 +117,7 @@ public abstract class AbstractSetKeyValueMessage extends AbstractCharsetByteBufM
             CharSequence value = DecodingUtil.getCString(byteBuf, offset, charset);
             offset += (value.length() + ByteSize.BYTE);   // '0' string terminating byte
 
-            keyValueIterator.doWith(key, value);
+            biConsumer.accept(key, value);
         } while (offset < size);
 
     }
