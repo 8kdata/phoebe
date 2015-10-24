@@ -229,6 +229,13 @@ public class RxPostgresClient implements PostgresClient {
             }
         }
 
+        public enum ConnectionsSelector {
+            /** Select the first connection that gets established **/
+            FIRST_CONNECTED,
+            /** Select all the connections **/
+            ALL;
+        }
+
         private final ArrayList<HostPort> hostPorts = new ArrayList<HostPort>();
         private boolean onlyOneHost = true;
         private boolean errorsViaSubscribeOnError = true;
@@ -248,13 +255,24 @@ public class RxPostgresClient implements PostgresClient {
             return this;
         }
 
-        public Builder onlyOneHost() {
-            onlyOneHost = true;
-            return this;
-        }
+        /**
+         * Select how many connections to return once the client is created.
+         * This allows to select whether to return all the connections or the first successful one.
+         * Failed connections are returned nonetheless.
+         *
+         * @param connectionsSelector The selector to use to select which connections to return
+         * @return The Builder, to allow keep chaining calls
+         */
+        public Builder selectConnections(@Nonnull ConnectionsSelector connectionsSelector) {
+            checkNotNull(connectionsSelector, "connectionsSelector");
 
-        public Builder allHosts() {
-            onlyOneHost = false;
+            switch (connectionsSelector) {
+                case FIRST_CONNECTED:       onlyOneHost = true;     break;
+                case ALL:                   onlyOneHost = false;    break;
+
+                default:                    onlyOneHost = false;
+            }
+
             return this;
         }
 
