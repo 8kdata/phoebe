@@ -25,6 +25,7 @@ import com.eightkdata.phoebe.client.rs.TcpIpPostgresConnection;
 import com.eightkdata.phoebe.common.FeBe;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import org.reactivestreams.Publisher;
 import rx.Observable;
 import rx.Subscriber;
@@ -44,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.eightkdata.phoebe.common.util.Preconditions.checkTextNotNullNotEmpty;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -54,7 +56,8 @@ public class RxPostgresClient implements PostgresClient {
     public static final long DEFAULT_TIMEOUT = 10;
     public static final TimeUnit DEFAULT_TIMEOUT_UNIT = TimeUnit.SECONDS;
 
-    private final EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+    private final EventLoopGroup eventLoopGroup;
+
     private final Observable<PostgresConnection> connections;
 
     private RxPostgresClient(
@@ -62,14 +65,26 @@ public class RxPostgresClient implements PostgresClient {
             final boolean onlyOneHost, final boolean errorsAsFailedConnections,
             @Nonnegative final long timeout, @Nonnull final TimeUnit unit
     ) {
-        final int nConnections = postgresHosts.count().toBlocking().single();
+        // Init event loop and make sure daemon connections will be closed properly
+        eventLoopGroup = new NioEventLoopGroup(
+                0,                                              // use default number of threads (queries system CPUs)
+                new DefaultThreadFactory("netty", true)         // Use daemon threads, JVM will always exit
+        );
 
+        // Make sure proper cleanup is performed even if the user does not explicitly call .close()
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                if(null != connections)
+                    close();
+            }
+        });
+
+        // Establish the connections
+        final int nConnections = postgresHosts.count().toBlocking().single();
         connections = Observable.create(new Observable.OnSubscribe<PostgresConnection>() {
             @Override
             public void call(final Subscriber<? super PostgresConnection> subscriber) {
-                if (subscriber.isUnsubscribed())
-                    return;
-
                 final CountDownLatch latch = new CountDownLatch(nConnections);
                 final AtomicBoolean someConnected = new AtomicBoolean(false);
                 final AtomicReference<Throwable> error = new AtomicReference<Throwable>(null);
@@ -78,7 +93,7 @@ public class RxPostgresClient implements PostgresClient {
                 postgresHosts.forEach(new Action1<Map.Entry<InetAddress,Integer>>() {
                     @Override
                     public void call(final Map.Entry<InetAddress,Integer> host) {
-                        if(null != error.get())
+                        if(subscriber.isUnsubscribed() || null != error.get())
                             return;
 
                         Schedulers
@@ -204,7 +219,7 @@ public class RxPostgresClient implements PostgresClient {
         eventLoopGroup.shutdownGracefully();
     }
 
-    public static Builder create() {
+    public static Builder newClient() {
         return new Builder();
     }
 
@@ -229,16 +244,25 @@ public class RxPostgresClient implements PostgresClient {
             }
         }
 
+        public enum ConnectionsSelector {
+            /** Select the first connection that gets established **/
+            FIRST_CONNECTED,
+            /** Select all the connections **/
+            ALL;
+        }
+
         private final ArrayList<HostPort> hostPorts = new ArrayList<HostPort>();
         private boolean onlyOneHost = true;
-        private boolean errorsViaSubscribeOnError = true;
+        private boolean abortOnError = true;
 
         public Builder tcpIp(@Nonnull String host, @Nonnegative int port) {
+            checkTextNotNullNotEmpty(host, "host");
             hostPorts.add(new HostPort(host, port));
             return this;
         }
 
         public Builder tcpIp(@Nonnull String host) {
+            checkTextNotNullNotEmpty(host, "host");
             hostPorts.add(new HostPort(host));
             return this;
         }
@@ -248,13 +272,24 @@ public class RxPostgresClient implements PostgresClient {
             return this;
         }
 
-        public Builder onlyOneHost() {
-            onlyOneHost = true;
-            return this;
-        }
+        /**
+         * Select how many connections to return once the client is created.
+         * This allows to select whether to return all the connections or the first successful one.
+         * Failed connections are returned nonetheless.
+         *
+         * @param connectionsSelector The selector to use to select which connections to return
+         * @return The Builder, to allow keep chaining calls
+         */
+        public Builder selectConnections(@Nonnull ConnectionsSelector connectionsSelector) {
+            checkNotNull(connectionsSelector, "connectionsSelector");
 
-        public Builder allHosts() {
-            onlyOneHost = false;
+            switch (connectionsSelector) {
+                case FIRST_CONNECTED:       onlyOneHost = true;     break;
+                case ALL:                   onlyOneHost = false;    break;
+
+                default:                    onlyOneHost = false;
+            }
+
             return this;
         }
 
@@ -266,7 +301,7 @@ public class RxPostgresClient implements PostgresClient {
          * to return the Observables corresponding to the successful and failed connections, respectively.
          *
          * <p>
-         * If {@link #errorsViaSubscribeOnError()} is called,
+         * If {@link #abortOnError()} is called,
          * Subscriber's {@code onError()} handler will be called instead.
          * Any previosuly stablished connection will be closed, and the Subscriber will be forced to provide
          * an implementation of the {@code onError()} handler. In this case, it's better to use the
@@ -274,14 +309,14 @@ public class RxPostgresClient implements PostgresClient {
          *
          * @return
          */
-        public Builder errorsViaSubscribeOnError() {
-            errorsViaSubscribeOnError = false;
+        public Builder abortOnError() {
+            abortOnError = false;
             return this;
         }
 
-        public RxPostgresClient init(@Nonnegative long timeout, @Nonnull TimeUnit unit) {
+        public RxPostgresClient create(@Nonnegative long timeout, @Nonnull TimeUnit unit) {
             checkState(timeout > 0, "timeout");
-            checkNotNull(unit);
+            checkNotNull(unit, "unit");
 
             if(hostPorts.isEmpty())
                 tcpIp();
@@ -295,7 +330,7 @@ public class RxPostgresClient implements PostgresClient {
                             try {
                                 addresses = InetAddress.getAllByName(hostPort.host);
                             } catch (UnknownHostException e) {
-                                return errorsViaSubscribeOnError ?
+                                return abortOnError ?
                                         Observable.<Map.Entry<InetAddress,Integer>>empty()
                                         : Observable.<Map.Entry<InetAddress,Integer>>error(e);
                             }
@@ -313,11 +348,11 @@ public class RxPostgresClient implements PostgresClient {
                     })
             ;
 
-            return new RxPostgresClient(hosts, onlyOneHost, errorsViaSubscribeOnError, timeout, unit);
+            return new RxPostgresClient(hosts, onlyOneHost, abortOnError, timeout, unit);
         }
 
-        public RxPostgresClient init() {
-            return init(DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_UNIT);
+        public RxPostgresClient create() {
+            return create(DEFAULT_TIMEOUT, DEFAULT_TIMEOUT_UNIT);
         }
     }
 
