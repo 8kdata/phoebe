@@ -19,12 +19,15 @@
 package com.eightkdata.phoebe.client.api;
 
 import com.eightkdata.phoebe.client.FlowHandler;
-import com.eightkdata.phoebe.client.SimpleQueryFlowHandler;
 import com.eightkdata.phoebe.client.StartupFlowHandler;
 import com.eightkdata.phoebe.client.decoder.BeMessageDecoder;
 import com.eightkdata.phoebe.client.decoder.BeMessageProcessor;
 import com.eightkdata.phoebe.client.encoder.FeMessageEncoder;
 import com.eightkdata.phoebe.client.encoder.FeMessageProcessor;
+import com.eightkdata.phoebe.common.SessionParameters;
+import com.eightkdata.phoebe.common.message.MessageHeaderEncoder;
+import com.eightkdata.phoebe.common.messages.MessageEncoders;
+import com.eightkdata.phoebe.common.messages.StartupMessage;
 import io.netty.channel.Channel;
 
 import java.nio.charset.Charset;
@@ -39,12 +42,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class PGSession {
 
     private final Channel channel;
+    private final MessageEncoders messageEncoders;
+    private final MessageHeaderEncoder messageHeaderEncoder;
 
     // todo: use ConcurrentLinkedDeque once we switch to Java 1.7 or later
     private final Deque<FlowHandler> handlers = new LinkedBlockingDeque<FlowHandler>();
 
     public PGSession(Channel channel) {
         this.channel = checkNotNull(channel, "channel");
+        messageEncoders = new MessageEncoders(channel.alloc());
+        messageHeaderEncoder = new MessageHeaderEncoder(channel.alloc());
     }
 
     private void initChannel(Charset encoding) {
@@ -52,23 +59,24 @@ public class PGSession {
                 .addLast("PGInboundMessageDecoder", new BeMessageDecoder(encoding))
                 .addLast("PGInboundMessageProcessor", new BeMessageProcessor(handlers, encoding))
 
-                .addLast("PGOutboundMessageEncoder", new FeMessageEncoder(encoding))
+                .addLast("PGOutboundMessageEncoder", new FeMessageEncoder(messageHeaderEncoder))
                 .addLast("PGOutboundMessageProcessor", new FeMessageProcessor());
     }
 
     public void start(StartupCommand command) throws InterruptedException {
         initChannel(command.getCharset());
-        handlers.addLast(new StartupFlowHandler(command));
-        command.writeTo(channel);
-    }
+        handlers.addLast(new StartupFlowHandler(command, channel.alloc()));
+        SessionParameters sessionParameters = new SessionParameters()
+                .user(command.getUsername())
+                .database(command.getDatabase());
 
-    public void query(SimpleQueryCommand command) {
-        handlers.addLast(new SimpleQueryFlowHandler(command));
-        command.writeTo(channel);
+        StartupMessage startupMessage = messageEncoders.startupMessage(command.getCharset(), sessionParameters);
+        channel.writeAndFlush(startupMessage);
     }
 
     public void close() {
         // Release any acquired resources
+        messageHeaderEncoder.releaseByteBufs();
     }
 
 }

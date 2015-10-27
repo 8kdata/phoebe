@@ -1,14 +1,14 @@
 package com.eightkdata.phoebe.client;
 
-import com.eightkdata.phoebe.common.Message;
-import com.eightkdata.phoebe.common.MessageType;
+import com.eightkdata.phoebe.common.message.Message;
+import com.eightkdata.phoebe.common.message.MessageType;
 import io.netty.channel.Channel;
 
 import java.nio.charset.Charset;
 import java.util.Set;
 
-import static com.eightkdata.phoebe.common.MessageType.ErrorResponse;
-import static com.eightkdata.phoebe.common.MessageType.ReadyForQuery;
+import static com.eightkdata.phoebe.common.message.MessageType.ErrorResponse;
+import static com.eightkdata.phoebe.common.message.MessageType.ReadyForQuery;
 
 public abstract class FlowHandler {
 

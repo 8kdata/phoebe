@@ -24,8 +24,6 @@
 
 package com.eightkdata.phoebe.common.message;
 
-import com.eightkdata.phoebe.common.MessageType;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.HashMap;
@@ -39,54 +37,54 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Immutable
 public enum HeaderOnlyMessages {
-    AuthenticationOk(MessageType.AuthenticationOk),
-    AuthenticationKerberosV5(MessageType.AuthenticationKerberosV5),
-    AuthenticationCleartextPassword(MessageType.AuthenticationCleartextPassword),
-    AuthenticationSCMCredential(MessageType.AuthenticationSCMCredential),
-    AuthenticationGSS(MessageType.AuthenticationGSS),
-    AuthenticationSSPI(MessageType.AuthenticationSSPI),
-    BindComplete(MessageType.BindComplete),
-    CloseComplete(MessageType.CloseComplete),
-    CopyDone(MessageType.CopyDone),
-    EmptyQueryResponse(MessageType.EmptyQueryResponse),
-    Flush(MessageType.Flush),
-    NoData(MessageType.NoData),
-    ParseComplete(MessageType.ParseComplete),
-    PortalSuspended(MessageType.PortalSuspended),
-    SSLRequest(MessageType.SSLRequest),
-    Sync(MessageType.Sync),
-    Terminate(MessageType.Terminate)
+
+	AuthenticationOk	            (	MessageType.AuthenticationOk	            ),
+	AuthenticationCleartextPassword (	MessageType.AuthenticationCleartextPassword ),
+	AuthenticationKerberosV5	    (	MessageType.AuthenticationKerberosV5	    ),
+	AuthenticationSCMCredential	    (	MessageType.AuthenticationSCMCredential	    ),
+	AuthenticationGSS	            (	MessageType.AuthenticationGSS	            ),
+	AuthenticationSSPI	            (	MessageType.AuthenticationSSPI	            ),
+	BindComplete	                (	MessageType.BindComplete	                ),
+	CloseComplete	                (	MessageType.CloseComplete	                ),
+	CopyDone	                    (	MessageType.CopyDone	                    ),
+	EmptyQueryResponse	            (	MessageType.EmptyQueryResponse	            ),
+	Flush	                        (	MessageType.Flush	                        ),
+	NoData	                        (	MessageType.NoData	                        ),
+	ParseComplete	                (	MessageType.ParseComplete	                ),
+	PortalSuspended	                (	MessageType.PortalSuspended	                ),
+	SSLRequest	                    (	MessageType.SSLRequest	                    ),
+	Sync	                        (	MessageType.Sync	                        ),
+	Terminate	                    (	MessageType.Terminate	                    )
     ;
 
     private final HeaderOnlyMessage headerOnlyMessage;
 
-    private static void checkMessageTypeIsHeaderOnly(MessageType messageType) {
-        checkNotNull(messageType);
-        checkArgument(! messageType.hasPayload());
-    }
-
     HeaderOnlyMessages(@Nonnull MessageType messageType) {
         checkMessageTypeIsHeaderOnly(messageType);
-
         headerOnlyMessage = new HeaderOnlyMessage(messageType);
     }
 
-    public @Nonnull HeaderOnlyMessage getHeaderOnlyMessage() {
+    private static void checkMessageTypeIsHeaderOnly(@Nonnull MessageType messageType) {
+        checkNotNull(messageType);
+        checkArgument(messageType.isFixedLengthMessage() && ! messageType.hasPayload());
+    }
+
+    public @Nonnull HeaderOnlyMessage getInstance() {
         return headerOnlyMessage;
     }
 
-    private static final Map<MessageType,HeaderOnlyMessage> instances =
-            new HashMap<MessageType, HeaderOnlyMessage>(values().length);
+    private static final Map<MessageType,HeaderOnlyMessages> instances =
+            new HashMap<MessageType, HeaderOnlyMessages>(values().length);
 
     static {
-        for(HeaderOnlyMessages value : values()) {
-            instances.put(value.headerOnlyMessage.getType(), value.headerOnlyMessage);
-        }
+        for(HeaderOnlyMessages value : values())
+            instances.put(value.headerOnlyMessage.getType(), value);
     }
 
-    public static HeaderOnlyMessage getInstance(@Nonnull MessageType messageType) {
+    public static @Nonnull HeaderOnlyMessages getByMessageType(@Nonnull MessageType messageType) {
         checkMessageTypeIsHeaderOnly(messageType);
 
         return instances.get(messageType);
     }
+
 }

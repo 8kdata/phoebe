@@ -16,30 +16,33 @@
  */
 
 
-package com.eightkdata.phoebe.common.util;
+package com.eightkdata.phoebe.common.message;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import com.google.common.base.MoreObjects;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
+import javax.annotation.concurrent.Immutable;
 
 /**
- * Utility class with methods to help check class invariants
+ *
  */
-public class Preconditions {
-    public static <T extends CharSequence> T checkTextNotNullNotEmpty(@Nonnull T argument, @Nonnull String message) {
-        checkNotNull(argument, "argument");
-        checkNotNull(message, "message");
-        checkArgument(argument.length() > 0, "'%s' must be non-empty", message);
+@Immutable
+public abstract class AbstractMessage implements Message {
 
-        return argument;
+    @Override
+    public String toString() {
+        MoreObjects.ToStringHelper toStringHelper = MoreObjects.toStringHelper(getType().name());
+        fillInPayloadInformation(toStringHelper);
+
+        return toStringHelper.toString();
     }
 
-    public static int checkTcpPort(@Nonnegative int port) {
-        checkState(port > 0 && port <= (1 << 16) - 1, "port");
+    /**
+     * toString()-type method to output information about this message's payload.
+     * Default implementation does not print any payload information, override to do it.
+     * Call the ToStringHelper.add(String, xxx) methods to always include param name information.
+     *
+     * @param toStringHelper the ToStringHelper where to write the payload information
+     */
+    public abstract void fillInPayloadInformation(MoreObjects.ToStringHelper toStringHelper);
 
-        return port;
-    }
 }

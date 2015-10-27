@@ -16,30 +16,36 @@
  */
 
 
-package com.eightkdata.phoebe.common.util;
+package com.eightkdata.phoebe.common.message;
 
-import javax.annotation.Nonnegative;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ReadOnlyByteBuf;
+
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 /**
- * Utility class with methods to help check class invariants
+ *
  */
-public class Preconditions {
-    public static <T extends CharSequence> T checkTextNotNullNotEmpty(@Nonnull T argument, @Nonnull String message) {
-        checkNotNull(argument, "argument");
-        checkNotNull(message, "message");
-        checkArgument(argument.length() > 0, "'%s' must be non-empty", message);
+@Immutable
+public abstract class AbstractByteBufMessage extends AbstractMessage implements ByteBufMessage {
 
-        return argument;
+    protected final ByteBuf byteBuf;
+
+    public AbstractByteBufMessage(@Nonnull ByteBuf byteBuf) {
+        this.byteBuf = new ReadOnlyByteBuf(checkNotNull(byteBuf.retain()));
     }
 
-    public static int checkTcpPort(@Nonnegative int port) {
-        checkState(port > 0 && port <= (1 << 16) - 1, "port");
-
-        return port;
+    @Override @Nonnull
+    public ByteBuf getByteBuf() {
+        return byteBuf;
     }
+
+    @Override
+    public int size() {
+        return byteBuf.readableBytes();
+    }
+
 }

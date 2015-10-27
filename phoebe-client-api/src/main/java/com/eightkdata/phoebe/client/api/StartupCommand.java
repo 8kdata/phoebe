@@ -21,9 +21,6 @@ package com.eightkdata.phoebe.client.api;
 
 import com.eightkdata.phoebe.client.StartupFlowHandler;
 import com.eightkdata.phoebe.common.PostgresEncoding;
-import com.eightkdata.phoebe.common.SessionParameters;
-import com.eightkdata.phoebe.common.message.*;
-import io.netty.channel.Channel;
 
 import javax.annotation.Nonnull;
 import java.nio.charset.Charset;
@@ -64,28 +61,7 @@ public class StartupCommand implements StartupFlowHandler.Callback {
         return password;
     }
 
-    void writeTo(Channel channel) {
-        SessionParameters sessionParameters = new SessionParameters()
-                .setParameter(SessionParameters.USER, user)
-                .setParameter(SessionParameters.DATABASE, database)
-                .setParameter(SessionParameters.CLIENT_ENCODING, encoding.name());
-
-        channel.writeAndFlush(new StartupMessage(sessionParameters));
-    }
-
-    @Override
-    public void onParameterStatus(ParameterStatus message) {
-    }
-
-    @Override
-    public void onBackendKeyData(BackendKeyData message) {
-    }
-
-    @Override
-    public void onCompleted(ReadyForQuery message) {
-    }
-
-    @Override
-    public void onFailed(ErrorResponse message) {
+    public String getDatabase() {
+        return database;
     }
 }

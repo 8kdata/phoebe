@@ -22,14 +22,19 @@
  */
 
 
-package com.eightkdata.phoebe.common.util;
+package com.eightkdata.phoebe.common.message;
+
+import io.netty.buffer.ByteBuf;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
- * A SAM-type interface for read-only iteration of key-value data structures.
+ * A {@link CharsetMessage} backed by a {@link ByteBuf}.
+ * It should provide getters as wrapper methods to read from the ByteBuf.
+ * ByteBuf needs to be of exactly the size of the serialized message and initialized at construction time.
  */
-public interface KeyValueIterator<K,V> {
-    void doWith(@Nonnull K key, @Nullable V value);
+public interface ByteBufMessage extends Message {
+
+    @Nonnull ByteBuf getByteBuf();
+
 }

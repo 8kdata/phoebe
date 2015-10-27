@@ -22,14 +22,16 @@
  */
 
 
-package com.eightkdata.phoebe.common.util;
+package com.eightkdata.phoebe.common.message;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.nio.charset.Charset;
 
 /**
- * A SAM-type interface for read-only iteration of key-value data structures.
+ * A {@link Message} with a {@link Charset}-dependant content
  */
-public interface KeyValueIterator<K,V> {
-    void doWith(@Nonnull K key, @Nullable V value);
+public interface CharsetMessage extends Message {
+
+    @Nonnull Charset getCharset();
+
 }

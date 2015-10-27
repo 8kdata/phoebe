@@ -22,14 +22,42 @@
  */
 
 
-package com.eightkdata.phoebe.common.util;
+package com.eightkdata.phoebe.common.messages;
+
+import com.eightkdata.phoebe.common.SessionParameters;
+import com.eightkdata.phoebe.common.message.MessageType;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import java.nio.charset.Charset;
 
 /**
- * A SAM-type interface for read-only iteration of key-value data structures.
+ *
+ * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
  */
-public interface KeyValueIterator<K,V> {
-    void doWith(@Nonnull K key, @Nullable V value);
+@Immutable
+public class ParameterStatus extends AbstractSetKeyValueMessage {
+
+    public ParameterStatus(@Nonnull ByteBuf byteBuf, @Nonnull Charset charset) {
+        super(byteBuf, charset);
+    }
+
+    static ParameterStatus encode(
+            @Nonnull ByteBufAllocator byteBufAllocator, @Nonnull Charset charset,
+            @Nonnull SessionParameters sessionParameters
+    ) {
+        return new ParameterStatus(
+                encodeToByteBuf(byteBufAllocator, charset, sessionParameters.parametersMap()),
+                charset
+        );
+    }
+
+
+    @Override
+    public MessageType getType() {
+        return MessageType.ParameterStatus;
+    }
+
 }

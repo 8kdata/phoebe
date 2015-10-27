@@ -22,14 +22,20 @@
  */
 
 
-package com.eightkdata.phoebe.common.util;
+package com.eightkdata.phoebe.common.message;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
- * A SAM-type interface for read-only iteration of key-value data structures.
+ * <p>Common interface for all {@code Message}s.
+ *
+ * <p>This contract expects {@code Message}s to be immutable.
  */
-public interface KeyValueIterator<K,V> {
-    void doWith(@Nonnull K key, @Nullable V value);
+public interface Message {
+
+    @Nonnull MessageType getType();
+
+    @Nonnegative int size();
+
 }

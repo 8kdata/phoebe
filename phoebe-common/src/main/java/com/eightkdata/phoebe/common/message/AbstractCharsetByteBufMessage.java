@@ -16,30 +16,32 @@
  */
 
 
-package com.eightkdata.phoebe.common.util;
+package com.eightkdata.phoebe.common.message;
 
-import javax.annotation.Nonnegative;
+import io.netty.buffer.ByteBuf;
+
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+import java.nio.charset.Charset;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 /**
- * Utility class with methods to help check class invariants
+ *
  */
-public class Preconditions {
-    public static <T extends CharSequence> T checkTextNotNullNotEmpty(@Nonnull T argument, @Nonnull String message) {
-        checkNotNull(argument, "argument");
-        checkNotNull(message, "message");
-        checkArgument(argument.length() > 0, "'%s' must be non-empty", message);
+@Immutable
+public abstract class AbstractCharsetByteBufMessage extends AbstractByteBufMessage implements CharsetMessage {
 
-        return argument;
+    protected final Charset charset;
+
+    public AbstractCharsetByteBufMessage(@Nonnull ByteBuf byteBuf, @Nonnull Charset charset) {
+        super(byteBuf);
+        this.charset = checkNotNull(charset);
     }
 
-    public static int checkTcpPort(@Nonnegative int port) {
-        checkState(port > 0 && port <= (1 << 16) - 1, "port");
-
-        return port;
+    @Override @Nonnull
+    public Charset getCharset() {
+        return charset;
     }
+
 }

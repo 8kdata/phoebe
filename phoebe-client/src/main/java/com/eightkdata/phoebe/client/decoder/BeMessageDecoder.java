@@ -18,8 +18,11 @@
 
 package com.eightkdata.phoebe.client.decoder;
 
-import com.eightkdata.phoebe.common.*;
+import com.eightkdata.phoebe.common.message.BeMessageType;
 import com.eightkdata.phoebe.common.message.HeaderOnlyMessages;
+import com.eightkdata.phoebe.common.message.MessageType;
+import com.eightkdata.phoebe.common.messages.MessageDecoders;
+import com.eightkdata.phoebe.common.util.EncodingUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -35,10 +38,10 @@ import java.util.List;
  */
 public class BeMessageDecoder extends ByteToMessageDecoder {
 
-    private final Charset encoding;
+    private final Charset charset;
 
-    public BeMessageDecoder(Charset encoding) {
-        this.encoding = encoding;
+    public BeMessageDecoder(Charset charset) {
+        this.charset = charset;
     }
 
     @Override
@@ -47,7 +50,7 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
             return;
         }
 
-        // Decode type and length
+        // Decode type and decodingLength
         byte type = in.readByte();
         long length = in.readUnsignedInt();
         if(length > Integer.MAX_VALUE) {
@@ -58,11 +61,11 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
         // Find exact type, checking subtype, if needed (only for auth messages)
         BeMessageType beMessageType;
         if (type == MessageType.AUTHENTICATION_TYPE) {
-            if(in.readableBytes() < Encoders.intLength()) {
+            if(in.readableBytes() < EncodingUtil.intLength()) {
                 return;
             }
             int subtype = in.readInt();
-            headerLength += Encoders.intLength();
+            headerLength += EncodingUtil.intLength();
             beMessageType = BeMessageType.getAuthMessageBySubtype(subtype);
         } else {
             beMessageType = BeMessageType.getNonAuthMessageByType(type);
@@ -75,7 +78,7 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
         MessageType messageType = beMessageType.getMessageType();
         if (messageType.isFixedLengthMessage() && length != messageType.getFixedMessageLength()) {
             throw new CorruptedFrameException(
-                    "unexpected length (" + length + ") for " + messageType + "(" + (char) type + ") message.");
+                    "unexpected decodingLength (" + length + ") for " + messageType + "(" + (char) type + ") message.");
         }
 
         // todo: add a singletondecoder (maybe some better name?) class and replace this special casing
@@ -86,14 +89,10 @@ public class BeMessageDecoder extends ByteToMessageDecoder {
         if(! messageType.hasPayload()) {
             assert payloadLength == 0 : "Message type indicates no payload, but payload found";
 
-            out.add(HeaderOnlyMessages.getInstance(messageType));
+            out.add(HeaderOnlyMessages.getByMessageType(messageType));
         } else {
-            Message.Decoder<?> decoder = BeMessageTypeDecoder.valueOf(beMessageType.name()).getDecoder();
-            if (decoder == null) {
-                throw new UnsupportedOperationException(messageType + "Decoder");
-            }
-
-            out.add(decoder.decode(in.readSlice(payloadLength), encoding));
+            out.add(MessageDecoders.decode(messageType, in.readSlice(payloadLength), charset));
         }
     }
+
 }

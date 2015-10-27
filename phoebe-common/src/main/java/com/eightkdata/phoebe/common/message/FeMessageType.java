@@ -16,30 +16,40 @@
  */
 
 
-package com.eightkdata.phoebe.common.util;
-
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
+package com.eightkdata.phoebe.common.message;
 
 /**
- * Utility class with methods to help check class invariants
+ * Created: 25/07/15
+ *
+ * @author Álvaro Hernández Tortosa <aht@8kdata.com>
  */
-public class Preconditions {
-    public static <T extends CharSequence> T checkTextNotNullNotEmpty(@Nonnull T argument, @Nonnull String message) {
-        checkNotNull(argument, "argument");
-        checkNotNull(message, "message");
-        checkArgument(argument.length() > 0, "'%s' must be non-empty", message);
+public enum FeMessageType {
+    Bind,
+    CancelRequest,
+    Close,
+    CopyData,
+    CopyDone,
+    CopyFail,
+    Describe,
+    Execute,
+    Flush,
+    FunctionCall,
+    Parse,
+    PasswordMessage,
+    Query,
+    SSLRequest,
+    StartupMessage,
+    Sync,
+    Terminate
+    ;
 
-        return argument;
+    private final MessageType febeMessageType;
+
+    FeMessageType() {
+        this.febeMessageType = MessageType.valueOf(name());
     }
 
-    public static int checkTcpPort(@Nonnegative int port) {
-        checkState(port > 0 && port <= (1 << 16) - 1, "port");
-
-        return port;
+    public MessageType getFeBeMessageType() {
+        return febeMessageType;
     }
 }

@@ -113,7 +113,7 @@ public enum Charsets implements CharsetHolder {
     private static Charset getCharset(@Nonnull String charsetName) {
         Preconditions.checkTextNotNullNotEmpty(charsetName, "Charset name cannot be empty");
 
-        // The holder pattern is not safe if instance construction may fail. Make sure exception is not thrown
+        // The holder pattern is not safe if get construction may fail. Make sure exception is not thrown
         if(Charset.isSupported(charsetName)) {
             try {
                 return Charset.forName(charsetName);
