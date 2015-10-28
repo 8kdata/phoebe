@@ -38,21 +38,24 @@ public class EncodingUtil {
     private EncodingUtil() {}
 
     /**
-     * Writes the given String to the ByteBuf as a C-String, i.e., a string terminated by the null byte ('0')
+     * Write a C-style (null terminated) string to a buffer.
      *
-     * @param buf The buffer where to write
-     * @param s The string
-     * @param encoding Encoding to use to write the string
+     * @param buffer the buffer to write to
+     * @param s the string
+     * @param encoding the encoding to use
      */
-    public static void writeCString(@Nonnull ByteBuf buf, @Nonnull String s, @Nonnull Charset encoding) {
-        if(Charsets.US_ASCII.getCharset() == encoding)
-            ByteBufUtil.writeAscii(buf, s);
-        else if(Charsets.UTF_8.getCharset() == encoding)
-            ByteBufUtil.writeUtf8(buf, s);
-        else
-            buf.writeBytes(s.getBytes(encoding));
-
-        buf.writeByte(0);
+    public static void writeCString(@Nonnull ByteBuf buffer, @Nonnull CharSequence s, @Nonnull Charset encoding) {
+        if (encoding == Charsets.US_ASCII.getCharset()) {
+            ByteBufUtil.writeAscii(buffer, s);
+        } else if (encoding == Charsets.UTF_8.getCharset()) {
+            ByteBufUtil.writeUtf8(buffer, s);
+        } else if (s instanceof String) {
+            // xxx: run some tests to see if this is actually faster/smaller than just using encoding.encode()
+            buffer.writeBytes(((String) s).getBytes(encoding));
+        } else {
+            buffer.writeBytes(encoding.encode(CharBuffer.wrap(s)));
+        }
+        buffer.writeByte(0);
     }
 
     // message field sizes, these may seem a bit superfluous but they match the data types described in
