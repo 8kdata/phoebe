@@ -80,8 +80,8 @@ public class StartupMessage extends AbstractSetKeyValueMessage {
             @Nonnull SessionParameters sessionParameters
     ) {
         // Validate input arguments
-        checkNotNull(sessionParameters);
-        checkNotNull(sessionParameters.getParameter(SessionParameters.USER));
+        checkNotNull(sessionParameters, "sessionParameters");
+        checkNotNull(sessionParameters.getParameter(SessionParameters.USER), "sessionParameters.user");
 
         Map<String,String> parameters = sessionParameters.parametersMap();
         if(! sessionParameters.parameterIsSet(SessionParameters.DATABASE)) {

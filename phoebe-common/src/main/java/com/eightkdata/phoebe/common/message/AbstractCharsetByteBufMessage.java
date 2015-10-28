@@ -15,7 +15,6 @@
  *
  */
 
-
 package com.eightkdata.phoebe.common.message;
 
 import io.netty.buffer.ByteBuf;
@@ -26,9 +25,6 @@ import java.nio.charset.Charset;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- *
- */
 @Immutable
 public abstract class AbstractCharsetByteBufMessage extends AbstractByteBufMessage implements CharsetMessage {
 
@@ -36,7 +32,7 @@ public abstract class AbstractCharsetByteBufMessage extends AbstractByteBufMessa
 
     public AbstractCharsetByteBufMessage(@Nonnull ByteBuf byteBuf, @Nonnull Charset charset) {
         super(byteBuf);
-        this.charset = checkNotNull(charset);
+        this.charset = checkNotNull(charset, "charset");
     }
 
     @Override @Nonnull

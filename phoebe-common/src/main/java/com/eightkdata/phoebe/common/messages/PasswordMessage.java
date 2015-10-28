@@ -15,7 +15,6 @@
  *
  */
 
-
 package com.eightkdata.phoebe.common.messages;
 
 import com.eightkdata.phoebe.common.message.AbstractCharsetByteBufMessage;
@@ -35,7 +34,6 @@ import java.nio.charset.Charset;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- *
  * @see <a href="http://www.postgresql.org/docs/9.4/interactive/protocol-message-formats.html">Message Formats</a>
  */
 @Immutable
@@ -45,14 +43,11 @@ public final class PasswordMessage extends AbstractCharsetByteBufMessage {
         super(byteBuf, charset);
     }
 
-    static PasswordMessage encode(
-            @Nonnull ByteBufAllocator byteBufAllocator, @Nonnull Charset charset, @Nonnull CharSequence password
-    ) {
-        checkNotNull(password);
-        ByteBuf byteBuf = ByteBufAllocatorUtil.allocStringByteBuf(
-                byteBufAllocator, EncodingUtil.lengthCString(password.toString(), charset)
-        );
-        EncodingUtil.writeCString(byteBuf, password.toString(), charset);
+    static PasswordMessage encode(@Nonnull ByteBufAllocator allocator, @Nonnull Charset charset, @Nonnull CharSequence password) {
+        checkNotNull(allocator, "allocator");
+        checkNotNull(password, "password");
+        ByteBuf byteBuf = ByteBufAllocatorUtil.allocStringByteBuf(allocator, EncodingUtil.lengthCString(password, charset));
+        EncodingUtil.writeCString(byteBuf, password, charset);
 
         return new PasswordMessage(byteBuf, charset);
     }
