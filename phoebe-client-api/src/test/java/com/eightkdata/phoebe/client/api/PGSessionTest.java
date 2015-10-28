@@ -17,7 +17,7 @@
 
 package com.eightkdata.phoebe.client.api;
 
-import com.eightkdata.phoebe.common.message.ReadyForQuery;
+import com.eightkdata.phoebe.common.messages.ReadyForQuery;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
