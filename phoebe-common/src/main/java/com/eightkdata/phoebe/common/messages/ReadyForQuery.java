@@ -91,7 +91,7 @@ public final class ReadyForQuery extends AbstractByteBufMessage {
         return new ReadyForQuery(byteBuf);
     }
 
-    @Override
+    @Override @Nonnull
     public MessageType getType() {
         return MessageType.ReadyForQuery;
     }

@@ -57,7 +57,7 @@ public final class PasswordMessage extends AbstractCharsetByteBufMessage {
         return new PasswordMessage(byteBuf, charset);
     }
 
-    @Override
+    @Override @Nonnull
     public MessageType getType() {
         return MessageType.PasswordMessage;
     }

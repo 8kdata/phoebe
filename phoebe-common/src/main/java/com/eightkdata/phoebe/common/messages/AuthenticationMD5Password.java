@@ -84,7 +84,7 @@ public final class AuthenticationMD5Password extends AbstractByteBufMessage {
         return MD5.encode(username, password, getSalt(), encoding);
     }
 
-    @Override
+    @Override @Nonnull
     public MessageType getType() {
         return MessageType.AuthenticationMD5Password;
     }

@@ -100,7 +100,7 @@ public class StartupMessage extends AbstractSetKeyValueMessage {
         );
     }
 
-    @Override
+    @Override @Nonnull
     public MessageType getType() {
         return MessageType.StartupMessage;
     }
