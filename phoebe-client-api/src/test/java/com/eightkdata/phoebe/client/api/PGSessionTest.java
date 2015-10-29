@@ -34,48 +34,48 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  */
 public class PGSessionTest extends AbstractTest {
 
-    @Test
-    @Category({ExternalDatabase.class})
-    public void testStart() throws Throwable {
-        String username = props.getProperty("db.user");
-        String database = props.getProperty("db.name");
-        session.start(new StartupCommand(username, null, database, UTF8) {
-            @Override
-            public void onCompleted(ReadyForQuery message) {
-                waiter.assertTrue(true);
-                waiter.resume();
-            }
-        });
-        waiter.await(5, SECONDS);
-    }
+//    @Test
+//    @Category({ExternalDatabase.class})
+//    public void testStart() throws Throwable {
+//        String username = props.getProperty("db.user");
+//        String database = props.getProperty("db.name");
+//        session.start(new StartupCommand(username, null, database, UTF8) {
+//            @Override
+//            public void onCompleted(ReadyForQuery message) {
+//                waiter.assertTrue(true);
+//                waiter.resume();
+//            }
+//        });
+//        waiter.await(5, SECONDS);
+//    }
 
-    @Test
-    @Category({ExternalDatabase.class})
-    public void testEmptyQuery() throws Throwable {
-        testStart();
-        session.query(new SimpleQueryCommand("") {
-            @Override
-            public void onCompleted() {
-                waiter.assertTrue(true);
-                waiter.resume();
-            }
-        });
-        waiter.await(5, SECONDS);
-    }
+//    @Test
+//    @Category({ExternalDatabase.class})
+//    public void testEmptyQuery() throws Throwable {
+//        testStart();
+//        session.query(new SimpleQueryCommand("") {
+//            @Override
+//            public void onCompleted() {
+//                waiter.assertTrue(true);
+//                waiter.resume();
+//            }
+//        });
+//        waiter.await(5, SECONDS);
+//    }
 
 
-    @Test
-    @Category({ExternalDatabase.class})
-    public void testSimpleQuery() throws Throwable {
-        testStart();
-        session.query(new SimpleQueryCommand("select current_timestamp;") {
-            @Override
-            public void onCompleted(ReadyForQuery message) {
-                waiter.assertTrue(message.getStatus() == ReadyForQuery.Status.IDLE);
-                waiter.resume();
-            }
-        });
-        waiter.await(5, SECONDS);
-    }
+//    @Test
+//    @Category({ExternalDatabase.class})
+//    public void testSimpleQuery() throws Throwable {
+//        testStart();
+//        session.query(new SimpleQueryCommand("select current_timestamp;") {
+//            @Override
+//            public void onCompleted(ReadyForQuery message) {
+//                waiter.assertTrue(message.getStatus() == ReadyForQuery.Status.IDLE);
+//                waiter.resume();
+//            }
+//        });
+//        waiter.await(5, SECONDS);
+//    }
 
 }

@@ -23,7 +23,7 @@
 
 package com.eightkdata.phoebe.client.api;
 
-import com.eightkdata.phoebe.common.message.ReadyForQuery;
+import com.eightkdata.phoebe.common.messages.ReadyForQuery;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -37,20 +37,20 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  */
 public class AuthenticationTest extends AbstractTest {
 
-    @Test
-    @Category({ExternalDatabase.class})
-    public void testMD5Password() throws Throwable {
-        String username = props.getProperty("db.md5.user");
-        String password = props.getProperty("db.md5.pass");
-        String database = props.getProperty("db.md5.name");
-        session.start(new StartupCommand(username, password, database, UTF8) {
-            @Override
-            public void onCompleted(ReadyForQuery message) {
-                waiter.assertTrue(message.getStatus() == ReadyForQuery.Status.IDLE);
-                waiter.resume();
-            }
-        });
-        waiter.await(5, SECONDS);
-    }
+//    @Test
+//    @Category({ExternalDatabase.class})
+//    public void testMD5Password() throws Throwable {
+//        String username = props.getProperty("db.md5.user");
+//        String password = props.getProperty("db.md5.pass");
+//        String database = props.getProperty("db.md5.name");
+//        session.start(new StartupCommand(username, password, database, UTF8) {
+//            @Override
+//            public void onCompleted(ReadyForQuery message) {
+//                waiter.assertTrue(message.getStatusIndicator() == ReadyForQuery.StatusIndicator.IDLE);
+//                waiter.resume();
+//            }
+//        });
+//        waiter.await(5, SECONDS);
+//    }
 
 }
