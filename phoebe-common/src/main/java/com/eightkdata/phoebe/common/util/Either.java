@@ -36,13 +36,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * (including reference equality (==), identity hash code, or synchronization) on
  * instances of Optional may have unpredictable results and should be avoided.
  */
-@Immutable @SuppressWarnings("unchecked")
+@Immutable
 public final class Either<Left, Right> {
 
+    @SuppressWarnings("unchecked")
     public static <Left, Right> Either<Left, Right> left(@Nonnull Left left) {
         return (Either<Left, Right>) new Either(checkNotNull(left, "left"), false);
     }
 
+    @SuppressWarnings("unchecked")
     public static <Left, Right> Either<Left, Right> right(@Nonnull Right right) {
         return (Either<Left, Right>) new Either(checkNotNull(right, "right"), true);
     }
@@ -63,10 +65,12 @@ public final class Either<Left, Right> {
         return right;
     }
 
+    @SuppressWarnings("unchecked")
     public Left getLeft() {
         return right ? null : (Left) value;
     }
 
+    @SuppressWarnings("unchecked")
     public Right getRight() {
         return right ? (Right) value : null;
     }
