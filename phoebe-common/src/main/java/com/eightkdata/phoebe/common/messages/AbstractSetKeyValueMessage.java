@@ -55,8 +55,8 @@ public abstract class AbstractSetKeyValueMessage extends AbstractCharsetByteBufM
             @Nonnull Map<String,String> parameters
     ) {
         // Validate input arguments
-        checkNotNull(parameters);
-        checkNotNull(charset);
+        checkNotNull(parameters, "parameters");
+        checkNotNull(charset, "charset");
 
         // Encode
         ByteBuf byteBuf = ByteBufAllocatorUtil.allocStringByteBuf(

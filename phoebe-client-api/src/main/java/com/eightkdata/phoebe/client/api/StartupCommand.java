@@ -40,7 +40,7 @@ public class StartupCommand implements StartupFlowHandler.Callback {
         this.user = checkNotNull(username, "username");
         this.password = password;
         this.database = database;
-        this.encoding = checkNotNull(encoding);
+        this.encoding = checkNotNull(encoding, "encoding");
     }
 
     public StartupCommand(@Nonnull String username, String password, String database) {

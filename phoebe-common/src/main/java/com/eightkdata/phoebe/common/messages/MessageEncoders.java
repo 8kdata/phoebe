@@ -39,8 +39,8 @@ public class MessageEncoders {
 
     private final ByteBufAllocator byteBufAllocator;
 
-    public MessageEncoders(@Nonnull ByteBufAllocator byteBufAllocator) {
-        this.byteBufAllocator = checkNotNull(byteBufAllocator);
+    public MessageEncoders(@Nonnull ByteBufAllocator allocator) {
+        this.byteBufAllocator = checkNotNull(allocator, "allocator");
     }
 
     public @Nonnull AuthenticationMD5Password authenticationMD5Password(@Nonnull byte[] salt) {

@@ -55,7 +55,7 @@ public class ParameterStatus extends AbstractSetKeyValueMessage {
     }
 
 
-    @Override
+    @Override @Nonnull
     public MessageType getType() {
         return MessageType.ParameterStatus;
     }

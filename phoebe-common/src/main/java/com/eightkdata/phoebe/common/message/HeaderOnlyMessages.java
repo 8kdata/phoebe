@@ -65,7 +65,7 @@ public enum HeaderOnlyMessages {
     }
 
     private static void checkMessageTypeIsHeaderOnly(@Nonnull MessageType messageType) {
-        checkNotNull(messageType);
+        checkNotNull(messageType, "messageType");
         checkArgument(messageType.isFixedLengthMessage() && ! messageType.hasPayload());
     }
 
