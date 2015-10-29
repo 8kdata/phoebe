@@ -25,6 +25,8 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 
 /**
  * Created: 25/07/15
@@ -97,14 +99,14 @@ public enum BeMessageType {
 
     public static @Nullable
     BeMessageType getAuthMessageBySubtype(@Nonnull Integer subtype) {
-        Preconditions.checkNotNull(subtype);
+        checkNotNull(subtype, "subtype");
 
         return authMessageTypes.get(subtype);
     }
 
     public static @Nullable
     BeMessageType getNonAuthMessageByType(@Nonnull Byte type) {
-        Preconditions.checkNotNull(type);
+        checkNotNull(type, "type");
 
         return nonAuthMessageTypes.get(type);
     }

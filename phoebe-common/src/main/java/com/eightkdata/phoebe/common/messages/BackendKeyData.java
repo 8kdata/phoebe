@@ -58,7 +58,7 @@ public final class BackendKeyData extends AbstractByteBufMessage {
         return new BackendKeyData(byteBuf);
     }
 
-    @Override
+    @Override @Nonnull
     public MessageType getType() {
         return MessageType.BackendKeyData;
     }

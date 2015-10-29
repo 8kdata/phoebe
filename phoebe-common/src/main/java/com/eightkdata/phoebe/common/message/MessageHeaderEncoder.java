@@ -42,8 +42,8 @@ public class MessageHeaderEncoder  {
     private final @Nonnull ByteBufAllocator byteBufAllocator;
     private final EnumMap<MessageType,ByteBuf> fixedHeadersCache = new EnumMap<MessageType, ByteBuf>(MessageType.class);
 
-    public MessageHeaderEncoder(@Nonnull ByteBufAllocator byteBufAllocator) {
-        this.byteBufAllocator = checkNotNull(byteBufAllocator);
+    public MessageHeaderEncoder(@Nonnull ByteBufAllocator allocator) {
+        this.byteBufAllocator = checkNotNull(allocator, "allocator");
     }
 
     /**
@@ -51,7 +51,7 @@ public class MessageHeaderEncoder  {
      * If the message is of fixed-length, a cached version will be returned after the first invocation.
      */
     public @Nonnull ByteBuf encodeHeader(@Nonnull MessageType messageType, @Nonnegative int messageLength) {
-        checkNotNull(messageType);
+        checkNotNull(messageType, "messageType");
         checkArgument(messageLength > 0, "Message length must be a positive number");
 
             return ! messageType.isFixedLengthMessage() ?
