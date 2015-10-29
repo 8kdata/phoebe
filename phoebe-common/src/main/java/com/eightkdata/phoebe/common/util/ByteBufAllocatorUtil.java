@@ -35,15 +35,15 @@ import static com.google.common.base.Preconditions.checkState;
 public class ByteBufAllocatorUtil {
 
     private static @Nonnull ByteBuf allocByteBuf(
-            @Nonnull ByteBufAllocator byteBufAllocator, @Nonnegative int size, @Nonnegative int capacity
+            @Nonnull ByteBufAllocator allocator, @Nonnegative int size, @Nonnegative int capacity
     ) {
-        checkNotNull(byteBufAllocator);
+        checkNotNull(allocator, "allocator");
         checkState(size > 0, "Requested size for the allocated ByteBuf must be non-zero (given = %s)", size);
         assert capacity >= size : "Capacity (" + capacity + ") must be >= size (" + size + ")";
 
         // We call ioBuffer to return a suitable ByteBuf for I/O.
         // When supported by the underlying, Netty will return a pooled, direct ByteBuf
-        return byteBufAllocator.ioBuffer(
+        return allocator.ioBuffer(
                 size,
                 // We round capacity to the next power of 2. Netty does that internally anyway, but we try to help here.
                 (int) Math.pow(2, DoubleMath.log2(capacity, RoundingMode.CEILING))

@@ -183,7 +183,7 @@ public enum PostgresEncoding implements CharsetHolder {
     private final Charsets charset;
 
     PostgresEncoding(@Nonnull Charsets charset) {
-        this.charset = checkNotNull(charset);
+        this.charset = checkNotNull(charset, "charset");
     }
 
     @Nullable
