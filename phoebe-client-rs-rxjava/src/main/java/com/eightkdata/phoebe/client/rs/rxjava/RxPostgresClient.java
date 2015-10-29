@@ -19,9 +19,13 @@
 package com.eightkdata.phoebe.client.rs.rxjava;
 
 
-import com.eightkdata.phoebe.client.rs.*;
+import com.eightkdata.phoebe.client.rs.FailedConnectionException;
+import com.eightkdata.phoebe.client.rs.PostgresClient;
+import com.eightkdata.phoebe.client.rs.PostgresConnection;
+import com.eightkdata.phoebe.client.rs.TcpIpPostgresConnection;
 import com.eightkdata.phoebe.common.FeBe;
 import com.eightkdata.phoebe.common.util.Try;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -172,16 +176,16 @@ public class RxPostgresClient implements PostgresClient {
     private static class FilterConnections
     implements Func1<Try<PostgresConnection, FailedConnectionException>, Boolean> {
         @Override
-        public Boolean call(Try<PostgresConnection, FailedConnectionException> Try) {
-            return Try.isSuccess();
+        public Boolean call(Try<PostgresConnection, FailedConnectionException> t) {
+            return t.isSuccess();
         }
     }
 
     private static class MapConnections
     implements Func1<Try<PostgresConnection, FailedConnectionException>, PostgresConnection> {
         @Override
-        public PostgresConnection call(Try<PostgresConnection, FailedConnectionException> Try) {
-            return Try.getSuccess();
+        public PostgresConnection call(Try<PostgresConnection, FailedConnectionException> t) {
+            return t.getSuccess();
         }
     }
 
@@ -202,16 +206,22 @@ public class RxPostgresClient implements PostgresClient {
     private static class FilterFailedConnections
     implements Func1<Try<PostgresConnection, FailedConnectionException>, Boolean> {
         @Override
-        public Boolean call(Try<PostgresConnection, FailedConnectionException> Try) {
-            return Try.isFailure();
+        public Boolean call(Try<PostgresConnection, FailedConnectionException> t) {
+            return t.isFailure();
         }
     }
 
+
     private static class MapFailedConnections
     implements Func1<Try<PostgresConnection, FailedConnectionException>, FailedConnectionException> {
+        // TODO: fix the findbug complain, if it's finally fair
+        @SuppressFBWarnings(
+                value="BC_UNCONFIRMED_CAST",
+                justification="Shouldn't happen here, Try#getFailure returns a T. But TODO: check it"
+        )
         @Override
-        public FailedConnectionException call(Try<PostgresConnection, FailedConnectionException> Try) {
-            return Try.getFailure();
+        public FailedConnectionException call(Try<PostgresConnection, FailedConnectionException> t) {
+            return t.getFailure();
         }
     }
 
