@@ -19,6 +19,7 @@
 package com.eightkdata.phoebe.client.rs;
 
 
+import com.eightkdata.phoebe.common.util.Try;
 import org.reactivestreams.Publisher;
 
 import javax.annotation.Nonnull;
@@ -28,7 +29,7 @@ import javax.annotation.Nonnull;
  */
 public interface PostgresClient {
 
-    @Nonnull Publisher<Either<PostgresConnection,FailedConnectionException>> connections();
+    @Nonnull Publisher<Try<PostgresConnection,FailedConnectionException>> connections();
 
     @Nonnull Publisher<PostgresConnection> onConnected();
 
