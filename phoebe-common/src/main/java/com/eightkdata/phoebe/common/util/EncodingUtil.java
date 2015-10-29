@@ -92,7 +92,7 @@ public class EncodingUtil {
     public static int lengthCString(@Nonnull CharSequence s, @Nonnull Charset cs) {
         // xxx: iff this is slow after profiling, cache the encders in a ThreadLocal<Map>
         CharsetEncoder encoder = cs.newEncoder();
-        return encoder.maxBytesPerChar() == 1 ? s.length() : cs.encode(CharBuffer.wrap(s)).remaining();
+        return (encoder.maxBytesPerChar() == 1 ? s.length() : cs.encode(CharBuffer.wrap(s)).remaining()) + ByteSize.BYTE;
     }
 
 }
