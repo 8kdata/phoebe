@@ -30,49 +30,48 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class EitherTest {
+public class TryTest {
+
+    @SuppressWarnings("ThrowableInstanceNeverThrown")
+    final Exception e = new Exception("Failure");
 
     @Test
     public void leftReturnsCorrectValue() {
-        Either<Integer, String> either = Either.left(42);
-        assertThat(either.getLeft(), is(42));
-        assertThat(either.getRight(), is(nullValue()));
-        assertThat(either.isLeft(), is(true));
-        assertThat(either.isRight(), is(false));
+        Try<Integer, Exception> t = Try.success(42);
+        assertThat(t.getSuccess(), is(42));
+        assertThat(t.getFailure(), is(nullValue()));
+        assertThat(t.isSuccess(), is(true));
+        assertThat(t.isFailure(), is(false));
     }
 
     @Test
     public void rightReturnsCorrectValue() {
-        Either<Integer, String> either = Either.right("foo");
-        assertThat(either.getLeft(), is(nullValue()));
-        assertThat(either.getRight(), is("foo"));
-        assertThat(either.isLeft(), is(false));
-        assertThat(either.isRight(), is(true));
+        Try<Integer, Exception> t = Try.failure(e);
+        assertThat(t.getSuccess(), is(nullValue()));
+        assertThat(t.getFailure(), is(e));
+        assertThat(t.isSuccess(), is(false));
+        assertThat(t.isFailure(), is(true));
     }
 
     @Test(expected = NullPointerException.class)
     public void leftValueCannotBeNull() {
-        Either.<Integer,String>left(null);
+        Try.<Integer, Exception>success(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void rightValueCannotBeNull() {
-        Either.<Integer,String>right(null);
+        Try.<Integer, Exception>failure(null);
     }
 
     @Test
     public void equalBehavesAsExpected() {
-        Either leftInt = Either.left(42);
-        Either leftString = Either.left("foo");
-        Either rightInt = Either.right(42);
-        Either rightString = Either.right("foo");
-
-        assertThat(leftInt, is(not(rightInt)));
-        assertThat(leftString, is(not(rightString)));
+        Try s = Try.success(42);
+        Try f = Try.failure(e);
+        assertThat(s, is(not(f)));
     }
 
     @Test
     public void hashCodeDoesNotCollide() {
-        assertThat(Either.left(42).hashCode(), is(not(Either.right(42).hashCode())));
+        assertThat(Try.success(42).hashCode(), is(not(Try.failure(e).hashCode())));
     }
 }

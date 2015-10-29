@@ -30,65 +30,65 @@ import javax.annotation.concurrent.Immutable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A value which can be one of two possible types.
+ * A value which represents the result of an operation.
  *
  * This is a (Java 8 style) value-based class; use of identity-sensitive operations
  * (including reference equality (==), identity hash code, or synchronization) on
  * instances of Optional may have unpredictable results and should be avoided.
  */
 @Immutable
-public final class Either<Left, Right> {
+public final class Try<S, T extends Throwable> {
 
     @SuppressWarnings("unchecked")
-    public static <Left, Right> Either<Left, Right> left(@Nonnull Left left) {
-        return (Either<Left, Right>) new Either(checkNotNull(left, "left"), false);
+    public static <S, T extends Throwable> Try<S, T> success(@Nonnull S result) {
+        return (Try<S, T>) new Try(checkNotNull(result, "result"), false);
     }
 
     @SuppressWarnings("unchecked")
-    public static <Left, Right> Either<Left, Right> right(@Nonnull Right right) {
-        return (Either<Left, Right>) new Either(checkNotNull(right, "right"), true);
+    public static <S, T extends Throwable> Try<S, T> failure(@Nonnull T cause) {
+        return (Try<S, T>) new Try(checkNotNull(cause, "cause"), true);
     }
 
     private final Object value;
-    private final boolean right;
+    private final boolean failed;
 
-    private Either(Object value, boolean right) {
+    private Try(Object value, boolean failed) {
         this.value = value;
-        this.right = right;
+        this.failed = failed;
     }
 
-    public boolean isLeft() {
-        return !right;
+    public boolean isSuccess() {
+        return !failed;
     }
 
-    public boolean isRight() {
-        return right;
-    }
-
-    @SuppressWarnings("unchecked")
-    public Left getLeft() {
-        return right ? null : (Left) value;
+    public boolean isFailure() {
+        return failed;
     }
 
     @SuppressWarnings("unchecked")
-    public Right getRight() {
-        return right ? (Right) value : null;
+    public S getSuccess() {
+        return failed ? null : (S) value;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T getFailure() {
+        return failed ? (T) value : null;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Either)) { return false; }
-        Either that = (Either) obj;
-        return this.right == that.right && this.value.equals(that.value);
+        if (!(obj instanceof Try)) { return false; }
+        Try that = (Try) obj;
+        return this.failed == that.failed && this.value.equals(that.value);
     }
 
     @Override
     public int hashCode() {
-        return value.hashCode() * (right ? 1 : 17);
+        return value.hashCode() * (failed ? 1 : 17);
     }
 
     @Override
     public String toString() {
-        return (right ? "Right(" : "Left(") + value + ")";
+        return (failed ? "Failure(" : "Success(") + value + ")";
     }
 }
