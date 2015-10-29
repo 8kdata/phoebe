@@ -46,13 +46,13 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public class TcpIpPostgresConnection implements PostgresConnection {
 
-    private final PostgresConnection.FailedConnection failedConnection;
     private final Channel channel;
 
     public TcpIpPostgresConnection(
             @Nonnull EventLoopGroup eventLoopGroup, @Nonnull InetAddress host, @Nonnegative int port,
             long timeout, final TimeUnit unit
-    ) {
+    ) throws FailedConnectionException {
+
         ChannelFuture channelFuture = new Bootstrap()
                 .group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
@@ -61,34 +61,20 @@ public class TcpIpPostgresConnection implements PostgresConnection {
                 .connect(host, port)
         ;
 
-        boolean timedOut = false;
-        Throwable interruptedThrowable = null;
         try {
-            timedOut = ! channelFuture.await(timeout, unit);
+            if(! channelFuture.await(timeout, unit))
+                throw new FailedConnectionException("Connection timeout (timeout=" + timeout + " " + unit + ")");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            interruptedThrowable = e;
+            throw new FailedConnectionException("Connection process was interrupted", e);
         }
 
-        if(null != interruptedThrowable) {
-            channel = null;
-            failedConnection = new PostgresConnection.FailedConnection(
-                    "Connection process was interrupted", interruptedThrowable
-            );
-        } else if(timedOut) {
-            channel = null;
-            failedConnection = new PostgresConnection.FailedConnection(
-                    "Connection timeout (timeout=" + timeout + " " + unit + ")"
-            );
-        } else if(! channelFuture.isSuccess()) {
-            channel = null;
-            failedConnection = new PostgresConnection.FailedConnection(
-                    "Could not connect to " + host, channelFuture.cause()
-            );
-        } else {
-            failedConnection = null;
-            channel = channelFuture.channel();
+        if(! channelFuture.isSuccess()) {
+            throw new FailedConnectionException("Could not connect to " + host, channelFuture.cause());
         }
+
+        channel = channelFuture.channel();
+        assert channel != null;
     }
 
     private static final class ChannelHandlerInitializer extends ChannelInitializer<Channel> {
@@ -106,16 +92,6 @@ public class TcpIpPostgresConnection implements PostgresConnection {
                     .addLast("PGOutboundMessageEncoder", new FeMessageEncoder(messageHeaderEncoder))
                     .addLast("PGOutboundMessageProcessor", new FeMessageProcessor());
         }
-    }
-
-    @Override
-    public boolean isSuccessful() {
-        return null != channel;
-    }
-
-    @Override
-    public PostgresConnection.FailedConnection failedConnection() {
-        return failedConnection;
     }
 
     @Override
@@ -140,16 +116,12 @@ public class TcpIpPostgresConnection implements PostgresConnection {
     }
 
     public int localPort() {
-        checkState(null != channel, "Connection was not successful!");
         return ((InetSocketAddress) channel.localAddress()).getPort();
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{ " + (isSuccessful() ?
-                ":" + localPort() + " -> " + host() + ":" + remotePort()
-                : "not connected!"
-        ) + " }";
+        return getClass().getSimpleName() + "{ :" + localPort() + " -> " + host() + ":" + remotePort() + " }";
     }
 
 }

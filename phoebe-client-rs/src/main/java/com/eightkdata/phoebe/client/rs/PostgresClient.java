@@ -21,12 +21,19 @@ package com.eightkdata.phoebe.client.rs;
 
 import org.reactivestreams.Publisher;
 
+import javax.annotation.Nonnull;
+
 /**
  *
  */
 public interface PostgresClient {
-    Publisher<PostgresConnection> connections();
-    Publisher<PostgresConnection> onConnected();
-    Publisher<PostgresConnection> onFailed();
+
+    @Nonnull Publisher<Either<PostgresConnection,FailedConnectionException>> connections();
+
+    @Nonnull Publisher<PostgresConnection> onConnected();
+
+    @Nonnull Publisher<FailedConnectionException> onFailed();
+
     void close();
+
 }
