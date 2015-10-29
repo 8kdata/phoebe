@@ -32,9 +32,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This class encapsulates the functionality to encode the header of a {@see Message} into a {@see ByteBuf}.
+ * This class encapsulates the functionality to encode the header of a {@link Message} into a {@link ByteBuf}.
  * Some message types (those with a fixed length) have headers that are always the same.
- * This uses internally a thread-safe cache to cache those {@see ByteBuf}s.
+ * This uses internally a thread-safe cache to cache those {@link ByteBuf}s.
  */
 @ThreadSafe
 public class MessageHeaderEncoder  {
@@ -42,16 +42,16 @@ public class MessageHeaderEncoder  {
     private final @Nonnull ByteBufAllocator byteBufAllocator;
     private final EnumMap<MessageType,ByteBuf> fixedHeadersCache = new EnumMap<MessageType, ByteBuf>(MessageType.class);
 
-    public MessageHeaderEncoder(@Nonnull ByteBufAllocator byteBufAllocator) {
-        this.byteBufAllocator = checkNotNull(byteBufAllocator);
+    public MessageHeaderEncoder(@Nonnull ByteBufAllocator allocator) {
+        this.byteBufAllocator = checkNotNull(allocator, "allocator");
     }
 
     /**
-     * Encodes the message header for the given {@see MessageType} and message length.
+     * Encodes the message header for the given {@link MessageType} and message length.
      * If the message is of fixed-length, a cached version will be returned after the first invocation.
      */
     public @Nonnull ByteBuf encodeHeader(@Nonnull MessageType messageType, @Nonnegative int messageLength) {
-        checkNotNull(messageType);
+        checkNotNull(messageType, "messageType");
         checkArgument(messageLength > 0, "Message length must be a positive number");
 
             return ! messageType.isFixedLengthMessage() ?
@@ -87,7 +87,7 @@ public class MessageHeaderEncoder  {
     }
 
     /**
-     * Release the {@see ByteBuf}s that might be retained in the fixed-length message cache
+     * Release the {@link ByteBuf}s that might be retained in the fixed-length message cache
      * associated with this instance.
      */
     public void releaseByteBufs() {

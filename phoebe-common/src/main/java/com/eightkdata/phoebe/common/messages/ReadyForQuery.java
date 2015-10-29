@@ -78,20 +78,18 @@ public final class ReadyForQuery extends AbstractByteBufMessage {
         super(byteBuf);
     }
 
-    static ReadyForQuery encode(
-            @Nonnull ByteBufAllocator byteBufAllocator, @Nonnull StatusIndicator statusIndicator
-    ) {
-        checkNotNull(statusIndicator);
+    static ReadyForQuery encode(@Nonnull ByteBufAllocator allocator, @Nonnull StatusIndicator status) {
+        checkNotNull(status, "status");
 
         ByteBuf byteBuf = ByteBufAllocatorUtil.allocNonStringByteBuf(
-                byteBufAllocator, MessageType.ReadyForQuery.getFixedMessageLength()
+                allocator, MessageType.ReadyForQuery.getFixedMessageLength()
         );
-        byteBuf.writeByte(statusIndicator.statusByte);
+        byteBuf.writeByte(status.statusByte);
 
         return new ReadyForQuery(byteBuf);
     }
 
-    @Override
+    @Override @Nonnull
     public MessageType getType() {
         return MessageType.ReadyForQuery;
     }

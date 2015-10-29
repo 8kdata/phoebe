@@ -39,8 +39,8 @@ public class MessageEncoders {
 
     private final ByteBufAllocator byteBufAllocator;
 
-    public MessageEncoders(@Nonnull ByteBufAllocator byteBufAllocator) {
-        this.byteBufAllocator = checkNotNull(byteBufAllocator);
+    public MessageEncoders(@Nonnull ByteBufAllocator allocator) {
+        this.byteBufAllocator = checkNotNull(allocator, "allocator");
     }
 
     public @Nonnull AuthenticationMD5Password authenticationMD5Password(@Nonnull byte[] salt) {
@@ -60,8 +60,8 @@ public class MessageEncoders {
      * <p>If not set:
      * <ul>
      *     <li>{@code database}: defaults to the {@code user}</li>
-     *     <li>{@code client_encoding}: defaults to {@link StartupMessage.DEFAULT_ENCODING}</li>
-     *     <li>{@code lc_messages}: defauls to {@link StartupMessage.DEFAULT_LC_MESSAGES}</li>
+     *     <li>{@code client_encoding}: defaults to {@link StartupMessage#DEFAULT_ENCODING}</li>
+     *     <li>{@code lc_messages}: defauls to {@link StartupMessage#DEFAULT_LC_MESSAGES}</li>
      * </ul>
      *
      * @param sessionParameters the session parameters

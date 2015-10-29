@@ -23,34 +23,10 @@
 
 package com.eightkdata.phoebe.client.api;
 
-import com.eightkdata.phoebe.common.message.ReadyForQuery;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import static com.eightkdata.phoebe.common.PostgresEncoding.UTF8;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 /**
- * Unit tests for the various authentication methods.
+ * Category for tests that require an external database to run.
  *
- * You will need to configure your PostgtreSQL instance appropriately in order to run these.
+ * See {@link AbstractTest} for details.
  */
-public class AuthenticationTest extends AbstractTest {
-
-    @Test
-    @Category({ExternalDatabase.class})
-    public void testMD5Password() throws Throwable {
-        String username = props.getProperty("db.md5.user");
-        String password = props.getProperty("db.md5.pass");
-        String database = props.getProperty("db.md5.name");
-        session.start(new StartupCommand(username, password, database, UTF8) {
-            @Override
-            public void onCompleted(ReadyForQuery message) {
-                waiter.assertTrue(message.getStatus() == ReadyForQuery.Status.IDLE);
-                waiter.resume();
-            }
-        });
-        waiter.await(5, SECONDS);
-    }
-
+public interface ExternalDatabase {
 }

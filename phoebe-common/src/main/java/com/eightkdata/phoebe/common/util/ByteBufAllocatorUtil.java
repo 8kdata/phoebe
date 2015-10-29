@@ -30,20 +30,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
- * Convenience methods to help allocate {@see ByteBuf}s
+ * Convenience methods to help allocate {@link ByteBuf}s
  */
 public class ByteBufAllocatorUtil {
 
     private static @Nonnull ByteBuf allocByteBuf(
-            @Nonnull ByteBufAllocator byteBufAllocator, @Nonnegative int size, @Nonnegative int capacity
+            @Nonnull ByteBufAllocator allocator, @Nonnegative int size, @Nonnegative int capacity
     ) {
-        checkNotNull(byteBufAllocator);
-        checkState(size > 0, "Requested size for the allocated ByteBuf must be non-zero (given = " + size + ")");
+        checkNotNull(allocator, "allocator");
+        checkState(size > 0, "Requested size for the allocated ByteBuf must be non-zero (given = %s)", size);
         assert capacity >= size : "Capacity (" + capacity + ") must be >= size (" + size + ")";
 
         // We call ioBuffer to return a suitable ByteBuf for I/O.
         // When supported by the underlying, Netty will return a pooled, direct ByteBuf
-        return byteBufAllocator.ioBuffer(
+        return allocator.ioBuffer(
                 size,
                 // We round capacity to the next power of 2. Netty does that internally anyway, but we try to help here.
                 (int) Math.pow(2, DoubleMath.log2(capacity, RoundingMode.CEILING))
@@ -51,7 +51,7 @@ public class ByteBufAllocatorUtil {
     }
 
     /**
-     * Allocates a {@see ByteBuf} suitable to have strings encoded into it.
+     * Allocates a {@link ByteBuf} suitable to have strings encoded into it.
      * More specifically, it will reserve enough capacity to write strings in any available encoding.
      */
     public static @Nonnull ByteBuf allocStringByteBuf(
@@ -64,8 +64,8 @@ public class ByteBufAllocatorUtil {
     }
 
     /**
-     * Allocates a {@see ByteBuf} which won't strings encoded into it.
-     * This will create a {@see ByteBuf} with a capacity equal to the requested size.
+     * Allocates a {@link ByteBuf} which won't strings encoded into it.
+     * This will create a {@link ByteBuf} with a capacity equal to the requested size.
      */
     public static @Nonnull ByteBuf allocNonStringByteBuf(
             @Nonnull ByteBufAllocator byteBufAllocator, @Nonnegative int size
