@@ -34,9 +34,6 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
-                <configuration>
-                    <excludedGroups>com.eightkdata.phoebe.client.api.ExternalDatabase</excludedGroups>
-                </configuration>
             </plugin>
         </plugins>
     </build>
