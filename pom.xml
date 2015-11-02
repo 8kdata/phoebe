@@ -13,7 +13,6 @@
     <modules>
         <module>phoebe-common</module>
         <module>phoebe-client</module>
-        <module>phoebe-client-api</module>
     </modules>
 
     <packaging>pom</packaging>
