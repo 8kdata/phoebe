@@ -13,21 +13,24 @@
     <modules>
         <module>phoebe-common</module>
         <module>phoebe-client</module>
+        <module>phoebe-client-api</module>
+        <module>phoebe-client-rs</module>
+        <module>phoebe-client-rs-rxjava</module>
     </modules>
 
     <packaging>pom</packaging>
-    
+
     <name>Phoebe Parent</name>
-    
+
     <organization>
         <name>8Kdata</name>
         <url>http://www.8kdata.com/</url>
     </organization>
-    
+
     <url>http://www.8kdata.com/</url>
 
     <inceptionYear>2015</inceptionYear>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <surefire.version>2.19</surefire.version>
