@@ -19,10 +19,13 @@
 package com.eightkdata.phoebe.client.rs.rxjava;
 
 
+import com.eightkdata.phoebe.client.rs.FailedConnectionException;
 import com.eightkdata.phoebe.client.rs.PostgresClient;
 import com.eightkdata.phoebe.client.rs.PostgresConnection;
 import com.eightkdata.phoebe.client.rs.TcpIpPostgresConnection;
 import com.eightkdata.phoebe.common.FeBe;
+import com.eightkdata.phoebe.common.util.Try;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -58,7 +61,7 @@ public class RxPostgresClient implements PostgresClient {
 
     private final EventLoopGroup eventLoopGroup;
 
-    private final Observable<PostgresConnection> connections;
+    private final Observable<Try<PostgresConnection,FailedConnectionException>> connections;
 
     private RxPostgresClient(
             final Observable<Map.Entry<InetAddress,Integer>> postgresHosts,
@@ -82,9 +85,11 @@ public class RxPostgresClient implements PostgresClient {
 
         // Establish the connections
         final int nConnections = postgresHosts.count().toBlocking().single();
-        connections = Observable.create(new Observable.OnSubscribe<PostgresConnection>() {
+
+        connections = Observable.create(
+        new Observable.OnSubscribe<Try<PostgresConnection,FailedConnectionException>>() {
             @Override
-            public void call(final Subscriber<? super PostgresConnection> subscriber) {
+            public void call(final Subscriber<? super Try<PostgresConnection,FailedConnectionException>> subs) {
                 final CountDownLatch latch = new CountDownLatch(nConnections);
                 final AtomicBoolean someConnected = new AtomicBoolean(false);
                 final AtomicReference<Throwable> error = new AtomicReference<Throwable>(null);
@@ -93,7 +98,7 @@ public class RxPostgresClient implements PostgresClient {
                 postgresHosts.forEach(new Action1<Map.Entry<InetAddress,Integer>>() {
                     @Override
                     public void call(final Map.Entry<InetAddress,Integer> host) {
-                        if(subscriber.isUnsubscribed() || null != error.get())
+                        if(subs.isUnsubscribed() || null != error.get())
                             return;
 
                         Schedulers
@@ -103,23 +108,29 @@ public class RxPostgresClient implements PostgresClient {
                                     @Override
                                     public void call() {
                                         if (! onlyOneHost || ! someConnected.get()) {
-                                            TcpIpPostgresConnection conn = new TcpIpPostgresConnection(
-                                                    eventLoopGroup, host.getKey(), host.getValue(), timeout, unit
-                                            );
-                                            if(conn.isSuccessful()) {
+                                            try {
+                                                TcpIpPostgresConnection c = new TcpIpPostgresConnection(
+                                                        eventLoopGroup, host.getKey(), host.getValue(), timeout, unit
+                                                );
                                                 if(onlyOneHost) {
                                                     if(someConnected.compareAndSet(false, true))
-                                                        subscriber.onNext(conn);
+                                                        subs.onNext(
+                                                            Try.<PostgresConnection,FailedConnectionException>success(c)
+                                                        );
                                                     else
-                                                        conn.close();   // We lost the race to another connection!
+                                                        c.close();   // We lost the race to another connection!
                                                 } else
-                                                    subscriber.onNext(conn);
-                                                connections.add(conn);
-                                            } else {
+                                                    subs.onNext(
+                                                        Try.<PostgresConnection,FailedConnectionException>success(c)
+                                                );
+                                                connections.add(c);
+                                            } catch (FailedConnectionException e) {
                                                 if(errorsAsFailedConnections) {
-                                                    subscriber.onNext(conn);
+                                                    subs.onNext(
+                                                        Try.<PostgresConnection,FailedConnectionException>failure(e)
+                                                    );
                                                 } else {
-                                                    error.compareAndSet(null, conn.failedConnection().getCause());
+                                                    error.compareAndSet(null, e.getCause());
                                                 }
                                             }
                                         }
@@ -134,17 +145,17 @@ public class RxPostgresClient implements PostgresClient {
                 try {
                     latch.await();
                 } catch (InterruptedException e) {
-                    subscriber.onError(e);
+                    subs.onError(e);
                     return;
                 }
 
                 if(null == error.get()) {
-                    subscriber.onCompleted();
+                    subs.onCompleted();
                 } else {
                     for(PostgresConnection connection : connections)
                         connection.close();
 
-                    subscriber.onError(error.get());
+                    subs.onError(error.get());
                 }
             }
         })
@@ -153,25 +164,38 @@ public class RxPostgresClient implements PostgresClient {
         ;
     }
 
-    public Observable<PostgresConnection> connectionsObservable() {
+    public Observable<Try<PostgresConnection,FailedConnectionException>> connectionsObservable() {
         return connections;
     }
 
     @Override
-    public Publisher<PostgresConnection> connections() {
-        return new PublisherAdapter<PostgresConnection>(connectionsObservable());
+    public Publisher<Try<PostgresConnection,FailedConnectionException>> connections() {
+        return new PublisherAdapter<Try<PostgresConnection,FailedConnectionException>>(connectionsObservable());
     }
 
-    private static class FilterSuccessful implements Func1<PostgresConnection, Boolean> {
+    private static class FilterConnections
+    implements Func1<Try<PostgresConnection, FailedConnectionException>, Boolean> {
         @Override
-        public Boolean call(PostgresConnection postgresConnection) {
-            return postgresConnection.isSuccessful();
+        public Boolean call(Try<PostgresConnection, FailedConnectionException> t) {
+            return t.isSuccess();
         }
     }
-    private static final FilterSuccessful FILTER_SUCCESSFUL = new FilterSuccessful();
+
+    private static class MapConnections
+    implements Func1<Try<PostgresConnection, FailedConnectionException>, PostgresConnection> {
+        @Override
+        public PostgresConnection call(Try<PostgresConnection, FailedConnectionException> t) {
+            return t.getSuccess();
+        }
+    }
+
+    private static final FilterConnections FILTER_CONNECTIONS = new FilterConnections();
+    private static final MapConnections MAP_CONNECTIONS = new MapConnections();
 
     public Observable<PostgresConnection> onConnectedObservable() {
-        return connections.filter(FILTER_SUCCESSFUL);
+        return connections
+                .filter(FILTER_CONNECTIONS)
+                .map(MAP_CONNECTIONS);
     }
 
     @Override
@@ -179,21 +203,40 @@ public class RxPostgresClient implements PostgresClient {
         return new PublisherAdapter<PostgresConnection>(onConnectedObservable());
     }
 
-    private static class FilterFailed implements Func1<PostgresConnection, Boolean> {
+    private static class FilterFailedConnections
+    implements Func1<Try<PostgresConnection, FailedConnectionException>, Boolean> {
         @Override
-        public Boolean call(PostgresConnection postgresConnection) {
-            return ! postgresConnection.isSuccessful();
+        public Boolean call(Try<PostgresConnection, FailedConnectionException> t) {
+            return t.isFailure();
         }
     }
-    private static final FilterFailed FILTER_FAILED = new FilterFailed();
 
-    public Observable<PostgresConnection> onFailedObservable() {
-        return connections.filter(FILTER_FAILED);
+
+    private static class MapFailedConnections
+    implements Func1<Try<PostgresConnection, FailedConnectionException>, FailedConnectionException> {
+        // TODO: fix the findbug complain, if it's finally fair
+        @SuppressFBWarnings(
+                value="BC_UNCONFIRMED_CAST",
+                justification="Shouldn't happen here, Try#getFailure returns a T. But TODO: check it"
+        )
+        @Override
+        public FailedConnectionException call(Try<PostgresConnection, FailedConnectionException> t) {
+            return t.getFailure();
+        }
+    }
+
+    private static final FilterFailedConnections FILTER_FAILED_CONNECTIONS = new FilterFailedConnections();
+    private static final MapFailedConnections MAP_FAILED_CONNECTIONS = new MapFailedConnections();
+
+    public Observable<FailedConnectionException> onFailedObservable() {
+        return connections
+                .filter(FILTER_FAILED_CONNECTIONS)
+                .map(MAP_FAILED_CONNECTIONS);
     }
 
     @Override
-    public Publisher<PostgresConnection> onFailed() {
-        return new PublisherAdapter<PostgresConnection>(onFailedObservable());
+    public Publisher<FailedConnectionException> onFailed() {
+        return new PublisherAdapter<FailedConnectionException>(onFailedObservable());
     }
 
     private static class ConnectionCloser implements Action1<PostgresConnection> {
@@ -215,7 +258,7 @@ public class RxPostgresClient implements PostgresClient {
 
     @Override
     public void close() {
-        connections.subscribe(CONNECTION_CLOSER, ON_ERROR_CLOSER);
+        onConnectedObservable().subscribe(CONNECTION_CLOSER, ON_ERROR_CLOSER);
         eventLoopGroup.shutdownGracefully();
     }
 
@@ -296,7 +339,8 @@ public class RxPostgresClient implements PostgresClient {
         /**
          * <p>
          * By default, failed connections are still returned by the Observable.
-         * Call {@link TcpIpPostgresConnection#isSuccessful()} to check whether the connection succeeded.
+         * Call {@link Try#isSuccess()} on the {@link PostgresClient#onConnected()} items
+         * to check whether the connection succeeded.
          * Use the {@link RxPostgresClient#onConnected()} and {@link RxPostgresClient#onFailed()} methods
          * to return the Observables corresponding to the successful and failed connections, respectively.
          *

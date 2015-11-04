@@ -19,47 +19,14 @@
 package com.eightkdata.phoebe.client.rs;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  *
  */
 public interface PostgresConnection {
-    boolean isSuccessful();
-    FailedConnection failedConnection();
+
     void close();
-    String host();
 
-    final class FailedConnection {
-        @Nonnull private final String message;
-        @Nullable private final Throwable cause;
-
-        public FailedConnection(@Nonnull String message, @Nullable Throwable cause) {
-            this.message = checkNotNull(message);
-            this.cause = cause;
-        }
-
-        public FailedConnection(String message) {
-            this(message, null);
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public Throwable getCause() {
-            return cause;
-        }
-
-        @Override
-        public String toString() {
-            return "FailedConnection{" +
-                    "message='" + message + '\'' +
-                    ", cause=" + cause +
-                    '}';
-        }
-    }
+    @Nonnull String host();
 
 }

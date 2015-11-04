@@ -15,7 +15,6 @@
  *
  */
 
-
 package com.eightkdata.phoebe.common.message;
 
 import io.netty.buffer.ByteBuf;
@@ -26,16 +25,14 @@ import javax.annotation.concurrent.Immutable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- *
- */
 @Immutable
 public abstract class AbstractByteBufMessage extends AbstractMessage implements ByteBufMessage {
 
     protected final ByteBuf byteBuf;
 
-    public AbstractByteBufMessage(@Nonnull ByteBuf byteBuf) {
-        this.byteBuf = new ReadOnlyByteBuf(checkNotNull(byteBuf.retain()));
+    public AbstractByteBufMessage(@Nonnull ByteBuf buffer) {
+        checkNotNull(buffer, "buffer");
+        this.byteBuf = new ReadOnlyByteBuf(buffer.retain());
     }
 
     @Override @Nonnull

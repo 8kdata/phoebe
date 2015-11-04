@@ -16,30 +16,32 @@
  */
 
 
-package com.eightkdata.phoebe.common.util;
+package com.eightkdata.phoebe.client.rs;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 /**
- * Utility class with methods to help check class invariants
+ *
  */
-public class Preconditions {
-    public static <T extends CharSequence> T checkTextNotNullNotEmpty(@Nonnull T argument, @Nonnull String message) {
-        checkNotNull(argument, "argument");
-        checkNotNull(message, "message");
-        checkArgument(argument.length() > 0, "'%s' must be non-empty", message);
+public class FailedConnectionException extends Exception {
 
-        return argument;
+    public FailedConnectionException(@Nonnull String message) {
+        super(checkNotNull(message));
     }
 
-    public static int checkTcpPort(@Nonnegative int port) {
-        checkState(port > 0 && port <= (1 << 16) - 1, "port");
-
-        return port;
+    public FailedConnectionException(@Nonnull String message, @Nullable Throwable cause) {
+        super(checkNotNull(message), cause);
     }
+
+    @Override
+    public String toString() {
+        return "FailedConnection{" +
+                "message='" + getMessage() + '\'' +
+                ", cause=" + getCause() +
+                '}';
+    }
+
 }

@@ -49,8 +49,8 @@ public final class AuthenticationMD5Password extends AbstractByteBufMessage {
     static AuthenticationMD5Password encode(@Nonnull ByteBufAllocator byteBufAllocator, @Nonnull byte[] salt) {
         assert MessageType.AuthenticationMD5Password.getFixedMessageLength() == SALT_LENGTH;
 
-        checkNotNull(salt);
-        checkArgument(SALT_LENGTH == salt.length, "salt must be %s bytes, found %d", SALT_LENGTH, salt.length);
+        checkNotNull(salt, "salt");
+        checkArgument(SALT_LENGTH == salt.length, "salt must be %s bytes, found %s", SALT_LENGTH, salt.length);
 
         ByteBuf byteBuf = ByteBufAllocatorUtil.allocNonStringByteBuf(
                 byteBufAllocator, MessageType.AuthenticationMD5Password.getFixedMessageLength()
@@ -84,7 +84,7 @@ public final class AuthenticationMD5Password extends AbstractByteBufMessage {
         return MD5.encode(username, password, getSalt(), encoding);
     }
 
-    @Override
+    @Override @Nonnull
     public MessageType getType() {
         return MessageType.AuthenticationMD5Password;
     }

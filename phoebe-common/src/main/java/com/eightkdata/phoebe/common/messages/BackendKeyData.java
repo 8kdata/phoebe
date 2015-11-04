@@ -46,8 +46,8 @@ public final class BackendKeyData extends AbstractByteBufMessage {
     static BackendKeyData encode(
             @Nonnull ByteBufAllocator byteBufAllocator, @Nonnegative int pid, @Nonnegative int secret
     ) {
-        checkArgument(pid > 0, "Pid must be a positive number (was: " + pid + ")");
-        checkArgument(secret >= 0, "Secret must be a non-negative number (was: " + secret + ")");
+        checkArgument(pid > 0, "Pid must be a positive number (was: %s)", pid);
+        checkArgument(secret >= 0, "Secret must be a non-negative number (was: %s)", secret);
 
         ByteBuf byteBuf = ByteBufAllocatorUtil.allocNonStringByteBuf(
                 byteBufAllocator, MessageType.BackendKeyData.getFixedMessageLength()
@@ -58,7 +58,7 @@ public final class BackendKeyData extends AbstractByteBufMessage {
         return new BackendKeyData(byteBuf);
     }
 
-    @Override
+    @Override @Nonnull
     public MessageType getType() {
         return MessageType.BackendKeyData;
     }
