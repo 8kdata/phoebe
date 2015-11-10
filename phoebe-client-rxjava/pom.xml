@@ -13,8 +13,8 @@
     </parent>
 
     <groupId>com.8kdata.phoebe</groupId>
-    <artifactId>phoebe-client-api</artifactId>
-    <name>Phoebe Client API</name>
+    <artifactId>phoebe-client-rs-rxjava</artifactId>
+    <name>Phoebe Client - RxJava</name>
 
     <dependencies>
         <dependency>
@@ -23,22 +23,21 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava-reactive-streams</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>1.0.14</version>
+        </dependency>
+        <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-transport</artifactId>
             <version>${netty.version}</version>
         </dependency>
-    </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire.version}</version>
-                <configuration>
-                    <excludedGroups>com.eightkdata.phoebe.client.api.ExternalDatabase</excludedGroups>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    </dependencies>
 
 </project>

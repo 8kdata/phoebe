@@ -13,28 +13,29 @@
     <modules>
         <module>phoebe-common</module>
         <module>phoebe-client</module>
-        <module>phoebe-client-api</module>
+        <module>phoebe-client-rxjava</module>
     </modules>
 
     <packaging>pom</packaging>
-    
+
     <name>Phoebe Parent</name>
-    
+
     <organization>
         <name>8Kdata</name>
         <url>http://www.8kdata.com/</url>
     </organization>
-    
+
     <url>http://www.8kdata.com/</url>
 
     <inceptionYear>2015</inceptionYear>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <surefire.version>2.18.1</surefire.version>
+        <surefire.version>2.19</surefire.version>
         <findbugs.version>3.0.0</findbugs.version>
         <guava.version>18.0</guava.version>
         <netty.version>4.1.0.Beta7</netty.version>
+        <reactivestreams.version>1.0.0</reactivestreams.version>
         <slf4j.version>1.7.12</slf4j.version>
     </properties>
 
@@ -67,6 +68,11 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${surefire.version}</version>
                     </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
@@ -119,6 +125,11 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${surefire.version}</version>
                     </plugin>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
