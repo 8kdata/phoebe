@@ -13,9 +13,7 @@
     <modules>
         <module>phoebe-common</module>
         <module>phoebe-client</module>
-        <module>phoebe-client-api</module>
-        <module>phoebe-client-rs</module>
-        <module>phoebe-client-rs-rxjava</module>
+        <module>phoebe-client-rxjava</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -37,6 +35,7 @@
         <findbugs.version>3.0.0</findbugs.version>
         <guava.version>18.0</guava.version>
         <netty.version>4.1.0.Beta7</netty.version>
+        <reactivestreams.version>1.0.0</reactivestreams.version>
         <slf4j.version>1.7.12</slf4j.version>
     </properties>
 

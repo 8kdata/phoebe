@@ -22,11 +22,15 @@
             <artifactId>phoebe-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec</artifactId>
             <version>${netty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams</artifactId>
+            <version>${reactivestreams.version}</version>
         </dependency>
     </dependencies>
 

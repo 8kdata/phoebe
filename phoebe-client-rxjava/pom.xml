@@ -14,31 +14,13 @@
 
     <groupId>com.8kdata.phoebe</groupId>
     <artifactId>phoebe-client-rs-rxjava</artifactId>
-    <name>Phoebe Client - Reactive Streams - RxJava</name>
+    <name>Phoebe Client - RxJava</name>
 
     <dependencies>
         <dependency>
             <groupId>com.8kdata.phoebe</groupId>
-            <artifactId>phoebe-common</artifactId>
+            <artifactId>phoebe-client</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.8kdata.phoebe</groupId>
-            <artifactId>phoebe-client-rs</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>${findbugs.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.reactivestreams</groupId>
-            <artifactId>reactive-streams</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>io.reactivex</groupId>
